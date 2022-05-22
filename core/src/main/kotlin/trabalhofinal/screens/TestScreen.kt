@@ -30,7 +30,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
 
     private val player = Circle(WIDTH/2, HEIGHT/2, 10f)
     private var playerDir = Vector2(1f, 0f)
-    private val cameraPlane = Vector2(0f, 0.66f)
+    private var cameraPlane = Vector2(0f, 0.66f)
     private var mapWidth = 0
     private var mapHeight = 0
     private var tileWidth = 0f
@@ -66,7 +66,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
 //        }
 
         tempController()
-        val collisionPoint = singleRayCast(playerDir)
+        val collisionPoints = multipleRayCast()
         renderer.use(ShapeRenderer.ShapeType.Filled){
             tiles.forEach{ line ->
                 line.forEach { tile ->
@@ -76,14 +76,32 @@ class TestScreen(game: MyGame): CustomScreen(game) {
             renderer.color = Color.BROWN
             renderer.circle(player.x, player.y, player.radius)
             renderer.color = Color.ORANGE
-            renderer.line(player.x, player.y, collisionPoint.x, collisionPoint.y)
+            collisionPoints.forEach{
+                renderer.line(player.x, player.y, it.x, it.y)
+            }
+//            renderer.color = Color.DARK_GRAY
+//            renderer.line(player.x + playerDir.x*20, player.y + 20*playerDir.y,
+//                player.x + 20*playerDir.x + cameraPlane.x*20, player.y + 20*playerDir.y + cameraPlane.y*20)
         }
+    }
+
+    private fun multipleRayCast(): List<Vector2>{
+        val collisions = mutableListOf<Vector2>()
+        for (x in 0 until mapWidth){
+            val cameraX = 2*x.toFloat()/mapWidth.toFloat() - 1
+            val rayDir = Vector2(
+                playerDir.x + cameraPlane.x * cameraX,
+                playerDir.y + cameraPlane.y * cameraX
+            ).nor()
+            collisions.add(singleRayCast(rayDir))
+        }
+        return collisions
     }
 
     private fun singleRayCast(dir: Vector2): Vector2{
         val rayStepSize = Vector2(
-            if (dir.x != 0f) sqrt(1 + (dir.y/dir.x)*(dir.y/dir.x)) else Float.MAX_VALUE,
-            if (dir.y != 0f) sqrt(1 + (dir.x/dir.y)*(dir.x/dir.y)) else Float.MAX_VALUE,
+            abs( 1/dir.x),
+            abs(1/dir.y)
         )
         val mapPos = IVector2(
             tileWidth.toInt()*(player.x/tileWidth).toInt(),
@@ -96,7 +114,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
             step.x = -1
             rayLengths.x = (player.x - mapPos.x)*rayStepSize.x
         } else {
-            rayLengths.x = (mapPos.x.toFloat() + tileWidth - player.x)*rayStepSize.x
+            rayLengths.x = (mapPos.x + tileWidth - player.x)*rayStepSize.x
         }
 
         if (dir.y < 0){
@@ -133,15 +151,22 @@ class TestScreen(game: MyGame): CustomScreen(game) {
 
     }
 
-    private fun rotate(angle: Float): Vector2{
-        return Vector2(playerDir.x*cos(angle) - playerDir.y* sin(angle), playerDir.x*sin(angle) + playerDir.y* cos(angle))
+    private fun rotate(vec: Vector2, angle: Float): Vector2{
+        return Vector2(vec.x*cos(angle) - vec.y* sin(angle), vec.x*sin(angle) + vec.y* cos(angle))
     }
 
     private fun tempController(){
         val speed = 6
         val theta = 2*PI/180
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) playerDir = rotate(theta.toFloat())
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) playerDir = rotate(-theta.toFloat())
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            playerDir = rotate(playerDir, theta.toFloat())
+            cameraPlane = rotate(cameraPlane, theta.toFloat())
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)){
+            playerDir = rotate(playerDir, -theta.toFloat())
+            cameraPlane = rotate(cameraPlane, -theta.toFloat())
+        }
+
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) player.y += playerDir.y*speed
         if (Gdx.input.isKeyPressed(Input.Keys.S)) player.y -= playerDir.y*speed
