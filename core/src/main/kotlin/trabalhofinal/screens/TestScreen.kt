@@ -17,12 +17,6 @@ import trabalhofinal.utils.MapReader
 import kotlin.math.*
 import kotlin.random.Random
 
-fun randomColor(offset: Float) = Color(
-    offset + Random.nextFloat(),
-    offset + Random.nextFloat(),
-    offset + Random.nextFloat(), 1f
-)
-
 class TestScreen(game: MyGame): CustomScreen(game) {
 
     private val tiles = mutableListOf<MutableList<Tile>>()
@@ -49,8 +43,16 @@ class TestScreen(game: MyGame): CustomScreen(game) {
         for (i in 0 until mapWidth){
             val line = mutableListOf<Tile>()
             for (j in 0 until mapHeight){
+                val color = when (mapString[j][i]){
+                    '1' -> Color.RED
+                    '2' -> Color(0f, 100f/255f, 0f, 1f) // Verde mais escuro
+                    '3' -> Color.CHARTREUSE
+                    '4' -> Color.WHITE
+                    '5' -> Color.YELLOW
+                    else -> Color.BLUE
+                }
                 line.add(
-                    Tile(i*tileWidth, j*tileHeight, tileWidth, tileHeight, if (mapString[j][i] == '1') Color.WHITE else Color.BLUE)
+                    Tile(i*tileWidth, j*tileHeight, tileWidth, tileHeight, color)
                 )
             }
             tiles.add(line)
@@ -59,95 +61,118 @@ class TestScreen(game: MyGame): CustomScreen(game) {
     }
 
     override fun render(delta: Float) {
-//        text.setText(font, "PARTY")
-//        batch.use {
-//            font.color = randomColor(0.3f)
-//            font.draw(batch, text, WIDTH/2 - text.width/2,  HEIGHT/2 + text.height/2)
-//        }
 
         tempController()
-        val collisionPoints = multipleRayCast()
+        val collisionWallsColors = multipleRayCast3D()
+        val collisionPoints = mutableListOf<Vector2>()
         renderer.use(ShapeRenderer.ShapeType.Filled){
+            collisionWallsColors.forEach{
+                collisionPoints.add(it.first)
+                renderer.color = it.third
+                val rect = it.second
+                renderer.rectLine(rect.x, rect.y, rect.x, rect.height, 1f)
+            }
+
+            // minimap
             tiles.forEach{ line ->
                 line.forEach { tile ->
-                    tile.draw(renderer)
+                    renderer.color = tile.color
+                    renderer.rect(5f + tile.x/5, HEIGHT - 165f + tile.y/5, tile.width/5, tile.height/5)
                 }
             }
             renderer.color = Color.BROWN
-            renderer.circle(player.x, player.y, player.radius)
-            renderer.color = Color.ORANGE
+            renderer.circle(5f + player.x/5, HEIGHT - 165f + player.y/5, player.radius/5)
+            renderer.color = Color.BLACK
             collisionPoints.forEach{
-                renderer.line(player.x, player.y, it.x, it.y)
+                renderer.rectLine(5f + player.x/5, HEIGHT - 165f + player.y/5, 5f + it.x/5, HEIGHT - 165f + it.y/5, 1f)
             }
-//            renderer.color = Color.DARK_GRAY
-//            renderer.line(player.x + playerDir.x*20, player.y + 20*playerDir.y,
-//                player.x + 20*playerDir.x + cameraPlane.x*20, player.y + 20*playerDir.y + cameraPlane.y*20)
+
         }
     }
 
-    private fun multipleRayCast(): List<Vector2>{
-        val collisions = mutableListOf<Vector2>()
-        for (x in 0 until mapWidth){
-            val cameraX = 2*x.toFloat()/mapWidth.toFloat() - 1
+    private fun multipleRayCast3D(): List<Triple<Vector2, Rectangle, Color>>{
+        val collisionsWallsColors = mutableListOf<Triple<Vector2, Rectangle, Color>>()
+        for (x in 0 until WIDTH.toInt()){
+            val cameraX = 2*x.toFloat()/ WIDTH - 1
             val rayDir = Vector2(
                 playerDir.x + cameraPlane.x * cameraX,
                 playerDir.y + cameraPlane.y * cameraX
-            ).nor()
-            collisions.add(singleRayCast(rayDir))
+            )
+            val (tile, side, perpDist) = singleRayCast(rayDir)
+
+            val h = HEIGHT
+            val lineHeight = tileHeight*(h / perpDist)
+
+            var drawStart = -lineHeight / 2 + h / 2
+            if (drawStart < 0) drawStart = 0f
+            var drawEnd = lineHeight / 2 + h / 2
+            if (drawEnd >= h) drawEnd = h - 1
+
+            val color = tile.color.cpy()
+            if(side == 1) {
+                color.r = color.r/2
+                color.b = color.b/2
+                color.g = color.g/2
+            }
+
+            collisionsWallsColors.add(
+                Triple(
+                    Vector2(player.x + rayDir.x*perpDist, player.y + rayDir.y*perpDist),
+                    Rectangle(x.toFloat(), drawStart, 1f, drawEnd),
+                    color
+                )
+            )
         }
-        return collisions
+        return collisionsWallsColors
     }
 
-    private fun singleRayCast(dir: Vector2): Vector2{
+    private fun singleRayCast(dir: Vector2): Triple<Tile, Int, Float> {
         val rayStepSize = Vector2(
-            abs( 1/dir.x),
-            abs(1/dir.y)
+            tileWidth * abs(1 / dir.x),
+            tileHeight * abs(1 / dir.y)
         )
         val mapPos = IVector2(
-            tileWidth.toInt()*(player.x/tileWidth).toInt(),
-            tileHeight.toInt()*(player.y/tileHeight).toInt()
+            (player.x / tileWidth).toInt(),
+            (player.y / tileHeight).toInt()
         )
         val rayLengths = Vector2(0f, 0f)
         val step = IVector2(1, 1)
 
-        if (dir.x < 0){
+        if (dir.x < 0) {
             step.x = -1
-            rayLengths.x = (player.x - mapPos.x)*rayStepSize.x
-        } else {
-            rayLengths.x = (mapPos.x + tileWidth - player.x)*rayStepSize.x
-        }
+            rayLengths.x = (player.x - mapPos.x*tileWidth) * rayStepSize.x / tileWidth
+        } else
+            rayLengths.x = (mapPos.x*tileWidth + tileWidth - player.x) * rayStepSize.x / tileWidth
 
-        if (dir.y < 0){
+        if (dir.y < 0) {
             step.y = -1
-            rayLengths.y = (player.y - mapPos.y)*rayStepSize.y
-        } else {
-            rayLengths.y = (mapPos.y + tileHeight - player.y)*rayStepSize.y
-        }
+            rayLengths.y = (player.y - mapPos.y*tileHeight) * rayStepSize.y / tileHeight
+        } else
+            rayLengths.y = (mapPos.y*tileHeight + tileHeight - player.y) * rayStepSize.y / tileHeight
 
         var hit = false
-        var dist = 0f
-        while (!hit){
-            if (rayLengths.x < rayLengths.y){
-                mapPos.x += step.x*tileWidth.toInt()
-                dist = rayLengths.x
-                rayLengths.x += rayStepSize.x*tileWidth
-            }
-            else{
-                mapPos.y += step.y*tileHeight.toInt()
-                dist = rayLengths.y
-                rayLengths.y += rayStepSize.y*tileHeight
+        var side = 0
+        while (!hit) {
+            if (rayLengths.x < rayLengths.y) {
+                mapPos.x += step.x
+                side = 0
+                rayLengths.x += rayStepSize.x
+            } else {
+                mapPos.y += step.y
+                side = 1
+                rayLengths.y += rayStepSize.y
             }
 
-            if (tiles[mapPos.x/tileWidth.toInt()][mapPos.y/tileHeight.toInt()].color == Color.WHITE) hit = true
+            if (tiles[mapPos.x][mapPos.y].color != Color.BLUE) hit = true
 
         }
 
-
-        return Vector2(
-            player.x + dir.x*dist,
-            player.y + dir.y*dist
+        return Triple(tiles[mapPos.x][mapPos.y], side,
+            if (side == 0)
+                rayLengths.x - rayStepSize.x
+            else
+                rayLengths.y - rayStepSize.y
         )
-
 
     }
 
@@ -159,12 +184,12 @@ class TestScreen(game: MyGame): CustomScreen(game) {
         val speed = 6
         val theta = 2*PI/180
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            playerDir = rotate(playerDir, theta.toFloat())
-            cameraPlane = rotate(cameraPlane, theta.toFloat())
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)){
             playerDir = rotate(playerDir, -theta.toFloat())
             cameraPlane = rotate(cameraPlane, -theta.toFloat())
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)){
+            playerDir = rotate(playerDir, theta.toFloat())
+            cameraPlane = rotate(cameraPlane, theta.toFloat())
         }
 
 
@@ -174,7 +199,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
         var playerRect = Rectangle(player.x - player.radius, player.y - player.radius, 2*player.radius, 2*player.radius)
         tiles.forEach{ line ->
             line.forEach { tile ->
-                if (tile.color == Color.WHITE && tile.overlaps(playerRect)){
+                if (tile.color != Color.BLUE && tile.overlaps(playerRect)){
                     if (Gdx.input.isKeyPressed(Input.Keys.S) && playerDir.y > 0 ||
                         Gdx.input.isKeyPressed(Input.Keys.W) && playerDir.y < 0)
                         player.y = tile.y + tile.height + player.radius
@@ -191,7 +216,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
 
         tiles.forEach{ line ->
             line.forEach { tile ->
-                if (tile.color == Color.WHITE && tile.overlaps(playerRect)){
+                if (tile.color != Color.BLUE && tile.overlaps(playerRect)){
                     if (Gdx.input.isKeyPressed(Input.Keys.S) && playerDir.x > 0 ||
                         Gdx.input.isKeyPressed(Input.Keys.W) && playerDir.x < 0)
                         player.x = tile.x + tile.width + player.radius
