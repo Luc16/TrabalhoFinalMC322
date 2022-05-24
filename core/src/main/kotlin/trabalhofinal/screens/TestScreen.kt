@@ -15,12 +15,10 @@ import trabalhofinal.components.Tile
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 import kotlin.math.*
-import kotlin.random.Random
 
 class TestScreen(game: MyGame): CustomScreen(game) {
 
     private val tiles = mutableListOf<MutableList<Tile>>()
-//    private val text = GlyphLayout()
 
     private val player = Circle(WIDTH/2, HEIGHT/2, 10f)
     private var playerDir = Vector2(1f, 0f)
@@ -45,11 +43,11 @@ class TestScreen(game: MyGame): CustomScreen(game) {
             for (j in 0 until mapHeight){
                 val color = when (mapString[j][i]){
                     '1' -> Color.RED
-                    '2' -> Color(0f, 100f/255f, 0f, 1f) // Verde mais escuro
-                    '3' -> Color.CHARTREUSE
+                    '2' -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro
+                    '3' -> Color.PURPLE
                     '4' -> Color.WHITE
                     '5' -> Color.YELLOW
-                    else -> Color.BLUE
+                    else -> Color.BLACK
                 }
                 line.add(
                     Tile(i*tileWidth, j*tileHeight, tileWidth, tileHeight, color)
@@ -77,14 +75,14 @@ class TestScreen(game: MyGame): CustomScreen(game) {
             tiles.forEach{ line ->
                 line.forEach { tile ->
                     renderer.color = tile.color
-                    renderer.rect(5f + tile.x/5, HEIGHT - 165f + tile.y/5, tile.width/5, tile.height/5)
+                    renderer.rect(165f - tileWidth/5 - tile.x/5, HEIGHT - 165f + tile.y/5, tile.width/5, tile.height/5)
                 }
             }
             renderer.color = Color.BROWN
-            renderer.circle(5f + player.x/5, HEIGHT - 165f + player.y/5, player.radius/5)
-            renderer.color = Color.BLACK
+            renderer.circle(165f - player.x/5, HEIGHT - 165f + player.y/5, player.radius/5)
+            renderer.color = Color.LIGHT_GRAY
             collisionPoints.forEach{
-                renderer.rectLine(5f + player.x/5, HEIGHT - 165f + player.y/5, 5f + it.x/5, HEIGHT - 165f + it.y/5, 1f)
+                renderer.rectLine(165f - player.x/5, HEIGHT - 165f + player.y/5, 165f - it.x/5, HEIGHT - 165f + it.y/5, 1f)
             }
 
         }
@@ -163,7 +161,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
                 rayLengths.y += rayStepSize.y
             }
 
-            if (tiles[mapPos.x][mapPos.y].color != Color.BLUE) hit = true
+            if (tiles[mapPos.x][mapPos.y].color != Color.BLACK) hit = true
 
         }
 
@@ -181,7 +179,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
     }
 
     private fun tempController(){
-        val speed = 6
+        val speed = 4
         val theta = 2*PI/180
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             playerDir = rotate(playerDir, -theta.toFloat())
@@ -199,7 +197,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
         var playerRect = Rectangle(player.x - player.radius, player.y - player.radius, 2*player.radius, 2*player.radius)
         tiles.forEach{ line ->
             line.forEach { tile ->
-                if (tile.color != Color.BLUE && tile.overlaps(playerRect)){
+                if (tile.color != Color.BLACK && tile.overlaps(playerRect)){
                     if (Gdx.input.isKeyPressed(Input.Keys.S) && playerDir.y > 0 ||
                         Gdx.input.isKeyPressed(Input.Keys.W) && playerDir.y < 0)
                         player.y = tile.y + tile.height + player.radius
@@ -216,7 +214,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
 
         tiles.forEach{ line ->
             line.forEach { tile ->
-                if (tile.color != Color.BLUE && tile.overlaps(playerRect)){
+                if (tile.color != Color.BLACK && tile.overlaps(playerRect)){
                     if (Gdx.input.isKeyPressed(Input.Keys.S) && playerDir.x > 0 ||
                         Gdx.input.isKeyPressed(Input.Keys.W) && playerDir.x < 0)
                         player.x = tile.x + tile.width + player.radius
