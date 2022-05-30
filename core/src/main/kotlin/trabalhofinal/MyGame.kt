@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxGame
 import trabalhofinal.screens.CustomScreen
-import trabalhofinal.screens.TestScreen
+import trabalhofinal.screens.RayCastingTestScreen
+import trabalhofinal.screens.MeshTestScreen
 
 const val WIDTH = 800f
 const val HEIGHT = 800f
@@ -19,9 +20,11 @@ class MyGame: KtxGame<CustomScreen>() {
     val gameViewport = FitViewport(WIDTH, HEIGHT)
 
     override fun create() {
+        gameViewport.camera.translate(WIDTH/2, HEIGHT/2,0f)
         font.data.scale(8f)
-        addScreen(TestScreen(this))
-        setScreen<TestScreen>()
+        addScreen(RayCastingTestScreen(this))
+        addScreen(MeshTestScreen(this))
+        setScreen<MeshTestScreen>()
     }
 
     override fun dispose() {

@@ -16,7 +16,7 @@ import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 import kotlin.math.*
 
-class TestScreen(game: MyGame): CustomScreen(game) {
+class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
     private val tiles = mutableListOf<MutableList<Tile>>()
 
@@ -63,7 +63,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
         tempController()
         val collisionWallsColors = multipleRayCast3D()
         val collisionPoints = mutableListOf<Vector2>()
-        renderer.use(ShapeRenderer.ShapeType.Filled){
+        renderer.use(ShapeRenderer.ShapeType.Filled, viewport.camera.combined){
             collisionWallsColors.forEach{
                 collisionPoints.add(it.first)
                 renderer.color = it.third
@@ -82,7 +82,7 @@ class TestScreen(game: MyGame): CustomScreen(game) {
             renderer.circle(165f - player.x/5, HEIGHT - 165f + player.y/5, player.radius/5)
             renderer.color = Color.LIGHT_GRAY
             collisionPoints.forEach{
-                renderer.rectLine(165f - player.x/5, HEIGHT - 165f + player.y/5, 165f - it.x/5, HEIGHT - 165f + it.y/5, 1f)
+                renderer.rectLine(165f - player.x/5, HEIGHT - 165f + player.y/5, 165f - it.x/5, HEIGHT - 165f + it.y/5, 1f/5)
             }
 
         }
