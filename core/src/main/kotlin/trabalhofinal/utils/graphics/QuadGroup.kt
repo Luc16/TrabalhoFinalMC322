@@ -1,10 +1,11 @@
-package trabalhofinal.utils
+package trabalhofinal.utils.graphics
 
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.badlogic.gdx.utils.Disposable
 
-class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DQuad>) {
+class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DQuad>): Disposable {
     private val quads = quads.toMutableList()
 
     constructor(shader: ShaderProgram) : this(shader, listOf())
@@ -28,10 +29,11 @@ class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DQuad>) 
         }
     }
 
-    fun dispose(){
+    override fun dispose(){
         quads.forEach {
             it.dispose()
         }
+        shader.dispose()
     }
 
 }

@@ -1,4 +1,4 @@
-package trabalhofinal.utils
+package trabalhofinal.utils.graphics
 
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
