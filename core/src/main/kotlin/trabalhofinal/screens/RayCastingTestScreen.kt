@@ -56,10 +56,12 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
             tiles.add(line)
         }
 
+        Gdx.input.isCursorCatched = true
+
     }
 
     override fun render(delta: Float) {
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) Gdx.app.exit()
         tempController()
         val collisionWallsColors = multipleRayCast3D()
         val collisionPoints = mutableListOf<Vector2>()
@@ -72,18 +74,23 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
             }
 
             // minimap
+            renderer.color = Color.BLACK
+            renderer.rect(5f, HEIGHT - 165f, 160f, 160f)
+            renderer.color = Color.LIGHT_GRAY
+            collisionPoints.forEach{
+                renderer.rectLine(165f - player.x/5, HEIGHT - 165f + player.y/5, 165f - it.x/5, HEIGHT - 165f + it.y/5, 1f)
+            }
             tiles.forEach{ line ->
                 line.forEach { tile ->
-                    renderer.color = tile.color
-                    renderer.rect(165f - tileWidth/5 - tile.x/5, HEIGHT - 165f + tile.y/5, tile.width/5, tile.height/5)
+                    if (tile.color != Color.BLACK){
+                        renderer.color = tile.color
+                        renderer.rect(165f - tileWidth/5 - tile.x/5, HEIGHT - 165f + tile.y/5, tile.width/5, tile.height/5)
+                    }
                 }
             }
             renderer.color = Color.BROWN
             renderer.circle(165f - player.x/5, HEIGHT - 165f + player.y/5, player.radius/5)
-            renderer.color = Color.LIGHT_GRAY
-            collisionPoints.forEach{
-                renderer.rectLine(165f - player.x/5, HEIGHT - 165f + player.y/5, 165f - it.x/5, HEIGHT - 165f + it.y/5, 1f/5)
-            }
+
 
         }
     }
@@ -181,15 +188,12 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
     private fun tempController(){
         val speed = 4
         val theta = 2*PI/180
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            playerDir = rotate(playerDir, -theta.toFloat())
-            cameraPlane = rotate(cameraPlane, -theta.toFloat())
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)){
-            playerDir = rotate(playerDir, theta.toFloat())
-            cameraPlane = rotate(cameraPlane, theta.toFloat())
-        }
 
+        val deltaX = Gdx.input.deltaX.toFloat()/10
+        playerDir = rotate(playerDir, deltaX*theta.toFloat())
+        cameraPlane = rotate(cameraPlane, deltaX*theta.toFloat())
+
+        Gdx.input.setCursorPosition((WIDTH/2).toInt(), (HEIGHT/2).toInt())
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) player.y += playerDir.y*speed
         if (Gdx.input.isKeyPressed(Input.Keys.S)) player.y -= playerDir.y*speed
