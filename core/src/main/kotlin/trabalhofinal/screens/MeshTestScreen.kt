@@ -19,8 +19,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 class MeshTestScreen(game: MyGame) : CustomScreen(game) {
-    private val t = Texture(Gdx.files.internal("assets/wolftex/pics/mossy.png"))
-    private val t2 = Texture(Gdx.files.internal("assets/wolftex/pics/colorstone.png"))
+    private val t = Texture(Gdx.files.local("assets/wolftex/pics/mossy.png"))
+    private val t2 = Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png"))
     private val quads = QuadGroup(
         ShaderProgram(vertexShader, fragmentShader),
         listOf(

@@ -24,7 +24,7 @@ class MyGame: KtxGame<CustomScreen>() {
         font.data.scale(8f)
         addScreen(RayCastingTestScreen(this))
         addScreen(MeshTestScreen(this))
-        setScreen<MeshTestScreen>()
+        setScreen<RayCastingTestScreen>()
     }
 
     override fun dispose() {
