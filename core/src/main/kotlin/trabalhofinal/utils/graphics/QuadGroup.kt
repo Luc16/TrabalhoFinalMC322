@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Disposable
 
 class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DQuad>): Disposable {
-    private val quads = quads.toMutableList()
+    /*private */val quads = quads.toMutableList()
 
     constructor(shader: ShaderProgram) : this(shader, listOf())
 
@@ -33,7 +33,8 @@ class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DQuad>):
         quads.forEach {
             it.dispose()
         }
-        shader.dispose()
     }
+
+    fun isEmpty() = quads.isEmpty()
 
 }

@@ -3,6 +3,7 @@ package trabalhofinal.screens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Circle
@@ -18,24 +19,25 @@ import trabalhofinal.utils.graphics.vertexShader
 import kotlin.math.max
 import kotlin.math.min
 
+
 class MeshTestScreen(game: MyGame) : CustomScreen(game) {
-    private val t = Texture(Gdx.files.local("assets/wolftex/pics/mossy.png"))
+    private val t = Texture(Gdx.files.local("assets/wolftex/pics/barrel.png"))
     private val t2 = Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png"))
     private val quads = QuadGroup(
         ShaderProgram(vertexShader, fragmentShader),
         listOf(
             Textured2DQuad(t, floatArrayOf(
-                200f, 660f,//upper left
-                280f, 300f,//lower left
-                600f, 660f, //upper right
-                520f, 300f //lower right
+                200f, 660f, 0f, 0f,//upper left
+                280f, 300f, 0f, 1f,//lower left
+                600f, 660f, 1f, 0f, //upper right
+                520f, 300f, 1f, 1f //lower right
             )),
             Textured2DQuad(t2, floatArrayOf(
-                200f, 660f,//upper left
-                280f, 300f,//lower left
-                600f, 660f, //upper right
-                520f, 300f //lower right
-            ))
+                500f, 300f, 0f, 0f,//upper left
+                500f, 150f, 0f, 1f,//lower left
+                750f, 300f, 1f, 0f, //upper right
+                750f, 150f, 1f, 1f //lower right
+            )),
         )
     )
     private val camera: Camera = viewport.camera
@@ -59,6 +61,11 @@ class MeshTestScreen(game: MyGame) : CustomScreen(game) {
         )
         moveCircles()
         quads.render(camera)
+        val tr = TextureRegion(t, 4, 4, 30, 30)
+
+        batch.use {
+            it.draw(tr.texture, 10f ,10f)
+        }
 
         renderer.use(ShapeRenderer.ShapeType.Filled) {
             renderer.color = Color.WHITE

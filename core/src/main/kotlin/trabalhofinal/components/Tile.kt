@@ -1,13 +1,15 @@
 package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 
-class Tile(x: Float, y: Float, width: Float, height: Float, var color: Color): Rectangle(x, y, width, height) {
+class Tile(x: Float, y: Float, width: Float, height: Float, val color: Color, val texture: Texture?, val id: Int): Rectangle(x, y, width, height) {
 
-    fun draw(renderer: ShapeRenderer){
-        renderer.color = color
-        renderer.rect(x + 1f, y + 1f, width - 1f, height - 1f)
+    fun draw(batch: SpriteBatch){
+        if (texture != null)
+            batch.draw(texture, x, y, width, height)
     }
 }

@@ -1,54 +1,113 @@
 package trabalhofinal.utils
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.Player
 import trabalhofinal.components.Tile
+import trabalhofinal.utils.graphics.QuadGroup
+import trabalhofinal.utils.graphics.Textured2DQuad
 import kotlin.math.abs
 
 class RayCaster(
     private val tiles: List<List<Tile>>,
     private val tileWidth: Float,
-    private val tileHeight: Float
+    private val tileHeight: Float,
+    private val shader: ShaderProgram
 ) {
 
-    fun multipleRayCast3D(player: Player): List<Triple<Vector2, Rectangle, Color>> {
-        val collisionsWallsColors = mutableListOf<Triple<Vector2, Rectangle, Color>>()
+    fun multipleRayCast3D(player: Player): Pair<List<Vector2>, QuadGroup> {
+        val collisionPoints = mutableListOf<Vector2>()
+        val quads = QuadGroup(shader)
+        var rayDir = Vector2()
+        var tile: Tile? = null
+        var prevTile: Tile? = null
+        var initialVertices = listOf<Vector2>()
+        var drawStart = 0f
+        var drawEnd = 0f
+        var side = 0
+        var prevSide = -1
+        var wallX = 0f
+        var startWallX = 0f
+        var prevWallX = 0f
+
         for (x in 0 until WIDTH.toInt()) {
             val cameraX = 2 * x.toFloat() / WIDTH - 1
-            val rayDir = Vector2(
+            rayDir = Vector2(
                 player.dir.x + player.cameraPlane.x * cameraX,
                 player.dir.y + player.cameraPlane.y * cameraX
             )
-            val (tile, side, perpDist) = singleRayCast(player, rayDir)
+            val result = singleRayCast(player, rayDir)
+            tile = result.first
+            side = result.second
+            val perpDist = result.third
 
             val h = HEIGHT
             val lineHeight = tileHeight * (h / perpDist)
 
-            var drawStart = -lineHeight / 2 + h / 2
-            if (drawStart < 0) drawStart = 0f
-            var drawEnd = lineHeight / 2 + h / 2
-            if (drawEnd >= h) drawEnd = h - 1
+            val prevDrawStartAndEnd = Pair(drawStart, drawEnd)
 
-            val color = tile.color.cpy()
-            if (side == 1) {
-                color.r = color.r / 2
-                color.b = color.b / 2
-                color.g = color.g / 2
-            }
+            drawStart = -lineHeight / 2 + h / 2
+            drawEnd = lineHeight / 2 + h / 2
+            prevWallX = wallX
+            wallX = if (side == 0) player.y + rayDir.y * perpDist else player.x + rayDir.x * perpDist
 
-            collisionsWallsColors.add(
-                Triple(
-                    Vector2(player.x + rayDir.x * perpDist, player.y + rayDir.y * perpDist),
-                    Rectangle(x.toFloat(), drawStart, 1f, drawEnd),
-                    color
+            if (prevTile == null || prevTile != tile || prevSide != side){
+                if (prevTile != null){
+                    val uStart = if (prevSide == 0)
+                        abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX)/tile.height)
+                    else
+                        abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX)/tile.width)
+
+                    val uEnd = if (prevSide == 0)
+                        abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tile.height - prevWallX)/tile.height)
+                    else
+                        abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tile.width - prevWallX)/tile.width)
+
+                    quads.add(
+                        Textured2DQuad(
+                            prevTile.texture!!, floatArrayOf(
+                                initialVertices[1].x , initialVertices[1].y, uStart, 0f,//upper left
+                                initialVertices[0].x , initialVertices[0].y, uStart, 1f, //lower left
+                                x.toFloat(), prevDrawStartAndEnd.second, uEnd, 0f, //upper right
+                                x.toFloat(), prevDrawStartAndEnd.first, uEnd, 1f, //lower right
+                            ), if (prevSide == 1) 2f else 1f)
+                    )
+                }
+                initialVertices = listOf(
+                    Vector2(x.toFloat(), drawStart),
+                    Vector2(x.toFloat(), drawEnd)
                 )
+                prevTile = tile
+                prevSide = side
+                startWallX = wallX
+            }
+            collisionPoints.add(Vector2(player.x + rayDir.x * perpDist, player.y + rayDir.y * perpDist))
+        }
+        if (prevTile != null) {
+            val uStart = if (prevSide == 0)
+                abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX)/tileHeight)
+            else
+                abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX)/tileWidth)
+
+            val uEnd = if (prevSide == 0)
+                abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tileHeight - prevWallX)/tileHeight)
+            else
+                abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tileWidth - prevWallX)/tileWidth)
+            quads.add(
+                Textured2DQuad(
+                    prevTile.texture!!, floatArrayOf(
+                        initialVertices[1].x , initialVertices[1].y, uStart, 0f,//upper left
+                        initialVertices[0].x , initialVertices[0].y, uStart, 1f, //lower left
+                        WIDTH, drawEnd, uEnd, 0f, //upper right
+                        HEIGHT, drawStart, uEnd, 1f, //lower right
+                    ), if (side == 1) 2f else 1f)
             )
         }
-        return collisionsWallsColors
+        return Pair(collisionPoints, quads)
     }
 
     private fun singleRayCast(player: Player, rayDir: Vector2): Triple<Tile, Int, Float> {
@@ -88,7 +147,7 @@ class RayCaster(
                 rayLengths.y += rayStepSize.y
             }
 
-            if (tiles[mapPos.x][mapPos.y].color != Color.BLACK) hit = true
+            if (tiles[mapPos.x][mapPos.y].id != 0) hit = true
 
         }
 

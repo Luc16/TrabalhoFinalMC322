@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 // Vertex order: upper left, lower left, upper right, lower right
 /** Creates a new Mesh with 4 vertices (quad) with the given attributes an texture.
  *
- * @param texture whether this mesh is static or not. Allows for internal optimizations.
+ * @param texture texture region for the mesh
  * @param vertices quad vertices in order: upper left, lower left, upper right, lower right
  * */
 class Textured2DQuad(
@@ -19,12 +19,7 @@ class Textured2DQuad(
     VertexAttribute(VertexAttributes.Usage.TextureCoordinates,2,"a_texCoord" + 0)
 ) {
     init {
-        setVertices(floatArrayOf(
-            vertices[0], vertices[1], 0f,0f, //upper left
-            vertices[2], vertices[3], 0f, 1f, //lower left
-            vertices[4], vertices[5], 1f, 0f, //upper right
-            vertices[6], vertices[7], 1f, 1f, //lower right
-        ))
+        setVertices(vertices)
         setIndices(shortArrayOf(0, 1, 2, 1, 2, 3))
     }
 
