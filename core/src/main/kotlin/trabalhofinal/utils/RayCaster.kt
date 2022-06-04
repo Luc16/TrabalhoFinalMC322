@@ -1,7 +1,6 @@
 package trabalhofinal.utils
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
@@ -9,7 +8,7 @@ import trabalhofinal.WIDTH
 import trabalhofinal.components.Player
 import trabalhofinal.components.Tile
 import trabalhofinal.utils.graphics.QuadGroup
-import trabalhofinal.utils.graphics.Textured2DQuad
+import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.abs
 
 class RayCaster(
@@ -23,7 +22,7 @@ class RayCaster(
         val collisionPoints = mutableListOf<Vector2>()
         val quads = QuadGroup(shader)
         var rayDir = Vector2()
-        var tile: Tile? = null
+        var tile: Tile
         var prevTile: Tile? = null
         var initialVertices = listOf<Vector2>()
         var drawStart = 0f
@@ -45,7 +44,7 @@ class RayCaster(
             side = result.second
             val perpDist = result.third
 
-            val h = HEIGHT
+            val h = 1.5f * HEIGHT
             val lineHeight = tileHeight * (h / perpDist)
 
             val prevDrawStartAndEnd = Pair(drawStart, drawEnd)
@@ -55,26 +54,21 @@ class RayCaster(
             prevWallX = wallX
             wallX = if (side == 0) player.y + rayDir.y * perpDist else player.x + rayDir.x * perpDist
 
-            if (prevTile == null || prevTile != tile || prevSide != side){
-                if (prevTile != null){
+            if (prevTile == null || prevTile != tile || prevSide != side) {
+                if (prevTile != null) {
                     val uStart = if (prevSide == 0)
-                        abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX)/tile.height)
+                        abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX) / tile.height)
                     else
-                        abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX)/tile.width)
+                        abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX) / tile.width)
 
                     val uEnd = if (prevSide == 0)
-                        abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tile.height - prevWallX)/tile.height)
+                        abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tile.height - prevWallX) / tile.height)
                     else
-                        abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tile.width - prevWallX)/tile.width)
+                        abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tile.width - prevWallX) / tile.width)
 
                     quads.add(
-                        Textured2DQuad(
-                            prevTile.texture!!, floatArrayOf(
-                                initialVertices[1].x , initialVertices[1].y, uStart, 0f,//upper left
-                                initialVertices[0].x , initialVertices[0].y, uStart, 1f, //lower left
-                                x.toFloat(), prevDrawStartAndEnd.second, uEnd, 0f, //upper right
-                                x.toFloat(), prevDrawStartAndEnd.first, uEnd, 1f, //lower right
-                            ), if (prevSide == 1) 2f else 1f)
+                        createTextured2DQuad(prevTile.texture!!, initialVertices, x.toFloat(),
+                            prevDrawStartAndEnd.first, prevDrawStartAndEnd.second, uStart, uEnd, prevSide)
                     )
                 }
                 initialVertices = listOf(
@@ -89,25 +83,43 @@ class RayCaster(
         }
         if (prevTile != null) {
             val uStart = if (prevSide == 0)
-                abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX)/tileHeight)
+                abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX) / tileHeight)
             else
-                abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX)/tileWidth)
+                abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX) / tileWidth)
 
             val uEnd = if (prevSide == 0)
-                abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tileHeight - prevWallX)/tileHeight)
+                abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tileHeight - prevWallX) / tileHeight)
             else
-                abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tileWidth - prevWallX)/tileWidth)
+                abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tileWidth - prevWallX) / tileWidth)
+
             quads.add(
-                Textured2DQuad(
-                    prevTile.texture!!, floatArrayOf(
-                        initialVertices[1].x , initialVertices[1].y, uStart, 0f,//upper left
-                        initialVertices[0].x , initialVertices[0].y, uStart, 1f, //lower left
-                        WIDTH, drawEnd, uEnd, 0f, //upper right
-                        HEIGHT, drawStart, uEnd, 1f, //lower right
-                    ), if (side == 1) 2f else 1f)
+                createTextured2DQuad(prevTile.texture!!, initialVertices, WIDTH, drawStart, drawEnd, uStart, uEnd, side)
             )
         }
         return Pair(collisionPoints, quads)
+    }
+
+    private fun createTextured2DQuad(
+        texture: Texture, initialVertices: List<Vector2>,
+        x: Float, drawStart: Float, drawEnd: Float,
+        uStart: Float, uEnd: Float, side: Int
+    ): Textured2DMesh {
+
+        fun mean(f1: Float, f2: Float) = (f1 + f2)/2
+
+        val meanU = mean(uStart, uEnd)
+        return Textured2DMesh(
+            texture, floatArrayOf(
+                initialVertices[1].x, initialVertices[1].y, uStart, 0f,//upper left
+                initialVertices[1].x, mean(initialVertices[1].y, initialVertices[0].y), uStart, 0.5f, //middle left
+                mean(initialVertices[1].x, x), mean(initialVertices[1].y, drawEnd), meanU, 0f, //upper middle
+                x, drawEnd, uEnd, 0f, //upper right
+                x, mean(drawEnd, drawStart), uEnd, 0.5f, //middle right
+                x, drawStart, uEnd, 1f, //lower right
+                mean(initialVertices[0].x, x), mean(initialVertices[0].y, drawStart), meanU, 1f, //upper middle
+                initialVertices[0].x, initialVertices[0].y, uStart, 1f, //lower left
+            ), if (side == 1) 2f else 1f
+        )
     }
 
     private fun singleRayCast(player: Player, rayDir: Vector2): Triple<Tile, Int, Float> {

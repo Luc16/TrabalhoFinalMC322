@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Disposable
 
-class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DQuad>): Disposable {
+class QuadGroup(private val shader: ShaderProgram, quads: List<Textured2DMesh>): Disposable {
     /*private */val quads = quads.toMutableList()
 
     constructor(shader: ShaderProgram) : this(shader, listOf())
 
-    fun add(quad: Textured2DQuad) = quads.add(quad)
-    operator fun get(i: Int): Textured2DQuad = quads[i]
+    fun add(quad: Textured2DMesh) = quads.add(quad)
+    operator fun get(i: Int): Textured2DMesh = quads[i]
 
 
     fun render(camera: Camera){
