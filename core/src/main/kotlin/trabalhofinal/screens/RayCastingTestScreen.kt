@@ -37,7 +37,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         Texture(Gdx.files.local("assets/wolftex/pics/redbrick.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/purplestone.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/greystone.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/bluestone.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/trig.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/mossy.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),

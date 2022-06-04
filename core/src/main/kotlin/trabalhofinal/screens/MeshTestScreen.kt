@@ -21,7 +21,7 @@ import kotlin.math.min
 
 
 class MeshTestScreen(game: MyGame) : CustomScreen(game) {
-    private val t = Texture(Gdx.files.local("assets/wolftex/pics/barrel.png"))
+    private val t = Texture(Gdx.files.local("assets/wolftex/pics/mossy.png"))
     private val t2 = Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png"))
     private val quads = QuadGroup(
         ShaderProgram(vertexShader, fragmentShader),
@@ -47,18 +47,32 @@ class MeshTestScreen(game: MyGame) : CustomScreen(game) {
         Circle(600f, 660f, 10f),
         Circle(520f, 300f, 10f),
     )
+    private val textures = listOf(
+        Texture(Gdx.files.local("assets/wolftex/pics/eagle.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/redbrick.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/purplestone.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/greystone.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/bluestone.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/mossy.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),
+    )
     private var selectedIdx = -1
+    private var idx = 0
 
     override fun render(delta: Float) {
-        quads[0].colorDiv = if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) 2f else 1f
-        quads[0].setVertices(
-            floatArrayOf(
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) Gdx.app.exit()
+        idx = if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) (idx + 1)%textures.size else idx
+        quads[0].run {
+            texture = textures[idx]
+            setVertices(floatArrayOf(
                 circles[0].x, circles[0].y, 0f, 0f, //upper left
                 circles[1].x, circles[1].y, 0f, 1f, //lower left
                 circles[2].x, circles[2].y, 1f, 0f, //upper right
                 circles[3].x, circles[3].y, 1f, 1f, //lower right
-            )
-        )
+            ))
+        }
+
         moveCircles()
         quads.render(camera)
         val tr = TextureRegion(t, 4, 4, 30, 30)

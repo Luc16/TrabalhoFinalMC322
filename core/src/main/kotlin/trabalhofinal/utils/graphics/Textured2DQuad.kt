@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
  * @param vertices quad vertices in order: upper left, lower left, upper right, lower right
  * */
 class Textured2DQuad(
-    val texture: Texture,
+    var texture: Texture,
     private val vertices: FloatArray,
     var colorDiv: Float = 1f
 ) : Mesh(
