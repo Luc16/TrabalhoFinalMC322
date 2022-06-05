@@ -24,12 +24,12 @@ class Component(private val texture: Texture, val pos: Vector2) {
         )
         val h = 1.5f* HEIGHT
         val spriteScreenX = (WIDTH / 2) * (1 + transformedPos.x / transformedPos.y)
-        val spriteHeight = tileHeight* abs(h / transformedPos.y)
+        val spriteHeight = tileHeight* abs(h / transformedPos.y)/1.5f
         val drawStartY = -spriteHeight / 2 + h / 2
         val drawEndY = spriteHeight / 2 + h / 2
 
         //calculate width of the sprite
-        val spriteWidth = tileWidth* abs(h / transformedPos.y)
+        val spriteWidth = tileWidth* abs(h / transformedPos.y)/1.5f
         var drawStartX = -spriteWidth / 2 + spriteScreenX
         var drawEndX = spriteWidth / 2 + spriteScreenX
 
@@ -57,7 +57,7 @@ class Component(private val texture: Texture, val pos: Vector2) {
         }
         drawEndX++
 
-        val y = drawStartY-2*tileHeight/transformedPos.y
+        val y = drawStartY - 500*tileHeight/(2*transformedPos.y)
         val uStart = (drawStartX - spriteScreenX)/spriteWidth + 0.5f
         val uEnd = (drawEndX - spriteScreenX)/spriteWidth + 0.5f
 
