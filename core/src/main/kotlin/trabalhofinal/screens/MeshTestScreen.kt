@@ -11,7 +11,7 @@ import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
-import trabalhofinal.utils.graphics.QuadGroup
+import trabalhofinal.utils.graphics.MeshGroup
 import trabalhofinal.utils.graphics.Textured2DMesh
 import trabalhofinal.utils.graphics.fragmentShader
 import trabalhofinal.utils.graphics.vertexShader
@@ -22,17 +22,15 @@ import kotlin.math.min
 class MeshTestScreen(game: MyGame) : CustomScreen(game) {
     private val t = Texture(Gdx.files.local("assets/wolftex/pics/mossy.png"))
     private val t2 = Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png"))
-    private val quads = QuadGroup(
+    private val quads = MeshGroup(
         ShaderProgram(vertexShader, fragmentShader),
-        listOf(
+        mutableListOf(
             Textured2DMesh(
                 t, floatArrayOf(
                     200f, 660f, 0f, 0f,//upper left
-                    280f, 300f, 0f, 1f,//lower left
-                    240f, 660f, 0f, 0f,//upper middle
                     600f, 660f, 1f, 0f, //upper right
                     520f, 300f, 1f, 1f, //lower right
-                    560f, 300f, 1f, 1f //lower middle
+                    280f, 300f, 0f, 1f,//lower left
                 )
             ),
             Textured2DMesh(

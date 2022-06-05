@@ -20,6 +20,7 @@ const val fragmentShader = "#ifdef GL_ES\n" +
         "uniform float f_colorDiv;\n" +
         "void main() {\n" +
         " vec4 col = texture2D(u_texture, v_texCoords);" +
-        " vec4 finalCol = vec4(col.r/f_colorDiv, col.g/f_colorDiv, col.b/f_colorDiv, 1);" +
+        "if(col.a < 0.1) discard;" +
+        " vec4 finalCol = vec4(col.r/f_colorDiv, col.g/f_colorDiv, col.b/f_colorDiv, col.a);" +
         " gl_FragColor = v_color * finalCol + vec4(0, 0, 0, -0.50);\n" +
         "}"
