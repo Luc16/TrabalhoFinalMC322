@@ -1,5 +1,7 @@
 package trabalhofinal.utils
 
+import kotlin.math.abs
+
 class AStar {
     private val graph = Array(5) { i ->
         Array(5) { j ->
