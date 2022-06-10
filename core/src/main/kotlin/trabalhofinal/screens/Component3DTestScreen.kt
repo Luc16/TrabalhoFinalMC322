@@ -22,9 +22,8 @@ import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.fragmentShader
 import trabalhofinal.utils.graphics.vertexShader
 import kotlin.math.PI
-import kotlin.math.abs
 
-class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
+class Component3DTestScreen(game: MyGame): CustomScreen(game) {
 
     private val tiles = mutableListOf<MutableList<Tile>>()
     private val shader = ShaderProgram(vertexShader, fragmentShader)
@@ -36,21 +35,14 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
     private var mapHeight = 0
     private var tileWidth = 0f
     private var tileHeight = 0f
-    private val barrel = Component(Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), Vector2())
+    private val alien = Component(Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), Vector2())
     private val textures = listOf(
-        Texture(Gdx.files.local("assets/wolftex/pics/eagle.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/redbrick.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/purplestone.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/greystone.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/trig.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/mossy.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),
+        Texture(Gdx.files.local("assets/wolftex/pics/greystone.png"))
     )
 
 
     override fun show() {
-        val reader = MapReader("assets/test.map")
+        val reader = MapReader("assets/testComp.map")
         val mapString = reader.contents().reversed()
         mapWidth = mapString[0].length
         mapHeight = mapString.size
@@ -81,8 +73,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
             tiles.add(line)
         }
 
-        barrel.tile = tiles[12][21]
-        barrel.pos.set(tileWidth*12 + tileWidth/2, HEIGHT - tileHeight*3 + tileHeight/2)
+        alien.tile = tiles[10][10]
+        alien.pos.set(tileWidth*10 + tileWidth/2, HEIGHT - tileHeight*10 + tileHeight/2)
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight, shader)
 
@@ -101,8 +93,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         meshesToDraw.render(viewport.camera)
         meshesToDraw.dispose()
 
-        barrel.render(player, zBuffer, shader, tileWidth, tileHeight)
-        barrel.tile.color = if (barrel.seen) Color.BROWN else Color.BLACK
+        alien.render(player, zBuffer, shader, tileWidth, tileHeight)
+        alien.tile.color = if (alien.seen) Color.BROWN else Color.BLACK
 
         // minimap
         renderer.use(ShapeRenderer.ShapeType.Filled, viewport.camera.combined){

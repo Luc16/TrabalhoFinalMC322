@@ -16,20 +16,22 @@ class Component(private val texture: Texture, val pos: Vector2) {
     lateinit var tile: Tile
 
     fun render(player: Player, zBuffer: Array<Float>, shader: ShaderProgram, tileWidth: Float, tileHeight: Float){
+        val div = 1f
+
         val transformedPos = Vector2(pos.x - player.x, pos.y - player.y)
         val invDet = 1f / (player.cameraPlane.x * player.dir.y - player.dir.x * player.cameraPlane.y)
         transformedPos.set(
             invDet * (player.dir.y * transformedPos.x - player.dir.x * transformedPos.y),
             invDet * (-player.cameraPlane.y * transformedPos.x + player.cameraPlane.x * transformedPos.y)
         )
-        val h = 1.5f* HEIGHT
+        val h = 1.5f*HEIGHT
         val spriteScreenX = (WIDTH / 2) * (1 + transformedPos.x / transformedPos.y)
-        val spriteHeight = tileHeight* abs(h / transformedPos.y)/1.5f
+        val spriteHeight = (tileHeight * h / transformedPos.y)/div
         val drawStartY = -spriteHeight / 2 + h / 2
         val drawEndY = spriteHeight / 2 + h / 2
 
         //calculate width of the sprite
-        val spriteWidth = tileWidth* abs(h / transformedPos.y)/1.5f
+        val spriteWidth = (tileWidth * h / transformedPos.y)/div
         var drawStartX = -spriteWidth / 2 + spriteScreenX
         var drawEndX = spriteWidth / 2 + spriteScreenX
 
@@ -57,7 +59,11 @@ class Component(private val texture: Texture, val pos: Vector2) {
         }
         drawEndX++
 
-        val y = drawStartY - 500*tileHeight/(2*transformedPos.y)
+        if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+            println(player.dir)
+            println(HEIGHT*tileHeight/transformedPos.y)
+        }
+        val y = drawStartY
         val uStart = (drawStartX - spriteScreenX)/spriteWidth + 0.5f
         val uEnd = (drawEndX - spriteScreenX)/spriteWidth + 0.5f
 
