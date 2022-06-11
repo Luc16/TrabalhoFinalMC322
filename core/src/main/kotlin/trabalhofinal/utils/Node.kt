@@ -2,7 +2,7 @@ package trabalhofinal.utils
 
 open class Node(val pos: IVector2, val isWall: Boolean){
 
-    constructor(i: Int, j: Int, isWall: Boolean): this(IVector2(j, i), isWall)
+    constructor(i: Int, j: Int, isWall: Boolean): this(IVector2(i, j), isWall)
 
     var g = Int.MAX_VALUE
     var h = Int.MAX_VALUE

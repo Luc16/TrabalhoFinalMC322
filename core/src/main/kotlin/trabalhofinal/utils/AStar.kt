@@ -50,7 +50,11 @@ class AStar (private val grid: List<List<Node>>) {
     }
 
     private fun resetGrid(){
-        changed.forEach { it.reset() }
+        grid.forEach { line ->
+            line.forEach { node ->
+                node.reset()
+            }
+        }
     }
 
     fun findPath(source: IVector2, dest: IVector2): List<IVector2>?{

@@ -62,7 +62,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         for (i in 0 until mapWidth){
             val line = mutableListOf<Tile>()
             for (j in 0 until mapHeight){
-                val id = mapString[j][i] - '0'
+                val id = mapString[i][j] - '0'
                 val color = when (id){
                     1 -> Color.RED
                     2 -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro

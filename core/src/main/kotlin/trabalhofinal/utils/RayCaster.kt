@@ -147,36 +147,36 @@ class RayCaster(
         val step = IVector2(1, 1)
 
         if (rayDir.x < 0) {
-            step.x = -1
-            rayLengths.x = (player.x - mapPos.x * tileWidth) * rayStepSize.x / tileWidth
+            step.i = -1
+            rayLengths.x = (player.x - mapPos.i * tileWidth) * rayStepSize.x / tileWidth
         } else
-            rayLengths.x = (mapPos.x * tileWidth + tileWidth - player.x) * rayStepSize.x / tileWidth
+            rayLengths.x = (mapPos.i * tileWidth + tileWidth - player.x) * rayStepSize.x / tileWidth
 
         if (rayDir.y < 0) {
-            step.y = -1
-            rayLengths.y = (player.y - mapPos.y * tileHeight) * rayStepSize.y / tileHeight
+            step.j = -1
+            rayLengths.y = (player.y - mapPos.j * tileHeight) * rayStepSize.y / tileHeight
         } else
-            rayLengths.y = (mapPos.y * tileHeight + tileHeight - player.y) * rayStepSize.y / tileHeight
+            rayLengths.y = (mapPos.j * tileHeight + tileHeight - player.y) * rayStepSize.y / tileHeight
 
         var hit = false
         var side = 0
         while (!hit) {
             if (rayLengths.x < rayLengths.y) {
-                mapPos.x += step.x
+                mapPos.i += step.i
                 side = 0
                 rayLengths.x += rayStepSize.x
             } else {
-                mapPos.y += step.y
+                mapPos.j += step.j
                 side = 1
                 rayLengths.y += rayStepSize.y
             }
 
-            if (tiles[mapPos.x][mapPos.y].id != 0) hit = true
+            if (tiles[mapPos.i][mapPos.j].id != 0) hit = true
 
         }
 
         return Triple(
-            tiles[mapPos.x][mapPos.y], side,
+            tiles[mapPos.i][mapPos.j], side,
             if (side == 0)
                 rayLengths.x - rayStepSize.x
             else

@@ -38,7 +38,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         for (i in 0 until mapWidth){
             val line = mutableListOf<Tile>()
             for (j in 0 until mapHeight){
-                val id = mapString[j][i] - '0'
+                val id = mapString[i][j] - '0'
                 val color = when (id){
                     1 -> Color.RED
                     2 -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro
@@ -97,7 +97,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         // provavelmente so colocar um when pra separar caso por caso
         val dest = getTilePos(xPos, yPos)
         if (dest != null){
-            val currTile = grid[dest.j][dest.i]
+            val currTile = grid[dest.i][dest.j]
             currTile.color = Color.RED
             when(currTile.id){
                 0 ->{
@@ -107,7 +107,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
 
                     if (path != null){
                         for (pos in path){
-                            grid[pos.j][pos.i].color = Color.RED
+                            grid[pos.i][pos.j].color = Color.RED
                         }
                     } else {
                         println("Invalido")
