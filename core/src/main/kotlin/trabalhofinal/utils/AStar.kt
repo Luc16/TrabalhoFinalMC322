@@ -1,5 +1,10 @@
 package trabalhofinal.utils
 
+import trabalhofinal.components.Tile
+import kotlin.math.abs
+
+
+
 class AStar (private val grid: List<List<Node>>) {
 
     private val changed = mutableListOf<Node>()
@@ -21,10 +26,10 @@ class AStar (private val grid: List<List<Node>>) {
 
     private fun Node.forEachNeighbor(func: (Node) -> Unit){
         listOf(-1, 1).forEach {idx ->
-            if (idx + j in 0 until  graph[0].size)
-                func(graph[i][idx + j])
-            if (idx + i in graph.indices)
-                func(graph[idx + i][j])
+            if (idx + j in 0 until  grid[0].size)
+                func(grid[i][idx + j])
+            if (idx + i in grid.indices)
+                func(grid[idx + i][j])
         }
     }
 
@@ -40,18 +45,25 @@ class AStar (private val grid: List<List<Node>>) {
             node = node.parent
             if (node != null) path.add(node.pos)
         }
-        printBoard()
+        resetGrid()
+        return path.reversed()
+    }
+
+    private fun resetGrid(){
+        changed.forEach { it.reset() }
     }
 
     fun findPath(source: IVector2, dest: IVector2): List<IVector2>?{
         // ver se a posicao destino eh valida
-        if (dest.isOutOfRange() || source.isOutOfRange() || dest.isBlocked() || source.isBlocked()) return false
+        if (dest.isOutOfRange() || source.isOutOfRange() || dest.isBlocked() || source.isBlocked()) return null
+
+
         val src = getNode(source)
         val end = getNode(dest)
         src.g = 0
         src.h = 0
-        var foundDest = false
         val open = mutableListOf(src)
+        changed.add(src)
 
         while (open.isNotEmpty()){
             val node = open.nextNode()
@@ -63,13 +75,14 @@ class AStar (private val grid: List<List<Node>>) {
             node.wasVisited = true
 
             node.forEachNeighbor { neighbor ->
-                // se eh parede ou neighbor possuir componente bloqueador, return
+                // se eh parede ou visinho possuir componente bloqueador, return
                 if (neighbor.isWall || neighbor.wasVisited) return@forEachNeighbor
 
                 if (neighbor.parent == null || neighbor.parent?.let {it.g > node.g} == true){
                     neighbor.parent = node
                     neighbor.g = node.g + 1
                     open.add(neighbor)
+                    changed.add(node)
                 }
                 if (neighbor.h == Int.MAX_VALUE){
                     neighbor.h = abs(neighbor.i - end.i) + abs(neighbor.j - end.j)
@@ -80,12 +93,4 @@ class AStar (private val grid: List<List<Node>>) {
         return null
     }
 
-    private fun printBoard(){
-        graph.forEach {
-            it.forEach {node ->
-                print(node.s)
-            }
-            println()
-        }
-    }
 }

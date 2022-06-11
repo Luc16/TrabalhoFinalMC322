@@ -15,7 +15,7 @@ class Component(private val texture: Texture, val pos: Vector2) {
     var seen = false
     lateinit var tile: Tile
 
-    fun render(player: Player, zBuffer: Array<Float>, shader: ShaderProgram, tileWidth: Float, tileHeight: Float){
+    fun render(player: Player, zBuffer: List<Float>, shader: ShaderProgram, tileWidth: Float, tileHeight: Float){
         val div = 1f
 
         val transformedPos = Vector2(pos.x - player.x, pos.y - player.y)

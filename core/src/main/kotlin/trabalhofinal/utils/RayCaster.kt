@@ -18,9 +18,16 @@ class RayCaster(
     private val shader: ShaderProgram
 ) {
 
-    fun multipleRayCast3D(player: Player): Triple<List<Vector2>, MeshGroup, Array<Float>> {
+    lateinit var zBuffer: List<Float>
+        private set
+    lateinit var collisionPoints: List<Vector2>
+        private set
+    lateinit var meshes: MeshGroup
+        private set
+
+    fun multipleRayCast3D(player: Player) {
         val collisionPoints = mutableListOf<Vector2>()
-        val quads = MeshGroup(shader)
+        val meshes = MeshGroup(shader)
         var rayDir = Vector2()
         var tile: Tile? = null
         var prevTile: Tile? = null
@@ -59,7 +66,7 @@ class RayCaster(
             if (prevTile == null || prevTile != tile || prevSide != side) {
                 if (prevTile != null) {
                     val (uStart, uEnd) = calculateStartAndEndOfTex(tile, prevTile, rayDir, startWallX, prevWallX, prevSide)
-                    quads.add(
+                    meshes.add(
                         createTextured2DQuad(
                             prevTile.texture!!, initialVertices, x.toFloat(),
                             prevDrawStartAndEnd.first, prevDrawStartAndEnd.second, uStart, uEnd, prevSide
@@ -80,11 +87,13 @@ class RayCaster(
         if (prevTile != null) {
             val (uStart, uEnd) = calculateStartAndEndOfTex(tile!!, prevTile, rayDir, startWallX, prevWallX, prevSide)
 
-            quads.add(
+            meshes.add(
                 createTextured2DQuad(prevTile.texture!!, initialVertices, WIDTH, drawStart, drawEnd, uStart, uEnd, side)
             )
         }
-        return Triple(collisionPoints, quads, zBuffer)
+        this.zBuffer = zBuffer.toList()
+        this.collisionPoints = collisionPoints
+        this.meshes = meshes
     }
 
     private fun calculateStartAndEndOfTex(
