@@ -14,4 +14,10 @@ class Player(x: Float, y: Float, radius: Float): Circle(x, y, radius) {
         dir = Vector2(dir.x* cos(angle) - dir.y* sin(angle), dir.x* sin(angle) + dir.y* cos(angle))
         cameraPlane = Vector2(cameraPlane.x* cos(angle) - cameraPlane.y* sin(angle), cameraPlane.x* sin(angle) + cameraPlane.y* cos(angle))
     }
+
+
+
+    fun move(x: Float, y: Float){
+
+    }
 }

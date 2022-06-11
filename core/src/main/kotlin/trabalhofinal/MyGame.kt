@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxGame
+import trabalhofinal.screens.GridScreen
 import trabalhofinal.screens.*
 
 const val WIDTH = 800f
@@ -22,8 +23,8 @@ class MyGame: KtxGame<CustomScreen>() {
         font.data.scale(8f)
         addScreen(RayCastingTestScreen(this))
         addScreen(MeshTestScreen(this))
-        addScreen(Component3DTestScreen(this))
-        setScreen<Component3DTestScreen>()
+        addScreen(GridScreen(this))
+        setScreen<GridScreen>()
     }
 
     override fun dispose() {

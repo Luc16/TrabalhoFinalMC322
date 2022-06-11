@@ -1,22 +1,12 @@
 package trabalhofinal.utils
 
-import kotlin.math.abs
+class AStar (private val grid: List<List<Node>>) {
 
-class AStar {
-    private val graph = Array(5) { i ->
-        Array(5) { j ->
-            Node(IVector2(j,i))
-        }
-    }
+    private val changed = mutableListOf<Node>()
 
-    init {
-        graph[3][3].isWall = true
-    }
-
-
-    private fun IVector2.isOutOfRange(): Boolean = i < 0 || i >= graph.size || j < 0 || j >= graph[0].size
-    private fun IVector2.isBlocked(): Boolean = graph[i][j].isWall
-    private fun getNode(pos: IVector2): Node = graph[pos.i][pos.j]
+    private fun IVector2.isOutOfRange(): Boolean = i < 0 || i >= grid.size || j < 0 || j >= grid[0].size
+    private fun IVector2.isBlocked(): Boolean = grid[i][j].isWall
+    private fun getNode(pos: IVector2): Node = grid[pos.i][pos.j]
 
 
     private fun MutableList<Node>.nextNode(): Node{
@@ -38,16 +28,22 @@ class AStar {
         }
     }
 
-    private fun printPath(end: Node) {
-        var node: Node = end.parent!!
-        while (node.parent != null) {
-            node.s = "."
-            node = node.parent!!
+    private fun resultPath(end: Node): List<IVector2>? {
+        var node: Node? = end.parent
+        if (node == null){
+            resetGrid()
+            return null
+        }
+        val path = mutableListOf(node.pos)
+
+        while (node?.parent != null) {
+            node = node.parent
+            if (node != null) path.add(node.pos)
         }
         printBoard()
     }
 
-    fun findPath(source: IVector2, dest: IVector2): Boolean{
+    fun findPath(source: IVector2, dest: IVector2): List<IVector2>?{
         // ver se a posicao destino eh valida
         if (dest.isOutOfRange() || source.isOutOfRange() || dest.isBlocked() || source.isBlocked()) return false
         val src = getNode(source)
@@ -60,8 +56,7 @@ class AStar {
         while (open.isNotEmpty()){
             val node = open.nextNode()
             if (node == end) {
-                printPath(end)
-                return true
+                return resultPath(node)
             }
 
             open.remove(node)
@@ -79,11 +74,10 @@ class AStar {
                 if (neighbor.h == Int.MAX_VALUE){
                     neighbor.h = abs(neighbor.i - end.i) + abs(neighbor.j - end.j)
                 }
-
-
             }
         }
-        return false
+        println("Nao achei caminho")
+        return null
     }
 
     private fun printBoard(){

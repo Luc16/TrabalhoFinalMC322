@@ -22,7 +22,7 @@ import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.fragmentShader
 import trabalhofinal.utils.graphics.vertexShader
 import kotlin.math.PI
-import kotlin.math.abs
+
 
 class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
@@ -105,24 +105,9 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         barrel.tile.color = if (barrel.seen) Color.BROWN else Color.BLACK
 
         // minimap
-        renderer.use(ShapeRenderer.ShapeType.Filled, viewport.camera.combined){
-            renderer.color = Color.BLACK
-            renderer.rect(5f, HEIGHT - 165f, 160f, 160f)
-            renderer.color = Color.LIGHT_GRAY
-            collisionPoints.forEach{
-                renderer.rectLine(165f - player.x/5, HEIGHT - 165f + player.y/5, 165f - it.x/5, HEIGHT - 165f + it.y/5, 1f)
-            }
-            tiles.forEach{ line ->
-                line.forEach { tile ->
-                    if (tile.color != Color.BLACK){
-                        renderer.color = tile.color
-                        renderer.rect(165f - tileWidth/5 - tile.x/5, HEIGHT - 165f + tile.y/5, tile.width/5, tile.height/5)
-                    }
-                }
-            }
-            renderer.color = Color.BROWN
-            renderer.circle(165f - player.x/5, HEIGHT - 165f + player.y/5, player.radius/5)
-        }
+        drawTileMinimap(0.2f)
+
+
     }
 
     override fun dispose() {
