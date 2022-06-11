@@ -31,7 +31,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
 
     private lateinit var rayCaster: RayCaster
-    private val player = Player(175.62909f,696.82367f, 10f)
+    private val player = Player(WIDTH/2, HEIGHT/2, 10f)
     private var mapWidth = 0
     private var mapHeight = 0
     private var tileWidth = 0f
@@ -82,8 +82,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
             tiles.add(line)
         }
 
-        alien.tile = tiles[12][21]
-        alien.pos.set(tileWidth*12 + tileWidth/2, HEIGHT - tileHeight*3 + tileHeight/2)
+        alien.tile = tiles[21][12]
+        alien.pos.set(tileWidth*21 + tileWidth/2, HEIGHT - tileHeight*12 + tileHeight/2)
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight, shader)
 
@@ -130,7 +130,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
                     if (tile.color != Color.BLACK){
                         renderer.color = tile.color
                         renderer.rect(
-                            mirroredX - tileWidth*ratio - tile.x*ratio,
+                            mirroredX - tile.width*ratio - tile.x*ratio,
                             minimapRect.y + tile.y*ratio,
                             tile.width*ratio, tile.height*ratio)
                     }
