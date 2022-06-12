@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
+import trabalhofinal.components.IRayCastTile
 import trabalhofinal.components.Player
 import trabalhofinal.components.Tile
 import trabalhofinal.utils.graphics.MeshGroup
@@ -12,10 +13,9 @@ import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.abs
 
 class RayCaster(
-    private val tiles: List<List<Tile>>,
+    private val tiles: List<List<IRayCastTile>>,
     private val tileWidth: Float,
     private val tileHeight: Float,
-    private val shader: ShaderProgram
 ) {
 
     lateinit var zBuffer: List<Float>
@@ -27,10 +27,10 @@ class RayCaster(
 
     fun multipleRayCast3D(player: Player) {
         val collisionPoints = mutableListOf<Vector2>()
-        val meshes = MeshGroup(shader)
+        val meshes = MeshGroup()
         var rayDir = Vector2()
-        var tile: Tile? = null
-        var prevTile: Tile? = null
+        var tile: IRayCastTile
+        var prevTile: IRayCastTile? = null
         var initialVertices = listOf<Vector2>()
         var drawStart = 0f
         var drawEnd = 0f
@@ -63,19 +63,23 @@ class RayCaster(
             prevWallX = wallX
             wallX = if (side == 0) player.y + rayDir.y * perpDist else player.x + rayDir.x * perpDist
 
+            val curX = x.toFloat()
+
             if (prevTile == null || prevTile != tile || prevSide != side) {
                 if (prevTile != null) {
-                    val (uStart, uEnd) = calculateStartAndEndOfTex(tile, prevTile, rayDir, startWallX, prevWallX, prevSide)
+                    val (uStart, uEnd) = calculateUStartAndUEnd(prevTile, rayDir, startWallX, prevWallX,
+                        tileWidth, tileHeight, prevSide)
                     meshes.add(
-                        createTextured2DQuad(
-                            prevTile.texture!!, initialVertices, x.toFloat(),
-                            prevDrawStartAndEnd.first, prevDrawStartAndEnd.second, uStart, uEnd, prevSide
+                        createTextured2DMesh(
+                            prevTile.texture!!, initialVertices, curX,
+                            prevDrawStartAndEnd.first, prevDrawStartAndEnd.second,
+                            uStart, uEnd, prevSide
                         )
                     )
                 }
                 initialVertices = listOf(
-                    Vector2(x.toFloat(), drawStart),
-                    Vector2(x.toFloat(), drawEnd)
+                    Vector2(curX, drawStart),
+                    Vector2(curX, drawEnd)
                 )
                 prevTile = tile
                 prevSide = side
@@ -85,10 +89,12 @@ class RayCaster(
         }
 
         if (prevTile != null) {
-            val (uStart, uEnd) = calculateStartAndEndOfTex(tile!!, prevTile, rayDir, startWallX, prevWallX, prevSide)
+            val (uStart, uEnd) = calculateUStartAndUEnd(prevTile, rayDir, startWallX, prevWallX,
+                tileWidth, tileHeight, prevSide)
 
             meshes.add(
-                createTextured2DQuad(prevTile.texture!!, initialVertices, WIDTH, drawStart, drawEnd, uStart, uEnd, side)
+                createTextured2DMesh(prevTile.texture!!, initialVertices,
+                    WIDTH, drawStart, drawEnd, uStart, uEnd, side)
             )
         }
         this.zBuffer = zBuffer.toList()
@@ -96,25 +102,26 @@ class RayCaster(
         this.meshes = meshes
     }
 
-    private fun calculateStartAndEndOfTex(
-        tile: Tile,
-        prevTile: Tile,
+    private fun calculateUStartAndUEnd(
+        prevTile: IRayCastTile,
         rayDir: Vector2,
         startWallX: Float,
         prevWallX: Float,
+        tileWidth: Float,
+        tileHeight: Float,
         prevSide: Int
     ): Pair<Float, Float> = Pair(
         if (prevSide == 0)
-            abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX) / tile.height)
+            abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX) / tileHeight)
         else
-            abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX) / tile.width),
+            abs((if (rayDir.y > 0) 1f else 0f) - abs(prevTile.x - startWallX) / tileWidth),
         if (prevSide == 0)
-            abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tile.height - prevWallX) / tile.height)
+            abs((if (rayDir.x > 0) 1f else 0f) - abs(prevTile.y + tileHeight - prevWallX) / tileHeight)
         else
-            abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tile.width - prevWallX) / tile.width)
+            abs((if (rayDir.y < 0) 1f else 0f) - abs(prevTile.x + tileWidth - prevWallX) / tileWidth)
     )
 
-    private fun createTextured2DQuad(
+    private fun createTextured2DMesh(
         texture: Texture,
         initialVertices: List<Vector2>,
         x: Float,
@@ -123,18 +130,18 @@ class RayCaster(
         uStart: Float,
         uEnd: Float,
         side: Int
-    ): Textured2DMesh {
-        return Textured2DMesh(
-            texture, floatArrayOf(
-                initialVertices[1].x, initialVertices[1].y, uStart, 0f,//upper left
-                x, drawEnd, uEnd, 0f, //upper right
-                x, drawStart, uEnd, 1f, //lower right
-                initialVertices[0].x, initialVertices[0].y, uStart, 1f, //lower left
-            ), if (side == 1) 2f else 1f
-        )
-    }
 
-    private fun singleRayCast(player: Player, rayDir: Vector2): Triple<Tile, Int, Float> {
+    ): Textured2DMesh = Textured2DMesh(
+        texture, floatArrayOf(
+            initialVertices[1].x, initialVertices[1].y, uStart, 0f,//upper left
+            x, drawEnd, uEnd, 0f, //upper right
+            x, drawStart, uEnd, 1f, //lower right
+            initialVertices[0].x, initialVertices[0].y, uStart, 1f, //lower left
+        ), if (side == 1) 2f else 1f
+    )
+
+
+    private fun singleRayCast(player: Player, rayDir: Vector2): Triple<IRayCastTile, Int, Float> {
         val rayStepSize = Vector2(
             tileWidth * abs(1 / rayDir.x),
             tileHeight * abs(1 / rayDir.y)

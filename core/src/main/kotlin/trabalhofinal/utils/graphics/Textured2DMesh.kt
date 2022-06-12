@@ -21,7 +21,6 @@ class Textured2DMesh(
     VertexAttribute(VertexAttributes.Usage.TextureCoordinates,2,"a_texCoord" + 0)
 ) {
     init {
-
         when (vertices.size){
             8 * 4 -> setVertices(vertices)
             4 * 4 -> {
@@ -53,6 +52,21 @@ class Textured2DMesh(
         )
     }
 
+
+    fun moveAndScale(initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
+        val vertices = FloatArray(8*4)
+        getVertices(vertices)
+        setVertices(floatArrayOf(
+            initialX + vertices[0]*ratio, initialY + vertices[1]*ratio, vertices[2], vertices[3],
+            initialX + vertices[4]*ratio, initialY + vertices[5]*ratio, vertices[6], vertices[7],
+            initialX + vertices[8]*ratio, initialY + vertices[9]*ratio, vertices[10], vertices[11],
+            initialX + vertices[12]*ratio, initialY + vertices[13]*ratio, vertices[14], vertices[15],
+            initialX + vertices[16]*ratio, initialY + vertices[17]*ratio, vertices[18], vertices[19],
+            initialX + vertices[20]*ratio, initialY + vertices[21]*ratio, vertices[22], vertices[23],
+            initialX + vertices[24]*ratio, initialY + vertices[25]*ratio, vertices[26], vertices[27],
+            initialX + vertices[28]*ratio, initialY + vertices[29]*ratio, vertices[30], vertices[31],
+        ))
+    }
     fun render(shader: ShaderProgram){
         render(shader, GL20.GL_TRIANGLE_STRIP)
     }

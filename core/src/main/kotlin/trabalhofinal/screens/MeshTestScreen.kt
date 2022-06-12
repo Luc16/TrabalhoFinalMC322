@@ -23,7 +23,6 @@ class MeshTestScreen(game: MyGame) : CustomScreen(game) {
     private val t = Texture(Gdx.files.local("assets/wolftex/pics/mossy.png"))
     private val t2 = Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png"))
     private val quads = MeshGroup(
-        ShaderProgram(vertexShader, fragmentShader),
         mutableListOf(
             Textured2DMesh(
                 t, floatArrayOf(
@@ -96,7 +95,7 @@ class MeshTestScreen(game: MyGame) : CustomScreen(game) {
         }
 
         moveCircles()
-        quads.render(camera)
+        quads.render(camera, ShaderProgram(vertexShader, fragmentShader))
 
         renderer.use(ShapeRenderer.ShapeType.Filled) {
             renderer.color = Color.WHITE
@@ -113,7 +112,7 @@ class MeshTestScreen(game: MyGame) : CustomScreen(game) {
         t2.dispose()
     }
 
-    fun mean(val1: Float, val2: Float) = (val1 + val2)/2
+    private fun mean(val1: Float, val2: Float) = (val1 + val2)/2
 
     private fun moveCircles() {
         val mouse = Vector2(

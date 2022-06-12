@@ -16,6 +16,7 @@ import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
 import trabalhofinal.components.Component
 import trabalhofinal.components.Player
+import trabalhofinal.components.ShipRenderer
 import trabalhofinal.components.Tile
 import trabalhofinal.utils.MapReader
 import trabalhofinal.utils.RayCaster
@@ -28,15 +29,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
     private val tiles = mutableListOf<MutableList<Tile>>()
     private val shader = ShaderProgram(vertexShader, fragmentShader)
-
-
-    private lateinit var rayCaster: RayCaster
-    private val player = Player(WIDTH/2, HEIGHT/2, 10f)
-    private var mapWidth = 0
-    private var mapHeight = 0
-    private var tileWidth = 0f
-    private var tileHeight = 0f
-    private val alien = Component(Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), Vector2())
+    private val shipRenderer = ShipRenderer(renderer, viewport.camera, shader, 0.3f)
     private val textures = listOf(
         Texture(Gdx.files.local("assets/wolftex/pics/eagle.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/redbrick.png")),
@@ -47,7 +40,16 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),
     )
-    private val raycastIsMinimap = false
+
+
+    private lateinit var rayCaster: RayCaster
+    private val player = Player(703.4676f,559.23145f, 10f)
+    private var mapWidth = 0
+    private var mapHeight = 0
+    private var tileWidth = 0f
+    private var tileHeight = 0f
+    private val alien = Component(Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), Vector2())
+    private val rayCastIsMinimap = false
 
 
     override fun show() {
@@ -85,60 +87,27 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         alien.tile = tiles[21][12]
         alien.pos.set(tileWidth*21 + tileWidth/2, HEIGHT - tileHeight*12 + tileHeight/2)
 
-        rayCaster = RayCaster(tiles, tileWidth, tileHeight, shader)
+        rayCaster = RayCaster(tiles, tileWidth, tileHeight)
 
         Gdx.input.isCursorCatched = true
         Gdx.gl.glEnable(GL20.GL_BLEND)
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun render(delta: Float) {
         if (Gdx.input.isKeyJustPressed(Keys.Q)) Gdx.app.exit()
 
         tempController()
-        rayCaster.multipleRayCast3D(player)
+
         clearScreen(1f, 1f, 1f, 1f)
+        rayCaster.multipleRayCast3D(player)
+        alien.createMesh(player, rayCaster.zBuffer, tileWidth, tileHeight)
 
-        rayCaster.meshes.render(viewport.camera)
-        rayCaster.meshes.dispose()
+        shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, alien)
 
-        alien.render(player, rayCaster.zBuffer, shader, tileWidth, tileHeight)
+        // TODO Mudar isso aqui quando o tile tiver o componente
         alien.tile.color = if (alien.seen) Color.BROWN else Color.BLACK
 
-        // minimap
-        drawTileMinimap(0.2f)
 
-
-    }
-
-    private fun drawTileMinimap(ratio: Float){
-        val minimapRect = Rectangle(5f, HEIGHT - HEIGHT*ratio - 5f, WIDTH*ratio, HEIGHT*ratio)
-        val mirroredX = minimapRect.x + minimapRect.width
-        renderer.use(ShapeRenderer.ShapeType.Filled, viewport.camera.combined){
-            renderer.color = Color.BLACK
-            renderer.rect(minimapRect.x, minimapRect.y, minimapRect.width, minimapRect.height)
-            renderer.color = Color.LIGHT_GRAY
-            rayCaster.collisionPoints.forEach{
-                renderer.rectLine(
-                    mirroredX - player.x*ratio,
-                    minimapRect.y + player.y*ratio,
-                    mirroredX - it.x*ratio,
-                    minimapRect.y + it.y*ratio, 1f)
-            }
-            tiles.forEach{ line ->
-                line.forEach { tile ->
-                    if (tile.color != Color.BLACK){
-                        renderer.color = tile.color
-                        renderer.rect(
-                            mirroredX - tile.width*ratio - tile.x*ratio,
-                            minimapRect.y + tile.y*ratio,
-                            tile.width*ratio, tile.height*ratio)
-                    }
-                }
-            }
-            renderer.color = Color.BROWN
-            renderer.circle(mirroredX - player.x*ratio, minimapRect.y + player.y*ratio, player.radius*ratio)
-        }
     }
 
     private fun tempController(){

@@ -1,21 +1,20 @@
 package trabalhofinal.components
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.utils.graphics.Textured2DMesh
-import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class Component(private val texture: Texture, val pos: Vector2) {
     var seen = false
     lateinit var tile: Tile
+    private lateinit var mesh: Textured2DMesh
 
-    fun render(player: Player, zBuffer: List<Float>, shader: ShaderProgram, tileWidth: Float, tileHeight: Float){
+    fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         val div = 1f
 
         val transformedPos = Vector2(pos.x - player.x, pos.y - player.y)
@@ -27,7 +26,7 @@ class Component(private val texture: Texture, val pos: Vector2) {
         val h = 1.5f*HEIGHT
         val spriteScreenX = (WIDTH / 2) * (1 + transformedPos.x / transformedPos.y)
         val spriteHeight = (tileHeight * h / transformedPos.y)/div
-        val drawStartY = -spriteHeight / 2 + h / 2
+        val drawStartY =  -spriteHeight / 2 + h / 2
         val drawEndY = spriteHeight / 2 + h / 2
 
         //calculate width of the sprite
@@ -48,7 +47,7 @@ class Component(private val texture: Texture, val pos: Vector2) {
                 return
             }
         }
-        drawStartX--
+        drawStartX = --drawStartX
 
         while (drawEndX >= WIDTH || transformedPos.y > zBuffer[drawEndX.toInt()]){
             drawEndX--
@@ -57,27 +56,28 @@ class Component(private val texture: Texture, val pos: Vector2) {
                 return
             }
         }
-        drawEndX++
+        drawEndX = ++drawEndX
 
-        if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-            println(player.dir)
-            println(HEIGHT*tileHeight/transformedPos.y)
-        }
-        val y = drawStartY
-        val uStart = (drawStartX - spriteScreenX)/spriteWidth + 0.5f
-        val uEnd = (drawEndX - spriteScreenX)/spriteWidth + 0.5f
+        val uStart = max(0f, (drawStartX - spriteScreenX)/spriteWidth + 0.5f)
+        val uEnd = min(1f, (drawEndX - spriteScreenX)/spriteWidth + 0.5f)
 
-        val tex = Textured2DMesh(texture,
+        mesh = Textured2DMesh(texture,
             floatArrayOf(
-                drawStartX, y + spriteHeight, uStart, 0f,//upper left
-                drawEndX, y + spriteHeight, uEnd, 0f, //upper right
-                drawEndX, y, uEnd, 1f, //lower right
-                drawStartX, y, uStart, 1f, //lower left
+                drawStartX, drawStartY + spriteHeight, uStart, 0f,//upper left
+                drawEndX, drawStartY + spriteHeight, uEnd, 0f, //upper right
+                drawEndX, drawStartY, uEnd, 1f, //lower right
+                drawStartX, drawStartY, uStart, 1f, //lower left
             )
         )
-        tex.standAloneRender(shader)
-        tex.dispose()
+
         seen = true
 
+    }
+
+    fun render(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
+        if (!seen) return
+        mesh.moveAndScale(initialX, initialY, ratio)
+        mesh.standAloneRender(shader)
+        mesh.dispose()
     }
 }
