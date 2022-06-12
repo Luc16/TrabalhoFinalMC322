@@ -27,19 +27,15 @@ class ShipRenderer(
     ){
         if (!rayCastIsMinimap){
             val collisionPoints = drawRayCastAndGetCollisions(rayCaster)
-            alien.render(shader, ratio = minimapRatio)
+            alien.render(shader)
             drawTileMinimap(player, tiles, collisionPoints)
-
         }
     }
 
     private fun drawRayCastAndGetCollisions(rayCaster: RayCaster): List<Vector2>{
-
-        rayCaster.meshes.render(camera, shader, ratio = minimapRatio)
+        rayCaster.meshes.render(camera, shader)
         rayCaster.meshes.dispose()
-
         return rayCaster.collisionPoints
-
     }
 
     private fun drawTileMinimap(player: Player, tiles: List<List<IMapDrawable>>, collisionPoints: List<Vector2>){

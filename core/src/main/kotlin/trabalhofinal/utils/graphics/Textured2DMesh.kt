@@ -3,7 +3,6 @@ package trabalhofinal.utils.graphics
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 
-// Vertex order: upper left, lower left, upper right, lower right
 /** Creates a new Mesh with 8 vertices (quad) with the given attributes an texture.
  *
  * @param texture texture region for the mesh
@@ -13,18 +12,23 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
  * */
 class Textured2DMesh(
     var texture: Texture,
+    // aceita vetores com 4 ou 8 vertices
     vertices: FloatArray,
     var colorDiv: Float = 1f
 ) : Mesh(
-    true, 8, 15,
-    VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"), //x,y
-    VertexAttribute(VertexAttributes.Usage.TextureCoordinates,2,"a_texCoord" + 0)
+    true,
+    8, // numero maximo de vertices para construir uma mesh com 8 verices, um em cada canto e um no centro de cada aresta
+    15, // numero maximo de indices para construir a mesh
+    // cada vertice tem 4 atributos, 2 de posição no espaço e dois de posição na textura
+    VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"), // x, y
+    VertexAttribute(VertexAttributes.Usage.TextureCoordinates,2,"a_texCoord" + 0) // u, v
 ) {
     init {
         when (vertices.size){
             8 * 4 -> setVertices(vertices)
             4 * 4 -> {
                 fun mean(f1: Float, f2: Float) = (f1 + f2) / 2
+                // cria os 8 vertices a partir de 4 fornecidos
                 setVertices(
                     floatArrayOf(
                         vertices[0], vertices[1], vertices[2], vertices[3], // upper left

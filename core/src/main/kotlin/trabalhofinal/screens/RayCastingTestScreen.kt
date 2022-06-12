@@ -61,6 +61,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         tileWidth = WIDTH/mapWidth
         tileHeight = HEIGHT/mapHeight
 
+        //cria a matriz de tiles
+
         for (i in 0 until mapWidth){
             val line = mutableListOf<Tile>()
             for (j in 0 until mapHeight){
@@ -89,7 +91,10 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight)
 
+        // mouse invisivel
         Gdx.input.isCursorCatched = true
+
+        // setup de opengl
         Gdx.gl.glEnable(GL20.GL_BLEND)
     }
 

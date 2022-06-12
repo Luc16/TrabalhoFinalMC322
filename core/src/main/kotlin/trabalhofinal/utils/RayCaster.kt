@@ -1,13 +1,11 @@
 package trabalhofinal.utils
 
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.IRayCastTile
 import trabalhofinal.components.Player
-import trabalhofinal.components.Tile
 import trabalhofinal.utils.graphics.MeshGroup
 import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.abs
@@ -26,33 +24,41 @@ class RayCaster(
         private set
 
     fun multipleRayCast3D(player: Player) {
+        // variaveis das informações do resultado
         val collisionPoints = mutableListOf<Vector2>()
         val meshes = MeshGroup()
-        var rayDir = Vector2()
+        val zBuffer = Array(WIDTH.toInt()) {0f}
+
+        var rayDir = Vector2() // direcao atual do raio
         var tile: IRayCastTile
         var prevTile: IRayCastTile? = null
-        var initialVertices = listOf<Vector2>()
+        var initialVertices = listOf<Vector2>() // vertices posicionais iniciais da mesh
+        // inicio e fim da coordenada y da mesh
         var drawStart = 0f
         var drawEnd = 0f
+        // lado em que o raio bate na parede
         var side = 0
         var prevSide = -1
+        // x real do tile analizado no momento
         var wallX = 0f
         var startWallX = 0f
         var prevWallX = 0f
-        val zBuffer = Array(WIDTH.toInt()) {0f}
 
         for (x in 0 until WIDTH.toInt()) {
             val cameraX = 2 * x.toFloat() / WIDTH - 1
+            // calcula a direção do raio atual
             rayDir = Vector2(
                 player.dir.x + player.cameraPlane.x * cameraX,
                 player.dir.y + player.cameraPlane.y * cameraX
             )
+            // armazena o resultado de um rayCast
             val result = singleRayCast(player, rayDir)
             tile = result.first
             side = result.second
             val perpDist = result.third
             zBuffer[x] = perpDist
 
+            // calcula altura da linha
             val h = 1.5f * HEIGHT
             val lineHeight = tileHeight * (h / perpDist)
 
@@ -66,6 +72,7 @@ class RayCaster(
             val curX = x.toFloat()
 
             if (prevTile == null || prevTile != tile || prevSide != side) {
+                // quando a muda o tile ou o lado analizado fecha a mesh e comeca outra
                 if (prevTile != null) {
                     val (uStart, uEnd) = calculateUStartAndUEnd(prevTile, rayDir, startWallX, prevWallX,
                         tileWidth, tileHeight, prevSide)
@@ -89,6 +96,7 @@ class RayCaster(
         }
 
         if (prevTile != null) {
+            // cria a ultima mesh
             val (uStart, uEnd) = calculateUStartAndUEnd(prevTile, rayDir, startWallX, prevWallX,
                 tileWidth, tileHeight, prevSide)
 
@@ -111,6 +119,7 @@ class RayCaster(
         tileHeight: Float,
         prevSide: Int
     ): Pair<Float, Float> = Pair(
+        // calcula a posição da textura sendo vista
         if (prevSide == 0)
             abs((if (rayDir.x < 0) 1f else 0f) - abs(prevTile.y - startWallX) / tileHeight)
         else
@@ -130,7 +139,6 @@ class RayCaster(
         uStart: Float,
         uEnd: Float,
         side: Int
-
     ): Textured2DMesh = Textured2DMesh(
         texture, floatArrayOf(
             initialVertices[1].x, initialVertices[1].y, uStart, 0f,//upper left
@@ -142,10 +150,12 @@ class RayCaster(
 
 
     private fun singleRayCast(player: Player, rayDir: Vector2): Triple<IRayCastTile, Int, Float> {
+        // quanto o vetor anda em x e em y
         val rayStepSize = Vector2(
             tileWidth * abs(1 / rayDir.x),
             tileHeight * abs(1 / rayDir.y)
         )
+        // posição do vetor no mapa
         val mapPos = IVector2(
             (player.x / tileWidth).toInt(),
             (player.y / tileHeight).toInt()
@@ -153,6 +163,7 @@ class RayCaster(
         val rayLengths = Vector2(0f, 0f)
         val step = IVector2(1, 1)
 
+        // considerando o local real do player, e sua distancia a borda de tile mais proxima
         if (rayDir.x < 0) {
             step.i = -1
             rayLengths.x = (player.x - mapPos.i * tileWidth) * rayStepSize.x / tileWidth
@@ -168,6 +179,7 @@ class RayCaster(
         var hit = false
         var side = 0
         while (!hit) {
+            // realiza o raycast
             if (rayLengths.x < rayLengths.y) {
                 mapPos.i += step.i
                 side = 0
