@@ -49,7 +49,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
     private var tileWidth = 0f
     private var tileHeight = 0f
     private val alien = Component(Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), Vector2())
-    private val rayCastIsMinimap = false
+    private var rayCastIsMinimap = true
+    private var mouseControl = true
 
 
     override fun show() {
@@ -91,9 +92,6 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight)
 
-        // mouse invisivel
-        Gdx.input.isCursorCatched = true
-
         // setup de opengl
         Gdx.gl.glEnable(GL20.GL_BLEND)
     }
@@ -103,9 +101,10 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
         tempController()
 
-        clearScreen(1f, 1f, 1f, 1f)
         rayCaster.multipleRayCast3D(player)
         alien.createMesh(player, rayCaster.zBuffer, tileWidth, tileHeight)
+
+        if (Gdx.input.isKeyJustPressed(Keys.SPACE)) rayCastIsMinimap = !rayCastIsMinimap
 
         shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, alien)
 
@@ -117,11 +116,22 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
     private fun tempController(){
         val speed = 4
-        val theta = 2*PI/180
+        val theta = (2*PI/180).toFloat()
 
-        val deltaX = Gdx.input.deltaX.toFloat()/10
-        player.rotate(deltaX*theta.toFloat())
-        Gdx.input.setCursorPosition((WIDTH/2).toInt(), (HEIGHT/2).toInt())
+        if (Gdx.input.isKeyJustPressed(Keys.C)) mouseControl = !mouseControl
+
+        if (mouseControl){
+            // mouse invisivel
+            if (!Gdx.input.isCursorCatched) Gdx.input.isCursorCatched = true
+            val deltaX = Gdx.input.deltaX.toFloat()/10
+            player.rotate(deltaX* theta)
+            Gdx.input.setCursorPosition((WIDTH/2).toInt(), (HEIGHT/2).toInt())
+
+        } else {
+            if (Gdx.input.isKeyPressed(Keys.A)) player.rotate(-theta)
+            if (Gdx.input.isKeyPressed(Keys.D)) player.rotate(theta)
+        }
+
 
         if (Gdx.input.isKeyPressed(Keys.W)) player.y += player.dir.y*speed
         if (Gdx.input.isKeyPressed(Keys.S)) player.y -= player.dir.y*speed

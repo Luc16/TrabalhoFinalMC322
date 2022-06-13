@@ -9,6 +9,7 @@ import trabalhofinal.components.Player
 import trabalhofinal.utils.graphics.MeshGroup
 import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.abs
+import kotlin.math.max
 
 class RayCaster(
     private val tiles: List<List<IRayCastTile>>,
@@ -21,6 +22,8 @@ class RayCaster(
     lateinit var collisionPoints: List<Vector2>
         private set
     lateinit var meshes: MeshGroup
+        private set
+    var floorLevel = 0f
         private set
 
     fun multipleRayCast3D(player: Player) {
@@ -65,6 +68,7 @@ class RayCaster(
             val prevDrawStartAndEnd = Pair(drawStart, drawEnd)
 
             drawStart = -lineHeight / 2 + h / 2
+            floorLevel = max(drawStart, floorLevel)
             drawEnd = lineHeight / 2 + h / 2
             prevWallX = wallX
             wallX = if (side == 0) player.y + rayDir.y * perpDist else player.x + rayDir.x * perpDist

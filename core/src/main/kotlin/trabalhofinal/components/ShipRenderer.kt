@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import ktx.app.clearScreen
 import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.utils.RayCaster
+import trabalhofinal.utils.graphics.MeshGroup
 
 class ShipRenderer(
     private val renderer: ShapeRenderer,
@@ -18,6 +20,8 @@ class ShipRenderer(
     private val minimapRatio: Float
 ) {
 
+    private val mapRatio = 0.75f
+
     fun renderShip(
         rayCastIsMinimap: Boolean,
         rayCaster: RayCaster,
@@ -25,21 +29,49 @@ class ShipRenderer(
         tiles: List<List<IMapDrawable>>,
         alien: Component,
     ){
+        clearScreen(0f, 0f, 0f, 1f)
         if (!rayCastIsMinimap){
-            val collisionPoints = drawRayCastAndGetCollisions(rayCaster)
+            drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
             alien.render(shader)
-            drawTileMinimap(player, tiles, collisionPoints)
+            drawTileMap(player, tiles, rayCaster.collisionPoints, true, 5f, HEIGHT - HEIGHT*minimapRatio - 5f)
+        } else {
+            val minimapX = WIDTH*mapRatio
+            val minimapY = HEIGHT*mapRatio
+            drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
+            alien.render(shader, minimapX, minimapY, 0.25f)
+            drawSideThings(minimapY)
+            drawTileMap(player, tiles, rayCaster.collisionPoints, false)
         }
     }
 
-    private fun drawRayCastAndGetCollisions(rayCaster: RayCaster): List<Vector2>{
-        rayCaster.meshes.render(camera, shader)
-        rayCaster.meshes.dispose()
-        return rayCaster.collisionPoints
+    private fun drawSideThings(initialY: Float) {
+        renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
+            renderer.color = Color.BLACK
+            renderer.rect(WIDTH - WIDTH*0.25f, 0f, WIDTH*0.25f, initialY)
+        }
+
     }
 
-    private fun drawTileMinimap(player: Player, tiles: List<List<IMapDrawable>>, collisionPoints: List<Vector2>){
-        val minimapRect = Rectangle(5f, HEIGHT - HEIGHT *minimapRatio - 5f, WIDTH *minimapRatio, HEIGHT *minimapRatio)
+    private fun drawRayCast(meshes: MeshGroup, isMinimap: Boolean, floor: Float, initialX: Float = 0f, initialY: Float = 0f) {
+        val ratio = if (isMinimap) 0.25f else 1f
+        renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
+            renderer.color = Color.WHITE
+            renderer.rect(initialX, initialY, WIDTH*ratio, floor*ratio)
+        }
+        meshes.render(camera, shader, initialX, initialY, ratio)
+        meshes.dispose()
+    }
+
+    private fun drawTileMap(
+        player: Player,
+        tiles: List<List<IMapDrawable>>,
+        collisionPoints: List<Vector2>,
+        isMinimap: Boolean,
+        initialX: Float = 0f,
+        initialY: Float = 0f
+    ){
+        val ratio = if (isMinimap) minimapRatio else mapRatio
+        val minimapRect = Rectangle(initialX, initialY, WIDTH*ratio, HEIGHT*ratio)
         val mirroredX = minimapRect.x + minimapRect.width
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.BLACK
@@ -47,21 +79,21 @@ class ShipRenderer(
             renderer.color = Color.LIGHT_GRAY
             collisionPoints.forEach{
                 renderer.rectLine(
-                    mirroredX - player.x*minimapRatio,
-                    minimapRect.y + player.y*minimapRatio,
-                    mirroredX - it.x*minimapRatio,
-                    minimapRect.y + it.y*minimapRatio, 1f)
+                    mirroredX - player.x*ratio,
+                    minimapRect.y + player.y*ratio,
+                    mirroredX - it.x*ratio,
+                    minimapRect.y + it.y*ratio, 1f)
             }
             tiles.forEach{ line ->
                 line.forEach { tile ->
                     if (tile.color != Color.BLACK){
-                        tile.draw(mirroredX, minimapRect.y, minimapRatio, renderer)
+                        tile.draw(mirroredX, minimapRect.y, ratio, renderer)
                     }
                 }
             }
             renderer.color = Color.BROWN
             //TODO("Make player I minimapDrawable")
-            renderer.circle(mirroredX - player.x*minimapRatio, minimapRect.y + player.y*minimapRatio, player.radius*minimapRatio)
+            renderer.circle(mirroredX - player.x*ratio, minimapRect.y + player.y*ratio, player.radius*ratio)
         }
     }
 
