@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Disposable
 class MeshGroup(private val meshes: MutableList<Textured2DMesh>): Disposable {
     constructor() : this(mutableListOf())
 
-    fun add(quad: Textured2DMesh) = meshes.add(quad)
+    fun add(mesh: Textured2DMesh) = meshes.add(mesh)
     operator fun get(i: Int): Textured2DMesh = meshes[i]
 
     fun render(camera: Camera, shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){

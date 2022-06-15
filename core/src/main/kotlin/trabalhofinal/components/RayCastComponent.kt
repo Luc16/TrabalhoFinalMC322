@@ -1,20 +1,30 @@
 package trabalhofinal.components
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Disposable
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.utils.graphics.Textured2DMesh
-import kotlin.math.max
-import kotlin.math.min
-
-class Component(private val texture: Texture, val pos: Vector2) {
+import kotlin.math.roundToInt
+import kotlin.properties.Delegates
+class RayCastComponent(private val texture: Texture, val pos: Vector2): Disposable, Comparable<RayCastComponent> {
     var seen = false
     lateinit var tile: Tile
     private lateinit var mesh: Textured2DMesh
+    private var dist = Float.MAX_VALUE
 
     fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
+        dist = (player.x - pos.x)*(player.x - pos.x) + (player.y - pos.y)*(player.y - pos.y)
+        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+            println("$texture -> $dist")
+            println(pos)
+            println(player)
+        }
+
         // variavel para aumentar ou diminuir os sprites
         val div = 1f
 
@@ -80,9 +90,20 @@ class Component(private val texture: Texture, val pos: Vector2) {
 
     fun render(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
         if (!seen) return
+        mesh.run {
+            moveAndScale(initialX, initialY, ratio)
+            standAloneRender(shader)
+            dispose()
+        }
+    }
 
-        mesh.moveAndScale(initialX, initialY, ratio)
-        mesh.standAloneRender(shader)
+    override fun compareTo(other: RayCastComponent): Int {
+        val diff = dist - other.dist
+        return if (diff > 0) 1 else if (diff < 0) -1 else 0
+    }
+
+    override fun dispose() {
         mesh.dispose()
     }
 }
+

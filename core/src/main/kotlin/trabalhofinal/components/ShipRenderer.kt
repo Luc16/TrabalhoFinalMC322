@@ -27,18 +27,18 @@ class ShipRenderer(
         rayCaster: RayCaster,
         player: Player,
         tiles: List<List<IMapDrawable>>,
-        alien: Component,
+        components: RayCastCompList,
     ){
         clearScreen(0f, 0f, 0f, 1f)
         if (!rayCastIsMinimap){
             drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
-            alien.render(shader)
+            components.render(shader)
             drawTileMap(player, tiles, rayCaster.collisionPoints, true, 5f, HEIGHT - HEIGHT*minimapRatio - 5f)
         } else {
             val minimapX = WIDTH*mapRatio
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
-            alien.render(shader, minimapX, minimapY, 0.25f)
+            components.render(shader, minimapX, minimapY, 0.25f)
             drawSideThings(minimapY)
             drawTileMap(player, tiles, rayCaster.collisionPoints, false)
         }
