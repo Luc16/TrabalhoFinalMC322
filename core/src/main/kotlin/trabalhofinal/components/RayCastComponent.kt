@@ -2,6 +2,7 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
@@ -11,19 +12,27 @@ import trabalhofinal.WIDTH
 import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
-class RayCastComponent(private val texture: Texture, val pos: Vector2): Disposable, Comparable<RayCastComponent> {
+class RayCastComponent(
+    override val texture: Texture,
+    val pos: Vector2,
+    private val seenColor: Color
+    ):
+    Disposable,
+    Comparable<RayCastComponent>,
+    Component
+{
+    override val isWall = false
+    override var color: Color = Color.BLACK
     var seen = false
-    lateinit var tile: Tile
+        set(value) {
+            color = if (value) seenColor else Color.BLACK
+            field = value
+        }
     private lateinit var mesh: Textured2DMesh
     private var dist = Float.MAX_VALUE
 
     fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         dist = (player.x - pos.x)*(player.x - pos.x) + (player.y - pos.y)*(player.y - pos.y)
-        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            println("$texture -> $dist")
-            println(pos)
-            println(player)
-        }
 
         // variavel para aumentar ou diminuir os sprites
         val div = 1f

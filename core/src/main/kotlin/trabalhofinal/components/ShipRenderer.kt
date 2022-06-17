@@ -86,9 +86,7 @@ class ShipRenderer(
             }
             tiles.forEach{ line ->
                 line.forEach { tile ->
-                    if (tile.color != Color.BLACK){
-                        tile.draw(mirroredX, minimapRect.y, ratio, renderer)
-                    }
+                    tile.draw(mirroredX, minimapRect.y, ratio, renderer)
                 }
             }
             renderer.color = Color.BROWN

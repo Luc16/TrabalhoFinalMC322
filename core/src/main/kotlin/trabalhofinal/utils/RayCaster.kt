@@ -77,6 +77,7 @@ class RayCaster(
 
             if (prevTile == null || prevTile != tile || prevSide != side) {
                 // quando a muda o tile ou o lado analizado fecha a mesh e comeca outra
+
                 if (prevTile != null) {
                     val (uStart, uEnd) = calculateUStartAndUEnd(prevTile, rayDir, startWallX, prevWallX,
                         tileWidth, tileHeight, prevSide)
@@ -98,7 +99,6 @@ class RayCaster(
             }
             collisionPoints.add(Vector2(player.x + rayDir.x * perpDist, player.y + rayDir.y * perpDist))
         }
-
         if (prevTile != null) {
             // cria a ultima mesh
             val (uStart, uEnd) = calculateUStartAndUEnd(prevTile, rayDir, startWallX, prevWallX,
@@ -180,9 +180,9 @@ class RayCaster(
         } else
             rayLengths.y = (mapPos.j * tileHeight + tileHeight - player.y) * rayStepSize.y / tileHeight
 
-        var hit = false
         var side = 0
-        while (!hit) {
+
+        while (!tiles[mapPos.i][mapPos.j].isWall) {
             // realiza o raycast
             if (rayLengths.x < rayLengths.y) {
                 mapPos.i += step.i
@@ -193,8 +193,6 @@ class RayCaster(
                 side = 1
                 rayLengths.y += rayStepSize.y
             }
-
-            if (tiles[mapPos.i][mapPos.j].id != 0) hit = true
 
         }
 

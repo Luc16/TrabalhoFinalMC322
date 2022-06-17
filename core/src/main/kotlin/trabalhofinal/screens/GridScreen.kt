@@ -10,7 +10,9 @@ import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
+import trabalhofinal.components.Player
 import trabalhofinal.components.Tile
+import trabalhofinal.components.Wall
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 import trabalhofinal.utils.AStar
@@ -24,7 +26,14 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     private var mapHeight = 0
     private var tileWidth = 0f
     private var tileHeight = 0f
+    private val players = mutableListOf<Player>()
+    // path
 
+    init{
+        val pl = Player(20f, 20f, 10f)
+        pl.pos = IVector2(1,1)
+        players.add(pl)
+    }
 
     override fun show() {
         val reader = MapReader("assets/test.map")
@@ -48,10 +57,10 @@ class GridScreen(game: MyGame): CustomScreen(game) {
                     6 -> Color.BLUE
                     7 -> Color.CORAL
                     8 -> Color.MAGENTA
-                    else -> Color.BLACK
+                    else -> Color.WHITE
                 }
                 line.add(
-                    Tile(i, j, tileWidth, tileHeight, color, null, id)
+                    Tile(i, j, tileWidth, tileHeight, if(id == 0) null else Wall(color, null))
                 )
             }
             grid.add(line)
@@ -62,8 +71,10 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     override fun render(delta: Float) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) Gdx.app.exit()
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) mouseController()
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) mouseController(players[0]) //TODO: implementar qual o player atual
         clearScreen(1f, 1f, 1f, 1f)
+
+        // curPlayer.update()
 
         renderer.use(ShapeRenderer.ShapeType.Filled, viewport.camera.combined){
             renderer.color = Color.BLACK
@@ -71,14 +82,11 @@ class GridScreen(game: MyGame): CustomScreen(game) {
             renderer.color = Color.LIGHT_GRAY
             grid.forEach{ line ->
                 line.forEach { tile ->
-                    if (tile.color != Color.BLACK){
-                        renderer.color = tile.color
-                        renderer.rect(tile.x, tile.y, tile.width - 1f, tile.height -1f)
-                    }
+                    tile.draw(0f, 0f, 1f, renderer)
                 }
             }
+            renderer.circle(players[0].pos.i*(tileWidth) + 0.5f*tileWidth, players[0].pos.j*(tileHeight) + 0.5f*tileHeight, 10f)
         }
-
     }
 
     private fun getTilePos(x: Int, y: Int): IVector2? {
@@ -88,31 +96,44 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         return IVector2(idx, idy)
     }
 
-    //colocar reconhecimento de coordenada
-    private fun mouseController() {
+    private fun mouseController(currPlayer: Player) {
         val xPos = Gdx.input.x
         val yPos = HEIGHT.toInt() - Gdx.input.y
 
         //codigo para movimento, depois vai ter que separar uma interacao especifica pra cada tipo de tile
         // provavelmente so colocar um when pra separar caso por caso
         val dest = getTilePos(xPos, yPos)
+
+        // if (!p.moving) path++ ; moveDnv
+//        fun setDest(i, j)
+//        fun move(){
+//            if (p.pos != dest){
+//                p.y += movY
+//                p.x += movX
+//            }
+//        }
+
+        // quero mexer 1f na direcao certa a cada 0.05s
+
         if (dest != null){
             val currTile = grid[dest.i][dest.j]
-            currTile.color = Color.RED
-            when(currTile.id){
-                0 ->{
+            when(currTile.component){
+                null ->{
                     val graph = AStar(grid)
-                    val test = IVector2(1,1)
-                    val path = graph.findPath(test, dest)
+                    val src = currPlayer.pos
+                    val path = graph.findPath(src, dest)
 
                     if (path != null){
-                        for (pos in path){
-                            grid[pos.i][pos.j].color = Color.RED
+                        for (pos in path) {
+
+                            //curPlayer.update()
+                            currPlayer.move(pos.i, pos.j)
                         }
                     } else {
                         println("Invalido")
                     }
                 }
+                //TODO: implementar clique em jogador -> trocar jogador (?)
             }
         }
     }

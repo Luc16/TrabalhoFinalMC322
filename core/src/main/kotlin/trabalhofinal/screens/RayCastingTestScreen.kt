@@ -42,12 +42,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
     private var mapHeight = 0
     private var tileWidth = 0f
     private var tileHeight = 0f
-    private val aliens = RayCastCompList(
-        mutableListOf(
-            RayCastComponent(Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), Vector2()),
-            RayCastComponent(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")), Vector2()),
-        )
-    )
+    private val aliens = RayCastCompList()
     private var rayCastIsMinimap = true
     private var mouseControl = true
 
@@ -79,18 +74,29 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
                     else -> Color.BLACK
                 }
                 line.add(
-                    Tile(i, j, tileWidth, tileHeight, color,
-                        if (id != 0) textures[id-1] else null, id)
+                    Tile(i, j, tileWidth, tileHeight, if (id == 0) null else Wall(color, textures[id-1]))
                 )
             }
             tiles.add(line)
         }
 
-        aliens[0].tile = tiles[21][12]
-        aliens[0].pos.set(tileWidth*21 + tileWidth/2, tileHeight*12 + tileHeight/2)
+        aliens.add(
+            RayCastComponent(
+                Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+                Vector2(tileWidth*21 + tileWidth/2, tileHeight*12 + tileHeight/2),
+                Color.BROWN
+            )
+        )
+        tiles[21][12].component = aliens[0]
 
-        aliens[1].tile = tiles[20][10]
-        aliens[1].pos.set(tileWidth*20 + tileWidth/2, tileHeight*10 + tileHeight/2)
+        aliens.add(
+            RayCastComponent(
+                Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")),
+                Vector2(tileWidth*20 + tileWidth/2, tileHeight*10 + tileHeight/2),
+                Color.BROWN
+            )
+        )
+        tiles[21][12].component = aliens[1]
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight)
 
@@ -109,11 +115,6 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         if (Gdx.input.isKeyJustPressed(Keys.SPACE)) rayCastIsMinimap = !rayCastIsMinimap
 
         shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, aliens)
-
-        // TODO Mudar isso aqui quando o tile tiver o componente
-        aliens[0].tile.color = if (aliens[0].seen) Color.BROWN else Color.BLACK
-        aliens[1].tile.color = if (aliens[1].seen) Color.BROWN else Color.BLACK
-
 
     }
 
@@ -142,7 +143,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
         var playerRect = Rectangle(player.x - player.radius, player.y - player.radius, 2*player.radius, 2*player.radius)
         tiles.forEach{ line ->
             line.forEach { tile ->
-                if (tile.id != 0 && tile.r.overlaps(playerRect)){
+                if (tile.isWall && tile.r.overlaps(playerRect)){
                     if (Gdx.input.isKeyPressed(Keys.S) && player.dir.y > 0 ||
                         Gdx.input.isKeyPressed(Keys.W) && player.dir.y < 0)
                         player.y = tile.y + tile.height + player.radius
@@ -159,7 +160,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
         tiles.forEach{ line ->
             line.forEach { tile ->
-                if (tile.id != 0 && tile.r.overlaps(playerRect)){
+                if (tile.isWall && tile.r.overlaps(playerRect)){
                     if (Gdx.input.isKeyPressed(Keys.S) && player.dir.x > 0 ||
                         Gdx.input.isKeyPressed(Keys.W) && player.dir.x < 0)
                         player.x = tile.x + tile.width + player.radius

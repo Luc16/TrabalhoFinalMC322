@@ -1,6 +1,6 @@
 package trabalhofinal.components
 
-interface IPositioned {
+interface IStatic {
     val x: Float
     val y: Float
 }

@@ -1,6 +1,5 @@
 package trabalhofinal.utils
 
-import trabalhofinal.components.Tile
 import kotlin.math.abs
 
 
@@ -10,7 +9,7 @@ class AStar (private val grid: List<List<Node>>) {
     private val changed = mutableListOf<Node>()
 
     private fun IVector2.isOutOfRange(): Boolean = i < 0 || i >= grid.size || j < 0 || j >= grid[0].size
-    private fun IVector2.isBlocked(): Boolean = grid[i][j].isWall
+    private fun IVector2.isBlocked(): Boolean = grid[i][j].notTraversable
     private fun getNode(pos: IVector2): Node = grid[pos.i][pos.j]
 
 
@@ -39,7 +38,7 @@ class AStar (private val grid: List<List<Node>>) {
             resetGrid()
             return null
         }
-        val path = mutableListOf(node.pos)
+        val path = mutableListOf(end.pos, node.pos)
 
         while (node?.parent != null) {
             node = node.parent
@@ -80,7 +79,7 @@ class AStar (private val grid: List<List<Node>>) {
 
             node.forEachNeighbor { neighbor ->
                 // se eh parede ou visinho possuir componente bloqueador, return
-                if (neighbor.isWall || neighbor.wasVisited) return@forEachNeighbor
+                if (neighbor.notTraversable || neighbor.wasVisited) return@forEachNeighbor
 
                 if (neighbor.parent == null || neighbor.parent?.let {it.g > node.g} == true){
                     neighbor.parent = node
