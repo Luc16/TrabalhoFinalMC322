@@ -24,7 +24,8 @@ class MyGame: KtxGame<CustomScreen>() {
         addScreen(RayCastingTestScreen(this))
         addScreen(MeshTestScreen(this))
         addScreen(GridScreen(this))
-        setScreen<RayCastingTestScreen>()
+        addScreen(MovementTestScreen(this))
+        setScreen<MovementTestScreen>()
     }
 
     override fun dispose() {

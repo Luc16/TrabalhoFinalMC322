@@ -96,7 +96,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
                 Color.BROWN
             )
         )
-        tiles[21][12].component = aliens[1]
+        tiles[20][10].component = aliens[1]
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight)
 

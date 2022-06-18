@@ -10,6 +10,11 @@ class Player(x: Float, y: Float, radius: Float): Circle(x, y, radius) {
 
     //posicoes tile
     var pos = IVector2(0,0)
+    var isMoving = false
+
+    //TEMPORARIO -> SO PRA TESTAR MovementTestScreen
+    var currxdest = 0
+    var currydest = 0
 
     var dir = Vector2(1f, 0f)
     var cameraPlane = Vector2(0f, 0.66f)
