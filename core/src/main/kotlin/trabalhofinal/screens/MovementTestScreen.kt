@@ -20,6 +20,8 @@ class MovementTestScreen(game: MyGame): CustomScreen(game){
     private var mapHeight = 0
     private var tileWidth = 1f
     private var tileHeight = 1f
+
+
     init{
         val pl = Player(50f, 50f, 10f)
         pl.pos = IVector2(1,1)
@@ -46,13 +48,13 @@ class MovementTestScreen(game: MyGame): CustomScreen(game){
     }
 
     private fun mouseController(currPlayer: Player) {
-        val xPos = Gdx.input.x
-        val yPos = HEIGHT.toInt() - Gdx.input.y
-        if (currPlayer.x.roundToInt() != xPos || currPlayer.y.roundToInt() != yPos){ //adaptar para checar se esta no mesmo tile
-            currPlayer.isMoving = true
-            currPlayer.currxdest = xPos
-            currPlayer.currydest = yPos
-        }
+//        val xPos = Gdx.input.x
+//        val yPos = HEIGHT.toInt() - Gdx.input.y
+//        if (currPlayer.x.roundToInt() != xPos || currPlayer.y.roundToInt() != yPos){ //adaptar para checar se esta no mesmo tile
+//            currPlayer.isMoving = true
+//            currPlayer.currDest.i = xPos
+//            currPlayer.currDest.j = yPos
+//        }
 
         // if (!p.moving) path++ ; moveDnv
 //        fun setDest(i, j)
@@ -66,27 +68,27 @@ class MovementTestScreen(game: MyGame): CustomScreen(game){
     }
 
     private fun update(player: Player){
-        if (!player.isMoving) return
-        if (player.x.roundToInt() == player.currxdest && player.y.roundToInt() == player.currydest){
-            player.isMoving = false
-        } else{
-            if (player.x.roundToInt() != player.currxdest){
-                if (player.x > player.currxdest){
-                    player.x -= 1f
-                    return
-                } else{
-                    player.x += 1f
-                    return
-                }
-            } else{
-                if (player.y.roundToInt() > player.currydest){
-                    player.y -= 1f
-                    return
-                } else{
-                    player.y += 1f
-                    return
-                }
-            }
-        }
+//        if (!player.isMoving) return
+//        if (player.x.roundToInt() == player.currDest.i && player.y.roundToInt() == player.currDest.j){
+//            player.isMoving = false
+//        } else{
+//            if (player.x.roundToInt() != player.currDest.i){
+//                if (player.x > player.currDest.i){
+//                    player.x -= 1f
+//                    return
+//                } else{
+//                    player.x += 1f
+//                    return
+//                }
+//            } else{
+//                if (player.y.roundToInt() > player.currDest.j){
+//                    player.y -= 1f
+//                    return
+//                } else{
+//                    player.y += 1f
+//                    return
+//                }
+//            }
+//        }
     }
 }

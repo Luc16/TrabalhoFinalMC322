@@ -12,10 +12,14 @@ import trabalhofinal.WIDTH
 import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.roundToInt
 import kotlin.properties.Delegates
+
+
 class RayCastComponent(
     override val texture: Texture,
-    val pos: Vector2,
-    private val seenColor: Color
+    private val pos: Vector2,
+    private val seenColor: Color,
+    // TODO() tirar
+    override val type: ComponentType
     ):
     Disposable,
     Comparable<RayCastComponent>,
@@ -80,6 +84,9 @@ class RayCastComponent(
             }
         }
         drawEndX++
+
+        if (WIDTH/2 in drawStartX..drawEndX && player.aimingComponent.second > transformedPos.y)
+            player.aimingComponent = Pair(this, transformedPos.y)
 
         // calcula posição na textura
         val uStart = (drawStartX - spriteScreenX)/spriteWidth + 0.5f

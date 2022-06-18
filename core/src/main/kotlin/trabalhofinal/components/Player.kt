@@ -3,6 +3,8 @@ package trabalhofinal.components
 import com.badlogic.gdx.math.Circle
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.utils.IVector2
+import java.util.LinkedList
+import java.util.Queue
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -12,9 +14,9 @@ class Player(x: Float, y: Float, radius: Float): Circle(x, y, radius) {
     var pos = IVector2(0,0)
     var isMoving = false
 
-    //TEMPORARIO -> SO PRA TESTAR MovementTestScreen
-    var currxdest = 0
-    var currydest = 0
+    var destQueue: Queue<IVector2> = LinkedList()
+
+    lateinit var aimingComponent: Pair<Component, Float>
 
     var dir = Vector2(1f, 0f)
     var cameraPlane = Vector2(0f, 0.66f)

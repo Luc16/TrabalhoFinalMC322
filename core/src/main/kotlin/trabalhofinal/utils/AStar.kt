@@ -1,5 +1,6 @@
 package trabalhofinal.utils
 
+import java.util.LinkedList
 import kotlin.math.abs
 
 

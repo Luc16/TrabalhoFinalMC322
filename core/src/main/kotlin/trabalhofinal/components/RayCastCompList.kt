@@ -7,6 +7,8 @@ class RayCastCompList(private val components: MutableList<RayCastComponent>): Di
     constructor() : this(mutableListOf())
 
     fun add(comp: RayCastComponent) = components.add(comp)
+    fun remove(comp: RayCastComponent) = components.remove(comp)
+    fun remove(comp: Component) = components.remove(comp)
     operator fun get(i: Int): RayCastComponent = components[i]
 
     fun createMeshes(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){

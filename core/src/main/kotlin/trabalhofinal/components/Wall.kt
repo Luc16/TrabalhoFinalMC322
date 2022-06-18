@@ -8,4 +8,5 @@ class Wall(
         override val texture: Texture?,
     ): Component {
     override val isWall = true
+    override val type = ComponentType.WALL
 }

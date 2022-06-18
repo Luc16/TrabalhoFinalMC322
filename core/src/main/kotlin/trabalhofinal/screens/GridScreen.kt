@@ -10,6 +10,7 @@ import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
+import trabalhofinal.components.ComponentType
 import trabalhofinal.components.Player
 import trabalhofinal.components.Tile
 import trabalhofinal.components.Wall
@@ -28,12 +29,6 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     private var tileHeight = 0f
     private val players = mutableListOf<Player>()
     // path
-
-    init{
-        val pl = Player(20f, 20f, 10f)
-        pl.pos = IVector2(1,1)
-        players.add(pl)
-    }
 
     override fun show() {
         val reader = MapReader("assets/test.map")
@@ -65,16 +60,21 @@ class GridScreen(game: MyGame): CustomScreen(game) {
             }
             grid.add(line)
         }
+
+        val pl = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
+        pl.pos = IVector2(1,1)
+        players.add(pl)
         Gdx.gl.glEnable(GL20.GL_BLEND)
     }
 
     override fun render(delta: Float) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) Gdx.app.exit()
-
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) mouseController(players[0]) //TODO: implementar qual o player atual
         clearScreen(1f, 1f, 1f, 1f)
 
-        // curPlayer.update()
+        players.forEach {
+            update(it) //TODO update eh metodo do jogador
+        }
 
         renderer.use(ShapeRenderer.ShapeType.Filled, viewport.camera.combined){
             renderer.color = Color.BLACK
@@ -82,58 +82,85 @@ class GridScreen(game: MyGame): CustomScreen(game) {
             renderer.color = Color.LIGHT_GRAY
             grid.forEach{ line ->
                 line.forEach { tile ->
-                    tile.draw(0f, 0f, 1f, renderer)
+                    tile.draw(WIDTH, 0f, 1f, renderer)
                 }
             }
-            renderer.circle(players[0].pos.i*(tileWidth) + 0.5f*tileWidth, players[0].pos.j*(tileHeight) + 0.5f*tileHeight, 10f)
+            renderer.color = Color.GOLD
+            renderer.circle(players[0].x, players[0].y, 10f)
         }
     }
 
-    private fun getTilePos(x: Int, y: Int): IVector2? {
+    private fun getTilePos(x: Float, y: Float): IVector2? {
         val idx = (floor(x/tileWidth)).roundToInt()
         val idy = (floor(y/tileHeight)).roundToInt()
         if (idx < 0 || idy < 0 || idy >= grid[0].size || idx >= grid.size) return null //coordenada invalida
-        return IVector2(idx, idy)
+        return IVector2(idy, idx)
     }
 
     private fun mouseController(currPlayer: Player) {
         val xPos = Gdx.input.x
         val yPos = HEIGHT.toInt() - Gdx.input.y
 
-        //codigo para movimento, depois vai ter que separar uma interacao especifica pra cada tipo de tile
-        // provavelmente so colocar um when pra separar caso por caso
-        val dest = getTilePos(xPos, yPos)
+        val dest = getTilePos(xPos.toFloat(), yPos.toFloat()) ?: return
+        println(dest)
+        val currTile = grid[dest.j][dest.i]
 
-        // if (!p.moving) path++ ; moveDnv
-//        fun setDest(i, j)
-//        fun move(){
-//            if (p.pos != dest){
-//                p.y += movY
-//                p.x += movX
+        if (currTile.component == null){
+                val graph = AStar(grid)
+                val src = currPlayer.pos
+                val path = graph.findPath(src, dest)
+
+                if (path != null){
+                    for (pos in path) {
+                        currPlayer.destQueue.add(pos)
+                    }
+                    currPlayer.isMoving = true
+                } else
+                    println("Invalido")
+
+        }
+//        else{
+//            when(currTile.component!!.type){
+//                //TODO: implementar clique em jogador -> trocar jogador
+//                ComponentType.PLAYER -> TODO()
+//                ComponentType.WALL -> TODO()
+//                ComponentType.DOOR -> TODO()
+//                ComponentType.EGG -> TODO()
+//                ComponentType.ALIEN -> TODO()
+//                ComponentType.FUNGUS -> TODO()
 //            }
 //        }
+    }
 
-        // quero mexer 1f na direcao certa a cada 0.05s
+    private fun update(player: Player){
+        if (!player.isMoving || player.destQueue.isEmpty()) return
+        val dest = player.destQueue.first()
 
-        if (dest != null){
-            val currTile = grid[dest.i][dest.j]
-            when(currTile.component){
-                null ->{
-                    val graph = AStar(grid)
-                    val src = currPlayer.pos
-                    val path = graph.findPath(src, dest)
+        val p = getTilePos(player.x, player.y)
+        val pos = p ?: IVector2(0, 0)
 
-                    if (path != null){
-                        for (pos in path) {
-
-                            //curPlayer.update()
-                            currPlayer.move(pos.i, pos.j)
-                        }
-                    } else {
-                        println("Invalido")
-                    }
+        if (pos.i == dest.i && pos.j == dest.j){
+            player.pos.i = dest.i
+            player.pos.j = dest.j
+            player.destQueue.remove(dest)
+            if (player.destQueue.isEmpty()) player.isMoving = false
+        } else{
+            if (pos.i != dest.i){
+                if (pos.i > dest.i){
+                    player.y -= tileWidth/8
+                    return
+                } else{
+                    player.y += tileWidth/8
+                    return
                 }
-                //TODO: implementar clique em jogador -> trocar jogador (?)
+            } else{
+                if (pos.j > dest.j){
+                    player.x -= tileHeight/8
+                    return
+                } else{
+                    player.x += tileHeight/8
+                    return
+                }
             }
         }
     }

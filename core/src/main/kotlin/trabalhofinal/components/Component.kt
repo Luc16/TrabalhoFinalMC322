@@ -7,4 +7,5 @@ interface Component {
     val isWall: Boolean
     val texture: Texture?
     var color: Color
+    val type: ComponentType
 }

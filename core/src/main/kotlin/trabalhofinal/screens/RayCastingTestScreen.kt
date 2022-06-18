@@ -1,6 +1,7 @@
 package trabalhofinal.screens
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input.Buttons
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
@@ -42,7 +43,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
     private var mapHeight = 0
     private var tileWidth = 0f
     private var tileHeight = 0f
-    private val aliens = RayCastCompList()
+    private val components = RayCastCompList()
     private var rayCastIsMinimap = true
     private var mouseControl = true
 
@@ -80,23 +81,32 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
             tiles.add(line)
         }
 
-        aliens.add(
+        components.add(
             RayCastComponent(
                 Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
                 Vector2(tileWidth*21 + tileWidth/2, tileHeight*12 + tileHeight/2),
-                Color.BROWN
+                Color.BROWN, ComponentType.ALIEN
             )
         )
-        tiles[21][12].component = aliens[0]
+        tiles[21][12].component = components[0]
 
-        aliens.add(
+        components.add(
             RayCastComponent(
                 Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")),
                 Vector2(tileWidth*20 + tileWidth/2, tileHeight*10 + tileHeight/2),
-                Color.BROWN
+                Color.BROWN, ComponentType.EGG
             )
         )
-        tiles[20][10].component = aliens[1]
+        tiles[20][10].component = components[1]
+
+        components.add(
+            RayCastComponent(
+                Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")),
+                Vector2(tileWidth*22 + tileWidth/2, tileHeight*2 + tileHeight/2),
+                Color.BROWN, ComponentType.DOOR
+            )
+        )
+        tiles[22][2].component = components[2]
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight)
 
@@ -109,12 +119,17 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game) {
 
         tempController()
 
+        // sempre fazer o raycast antes de criar as meshes dos componentes!
         rayCaster.multipleRayCast3D(player)
-        aliens.createMeshes(player, rayCaster.zBuffer, tileWidth, tileHeight)
+        components.createMeshes(player, rayCaster.zBuffer, tileWidth, tileHeight)
 
         if (Gdx.input.isKeyJustPressed(Keys.SPACE)) rayCastIsMinimap = !rayCastIsMinimap
 
-        shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, aliens)
+        if (player.aimingComponent.first.type == ComponentType.DOOR && Gdx.input.isButtonPressed(Buttons.LEFT)){
+            components.remove(player.aimingComponent.first)
+        }
+
+        shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, components)
 
     }
 

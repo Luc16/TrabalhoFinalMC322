@@ -59,6 +59,7 @@ class RayCaster(
             tile = result.first
             side = result.second
             val perpDist = result.third
+            if (x == WIDTH.toInt()/2) player.aimingComponent = Pair(tile.component!!, perpDist)
             zBuffer[x] = perpDist
 
             // calcula altura da linha
