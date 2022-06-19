@@ -62,7 +62,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         }
 
         val pl = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
-        pl.pos = IVector2(1,1)
+        pl.pos = IVector2(22,1)
         players.add(pl)
         Gdx.gl.glEnable(GL20.GL_BLEND)
     }
@@ -98,12 +98,12 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     }
 
     private fun mouseController(currPlayer: Player) {
-        val xPos = Gdx.input.x
-        val yPos = HEIGHT.toInt() - Gdx.input.y
+        val xPos = WIDTH - Gdx.input.x
+        val yPos = HEIGHT - Gdx.input.y
 
-        val dest = getTilePos(xPos.toFloat(), yPos.toFloat()) ?: return
-        println(dest)
-        val currTile = grid[dest.j][dest.i]
+        val d1 = getTilePos(xPos, yPos) ?: return
+        val dest = IVector2(d1.j, d1.i)
+        val currTile = grid[dest.i][dest.j]
 
         if (currTile.component == null){
                 val graph = AStar(grid)
@@ -112,6 +112,8 @@ class GridScreen(game: MyGame): CustomScreen(game) {
 
                 if (path != null){
                     for (pos in path) {
+                        grid[pos.i][pos.j].component?.color = Color.RED
+                        println(pos)
                         currPlayer.destQueue.add(pos)
                     }
                     currPlayer.isMoving = true
@@ -136,10 +138,17 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         if (!player.isMoving || player.destQueue.isEmpty()) return
         val dest = player.destQueue.first()
 
-        val p = getTilePos(player.x, player.y)
+        val p = getTilePos(player.y, WIDTH - player.x)
         val pos = p ?: IVector2(0, 0)
+        val speedY = tileWidth
+        val speedX = tileHeight
+
+//        println(pos)
+//        println(dest)
+//        println()
 
         if (pos.i == dest.i && pos.j == dest.j){
+            println("Cheguei")
             player.pos.i = dest.i
             player.pos.j = dest.j
             player.destQueue.remove(dest)
@@ -147,18 +156,18 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         } else{
             if (pos.i != dest.i){
                 if (pos.i > dest.i){
-                    player.y -= tileWidth/8
+                    player.x += speedY
                     return
                 } else{
-                    player.y += tileWidth/8
+                    player.x -= speedY
                     return
                 }
             } else{
                 if (pos.j > dest.j){
-                    player.x -= tileHeight/8
+                    player.y -= speedX
                     return
                 } else{
-                    player.x += tileHeight/8
+                    player.y += speedX
                     return
                 }
             }
