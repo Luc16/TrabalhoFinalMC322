@@ -113,7 +113,6 @@ class GridScreen(game: MyGame): CustomScreen(game) {
                 if (path != null){
                     for (pos in path) {
                         grid[pos.i][pos.j].component?.color = Color.RED
-                        println(pos)
                         currPlayer.destQueue.add(pos)
                     }
                     currPlayer.isMoving = true
@@ -143,12 +142,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         val speedY = tileWidth
         val speedX = tileHeight
 
-//        println(pos)
-//        println(dest)
-//        println()
-
         if (pos.i == dest.i && pos.j == dest.j){
-            println("Cheguei")
             player.pos.i = dest.i
             player.pos.j = dest.j
             player.destQueue.remove(dest)
