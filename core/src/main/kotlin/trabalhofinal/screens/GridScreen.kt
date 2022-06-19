@@ -2,6 +2,7 @@ package trabalhofinal.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -68,7 +69,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     }
 
     override fun render(delta: Float) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) Gdx.app.exit()
+        if (Gdx.input.isKeyJustPressed(Keys.Q)) Gdx.app.exit()
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) mouseController(players[0]) //TODO: implementar qual o player atual
         clearScreen(1f, 1f, 1f, 1f)
 
@@ -90,19 +91,23 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         }
     }
 
-    private fun getTilePos(x: Float, y: Float): IVector2? {
-        val idx = (floor(x/tileWidth)).roundToInt()
-        val idy = (floor(y/tileHeight)).roundToInt()
-        if (idx < 0 || idy < 0 || idy >= grid[0].size || idx >= grid.size) return null //coordenada invalida
-        return IVector2(idy, idx)
+    private fun getTilePos(y: Float, x: Float): IVector2 {
+        var idx = (x/tileWidth).toInt()
+        var idy = (y/tileHeight).toInt()
+
+        if (idx < 0) idx = 0
+        else if (idx >= grid.size) idx = grid.size
+
+        if (idy < 0) idy = 0
+        else if (idy >= grid[0].size) idy = grid.size
+        return IVector2(idx, idy)
     }
 
     private fun mouseController(currPlayer: Player) {
         val xPos = WIDTH - Gdx.input.x
         val yPos = HEIGHT - Gdx.input.y
 
-        val d1 = getTilePos(xPos, yPos) ?: return
-        val dest = IVector2(d1.j, d1.i)
+        val dest = getTilePos(yPos, xPos)
         val currTile = grid[dest.i][dest.j]
 
         if (currTile.component == null){
@@ -137,19 +142,21 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         if (!player.isMoving || player.destQueue.isEmpty()) return
         val dest = player.destQueue.first()
 
-        val p = getTilePos(player.y, WIDTH - player.x)
-        val pos = p ?: IVector2(0, 0)
-        val speedY = tileWidth
-        val speedX = tileHeight
+        val dir = dest - player.pos
+        player.pos = getTilePos(player.y - dir.j*tileHeight/2, WIDTH - player.x - dir.i*tileWidth/2)
+        val speedY = tileWidth/16
+        val speedX = tileHeight/16
 
-        if (pos.i == dest.i && pos.j == dest.j){
-            player.pos.i = dest.i
-            player.pos.j = dest.j
+        if (player.i == dest.i && player.j == dest.j){
+            if (player.destQueue.size == 1){
+                player.x = WIDTH - player.i*tileWidth - tileWidth/2
+                player.y = player.j*tileWidth + tileWidth/2
+            }
             player.destQueue.remove(dest)
             if (player.destQueue.isEmpty()) player.isMoving = false
         } else{
-            if (pos.i != dest.i){
-                if (pos.i > dest.i){
+            if (player.i != dest.i){
+                if (player.i > dest.i){
                     player.x += speedY
                     return
                 } else{
@@ -157,7 +164,7 @@ class GridScreen(game: MyGame): CustomScreen(game) {
                     return
                 }
             } else{
-                if (pos.j > dest.j){
+                if (player.j > dest.j){
                     player.y -= speedX
                     return
                 } else{

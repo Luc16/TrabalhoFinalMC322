@@ -12,6 +12,9 @@ class Player(x: Float, y: Float, radius: Float): Circle(x, y, radius) {
 
     //posicoes tile
     var pos = IVector2(0,0)
+    val i: Int get() = pos.i
+    val j: Int get() = pos.j
+
     var isMoving = false
 
     var destQueue: Queue<IVector2> = LinkedList()

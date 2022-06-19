@@ -35,9 +35,9 @@ class Tile(
         component?.let {
             renderer.color = it.color
             renderer.rect(
-                startX - width * ratio - x * ratio,
-                startY + y * ratio,
-                width * ratio, height * ratio
+                startX - width * ratio - x * ratio-1,
+                startY + y * ratio -1,
+                width * ratio - 1, height * ratio -1
             )
         }
     }
