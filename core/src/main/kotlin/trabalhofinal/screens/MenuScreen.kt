@@ -39,6 +39,7 @@ class MenuScreen(game: MyGame):CustomScreen(game), InputProcessor {
     }
 
     override fun render(delta: Float) {
+        Gdx.input.isCursorCatched = false
         renderer.use(ShapeRenderer.ShapeType.Filled) {
             buttons.forEach { it.drawRect(renderer) }
         }

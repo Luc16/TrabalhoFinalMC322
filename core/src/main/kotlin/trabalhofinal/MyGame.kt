@@ -18,7 +18,6 @@ class MyGame: KtxGame<CustomScreen>() {
     val font: BitmapFont by lazy { BitmapFont() }
     val batch: Batch by lazy { SpriteBatch() }
     val gameViewport = FitViewport(WIDTH, HEIGHT)
-    val multiplexer: InputMultiplexer by lazy { InputMultiplexer() }
 
     override fun create() {
         gameViewport.camera.translate(WIDTH/2, HEIGHT/2,0f)

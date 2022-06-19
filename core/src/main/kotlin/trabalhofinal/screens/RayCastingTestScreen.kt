@@ -116,9 +116,6 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     override fun show() {
         Gdx.input.inputProcessor = this
     }
-    override fun hide() {
-        Gdx.input.isCursorCatched = false
-    }
 
     override fun render(delta: Float) {
         if (Gdx.input.isKeyJustPressed(Keys.Q)) Gdx.app.exit()

@@ -15,7 +15,6 @@ abstract class CustomScreen(
     val renderer: ShapeRenderer = game.renderer,
     val font: BitmapFont = game.font,
     val viewport: FitViewport = game.gameViewport,
-    val multiplexer: InputMultiplexer = game.multiplexer
 ) : KtxScreen {
     override fun resize(width: Int, height: Int) {
         viewport.update(width, height)
