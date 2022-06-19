@@ -50,7 +50,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private var mouseControl = true
 
     init {
-        val reader = MapReader("assets/test.map")
+        val reader = MapReader("assets/maps/test.map")
         val mapString = reader.contents().reversed()
         mapWidth = mapString[0].length
         mapHeight = mapString.size
