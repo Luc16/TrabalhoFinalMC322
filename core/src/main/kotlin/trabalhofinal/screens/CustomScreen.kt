@@ -1,6 +1,7 @@
 package trabalhofinal.screens
 
 
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -14,6 +15,7 @@ abstract class CustomScreen(
     val renderer: ShapeRenderer = game.renderer,
     val font: BitmapFont = game.font,
     val viewport: FitViewport = game.gameViewport,
+    val multiplexer: InputMultiplexer = game.multiplexer
 ) : KtxScreen {
     override fun resize(width: Int, height: Int) {
         viewport.update(width, height)

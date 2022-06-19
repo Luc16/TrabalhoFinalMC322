@@ -3,6 +3,9 @@ package trabalhofinal.components
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
+import trabalhofinal.components.general.Component
+import trabalhofinal.components.general.IMapDrawable
+import trabalhofinal.components.general.IRayCastTile
 import trabalhofinal.utils.Node
 
 class Tile(

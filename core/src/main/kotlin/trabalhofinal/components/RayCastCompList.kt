@@ -2,6 +2,8 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Disposable
+import trabalhofinal.components.general.Component
+import trabalhofinal.components.general.RayCastComponent
 
 class RayCastCompList(private val components: MutableList<RayCastComponent>): Disposable {
     constructor() : this(mutableListOf())

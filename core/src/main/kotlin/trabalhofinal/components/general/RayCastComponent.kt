@@ -1,7 +1,5 @@
-package trabalhofinal.components
+package trabalhofinal.components.general
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
@@ -9,15 +7,17 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
+import trabalhofinal.components.ComponentType
+import trabalhofinal.components.Player
+import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.Textured2DMesh
-import kotlin.math.roundToInt
-import kotlin.properties.Delegates
 
 
 class RayCastComponent(
     override val texture: Texture,
     private val pos: Vector2,
     private val seenColor: Color,
+    private val tile: IRayCastTile,
     // TODO() tirar
     override val type: ComponentType
     ):
@@ -34,6 +34,10 @@ class RayCastComponent(
         }
     private lateinit var mesh: Textured2DMesh
     private var dist = Float.MAX_VALUE
+
+    init {
+        tile.component = this
+    }
 
     fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         dist = (player.x - pos.x)*(player.x - pos.x) + (player.y - pos.y)*(player.y - pos.y)
@@ -85,8 +89,8 @@ class RayCastComponent(
         }
         drawEndX++
 
-        if (WIDTH/2 in drawStartX..drawEndX && player.aimingComponent.second > transformedPos.y)
-            player.aimingComponent = Pair(this, transformedPos.y)
+        if (WIDTH/2 in drawStartX..drawEndX && player.targetComponent.dist > transformedPos.y)
+            player.targetComponent = TargetComponent(this, transformedPos.y)
 
         // calcula posição na textura
         val uStart = (drawStartX - spriteScreenX)/spriteWidth + 0.5f
@@ -111,6 +115,10 @@ class RayCastComponent(
             standAloneRender(shader)
             dispose()
         }
+    }
+
+    fun die(){
+        tile.component = null
     }
 
     override fun compareTo(other: RayCastComponent): Int {

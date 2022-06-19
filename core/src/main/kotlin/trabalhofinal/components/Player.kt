@@ -19,7 +19,7 @@ class Player(x: Float, y: Float, radius: Float): Circle(x, y, radius) {
 
     var destQueue: Queue<IVector2> = LinkedList()
 
-    lateinit var aimingComponent: Pair<Component, Float>
+    lateinit var targetComponent: TargetComponent
 
     var dir = Vector2(1f, 0f)
     var cameraPlane = Vector2(0f, 0.66f)

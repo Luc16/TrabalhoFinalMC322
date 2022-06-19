@@ -4,8 +4,9 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.IRayCastTile
+import trabalhofinal.components.general.IRayCastTile
 import trabalhofinal.components.Player
+import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.MeshGroup
 import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.abs
@@ -59,7 +60,7 @@ class RayCaster(
             tile = result.first
             side = result.second
             val perpDist = result.third
-            if (x == WIDTH.toInt()/2) player.aimingComponent = Pair(tile.component!!, perpDist)
+            if (x == WIDTH.toInt()/2) player.targetComponent = TargetComponent(tile.component!!, perpDist)
             zBuffer[x] = perpDist
 
             // calcula altura da linha

@@ -1,4 +1,4 @@
-package trabalhofinal.components
+package trabalhofinal.components.general
 
 interface IStatic {
     val x: Float

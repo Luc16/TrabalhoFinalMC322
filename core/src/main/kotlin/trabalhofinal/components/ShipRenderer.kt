@@ -10,6 +10,7 @@ import ktx.app.clearScreen
 import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
+import trabalhofinal.components.general.IMapDrawable
 import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.MeshGroup
 

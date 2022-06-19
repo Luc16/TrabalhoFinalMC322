@@ -1,5 +1,6 @@
 package trabalhofinal
 
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -17,15 +18,17 @@ class MyGame: KtxGame<CustomScreen>() {
     val font: BitmapFont by lazy { BitmapFont() }
     val batch: Batch by lazy { SpriteBatch() }
     val gameViewport = FitViewport(WIDTH, HEIGHT)
+    val multiplexer: InputMultiplexer by lazy { InputMultiplexer() }
 
     override fun create() {
         gameViewport.camera.translate(WIDTH/2, HEIGHT/2,0f)
-        font.data.scale(8f)
+        font.data.scale(2f)
         addScreen(RayCastingTestScreen(this))
         addScreen(MeshTestScreen(this))
         addScreen(GridScreen(this))
         addScreen(MovementTestScreen(this))
-        setScreen<GridScreen>()
+        addScreen(MenuScreen(this))
+        setScreen<MenuScreen>()
     }
 
     override fun dispose() {

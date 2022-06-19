@@ -3,6 +3,7 @@ package trabalhofinal.screens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Input.Keys
+import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -22,7 +23,7 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 
-class GridScreen(game: MyGame): CustomScreen(game) {
+class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private val grid = mutableListOf<MutableList<Tile>>()
     private var mapWidth = 0
     private var mapHeight = 0
@@ -32,6 +33,8 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     // path
 
     override fun show() {
+        Gdx.input.inputProcessor = this
+
         val reader = MapReader("assets/test.map")
         val mapString = reader.contents().reversed()
         mapWidth = mapString[0].length
@@ -65,7 +68,6 @@ class GridScreen(game: MyGame): CustomScreen(game) {
         val pl = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
         pl.pos = IVector2(22,1)
         players.add(pl)
-        Gdx.gl.glEnable(GL20.GL_BLEND)
     }
 
     override fun render(delta: Float) {
@@ -104,6 +106,8 @@ class GridScreen(game: MyGame): CustomScreen(game) {
     }
 
     private fun mouseController(currPlayer: Player) {
+        if (currPlayer.isMoving) return
+
         val xPos = WIDTH - Gdx.input.x
         val yPos = HEIGHT - Gdx.input.y
 
@@ -174,4 +178,14 @@ class GridScreen(game: MyGame): CustomScreen(game) {
             }
         }
     }
+
+
+    override fun keyDown(keycode: Int): Boolean = true
+    override fun keyUp(keycode: Int): Boolean = true
+    override fun keyTyped(character: Char): Boolean = true
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean = true
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean = true
+    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean = true
+    override fun mouseMoved(screenX: Int, screenY: Int): Boolean = true
+    override fun scrolled(amountX: Float, amountY: Float): Boolean = true
 }

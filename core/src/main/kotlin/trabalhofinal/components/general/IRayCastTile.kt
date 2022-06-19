@@ -1,4 +1,4 @@
-package trabalhofinal.components
+package trabalhofinal.components.general
 
 import com.badlogic.gdx.graphics.Texture
 
