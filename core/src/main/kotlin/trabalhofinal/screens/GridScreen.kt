@@ -30,12 +30,23 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private var tileWidth = 0f
     private var tileHeight = 0f
     private val players = mutableListOf<Player>()
+    private var activePlayer: Player? = null
     // path
+
+    init {
+        val pl = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
+        val pl2 = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
+        pl.pos = IVector2(22,1)
+        pl2.pos = IVector2(21,1)
+        players.add(pl)
+        players.add(pl2)
+        activePlayer = players[0]
+    }
 
     override fun show() {
         Gdx.input.inputProcessor = this
 
-        val reader = MapReader("assets/test.map")
+        val reader = MapReader("assets/maps/test.map")
         val mapString = reader.contents().reversed()
         mapWidth = mapString[0].length
         mapHeight = mapString.size
@@ -64,15 +75,11 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
             }
             grid.add(line)
         }
-
-        val pl = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
-        pl.pos = IVector2(22,1)
-        players.add(pl)
     }
 
     override fun render(delta: Float) {
         if (Gdx.input.isKeyJustPressed(Keys.Q)) Gdx.app.exit()
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) mouseController(players[0]) //TODO: implementar qual o player atual
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) mouseController(activePlayer) //TODO: implementar qual o player atual
         clearScreen(1f, 1f, 1f, 1f)
 
         players.forEach {
@@ -90,6 +97,8 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
             }
             renderer.color = Color.GOLD
             renderer.circle(players[0].x, players[0].y, 10f)
+            renderer.color = Color.BLUE
+            renderer.circle(players[1].x, players[1].y, 10f)
         }
     }
 
@@ -105,8 +114,8 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
         return IVector2(idx, idy)
     }
 
-    private fun mouseController(currPlayer: Player) {
-        if (currPlayer.isMoving) return
+    private fun mouseController(activePlayer: Player?) {
+        if (activePlayer == null || activePlayer.isMoving) return
 
         val xPos = WIDTH - Gdx.input.x
         val yPos = HEIGHT - Gdx.input.y
@@ -116,18 +125,22 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
         if (currTile.component == null){
                 val graph = AStar(grid)
-                val src = currPlayer.pos
+                val src = activePlayer.pos
                 val path = graph.findPath(src, dest)
 
                 if (path != null){
+                    grid[activePlayer.i][activePlayer.j].component = null
                     for (pos in path) {
-                        grid[pos.i][pos.j].component?.color = Color.RED
-                        currPlayer.destQueue.add(pos)
+                        //grid[pos.i][pos.j].component?.color = Color.RED
+                        activePlayer.destQueue.add(pos)
                     }
-                    currPlayer.isMoving = true
+                    activePlayer.isMoving = true
                 } else
                     println("Invalido")
 
+        } else if (currTile.component!!.type == ComponentType.PLAYER){
+            changePlayer(currTile.component as Player)
+            println("trocando jogador")
         }
 //        else{
 //            when(currTile.component!!.type){
@@ -141,9 +154,16 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
 //            }
 //        }
     }
+    fun changePlayer(player: Player){
+        activePlayer = player
+    }
 
     private fun update(player: Player){
-        if (!player.isMoving || player.destQueue.isEmpty()) return
+        if (!player.isMoving || player.destQueue.isEmpty()){
+            grid[player.pos.i][player.pos.j].component = player
+            return
+        }
+
         val dest = player.destQueue.first()
 
         val dir = dest - player.pos

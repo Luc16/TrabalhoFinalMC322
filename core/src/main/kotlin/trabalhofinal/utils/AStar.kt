@@ -59,7 +59,8 @@ class AStar (private val grid: List<List<Node>>) {
 
     fun findPath(source: IVector2, dest: IVector2): List<IVector2>?{
         // ver se a posicao destino eh valida
-        if (dest.isOutOfRange() || source.isOutOfRange() || dest.isBlocked() || source.isBlocked()) return null
+        // APAGUEI TEMPORARIAMENTE O SOURCE.ISBLOCKED
+        if (dest.isOutOfRange() || source.isOutOfRange() || dest.isBlocked()) return null
 
 
         val src = getNode(source)

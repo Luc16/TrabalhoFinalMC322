@@ -27,7 +27,7 @@ class MyGame: KtxGame<CustomScreen>() {
         addScreen(GridScreen(this))
         addScreen(MovementTestScreen(this))
         addScreen(MenuScreen(this))
-        setScreen<MenuScreen>()
+        setScreen<GridScreen>()
     }
 
     override fun dispose() {
