@@ -34,16 +34,6 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
     // path
 
     init {
-        val pl = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
-        val pl2 = Player(1.5f*tileWidth, 1.5f*tileHeight, 10f)
-        pl.pos = IVector2(22,1)
-        pl2.pos = IVector2(21,1)
-        players.add(pl)
-        players.add(pl2)
-        activePlayer = players[0]
-    }
-
-    override fun show() {
         Gdx.input.inputProcessor = this
 
         val reader = MapReader("assets/maps/test.map")
@@ -75,6 +65,14 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
             }
             grid.add(line)
         }
+
+        val pl = Player((grid.size - (22 + 1))*tileWidth + tileWidth/2, 1*tileHeight + tileHeight/2, 10f)
+        val pl2 = Player((grid.size - (21 + 1))*tileWidth + tileWidth/2, 1*tileHeight + tileHeight/2, 10f)
+        pl.pos = IVector2(22,1)
+        pl2.pos = IVector2(21,1)
+        players.add(pl)
+        players.add(pl2)
+        activePlayer = players[0]
     }
 
     override fun render(delta: Float) {
@@ -154,8 +152,10 @@ class GridScreen(game: MyGame): CustomScreen(game), InputProcessor {
 //            }
 //        }
     }
-    fun changePlayer(player: Player){
+    private fun changePlayer(player: Player){
+        activePlayer?.let { it.color = Color.LIGHT_GRAY }
         activePlayer = player
+        player.color = Color.RED
     }
 
     private fun update(player: Player){

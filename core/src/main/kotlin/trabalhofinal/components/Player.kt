@@ -1,10 +1,10 @@
 package trabalhofinal.components
 
-import com.badlogic.ashley.core.Component
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Circle
 import com.badlogic.gdx.math.Vector2
+import trabalhofinal.components.general.Component
 import trabalhofinal.utils.IVector2
 import java.util.LinkedList
 import java.util.Queue
@@ -14,9 +14,9 @@ import kotlin.math.sin
 class Player(x: Float, y: Float, radius: Float,
              override val isWall: Boolean = false,
              override val texture: Texture? = null,
-             override var color: Color = Color.RED,
+             override var color: Color = Color.LIGHT_GRAY,
              override val type: ComponentType = ComponentType.PLAYER
-): Circle(x, y, radius), trabalhofinal.components.general.Component {
+): Circle(x, y, radius), Component {
 
     //posicoes tile
     var pos = IVector2(0,0)
