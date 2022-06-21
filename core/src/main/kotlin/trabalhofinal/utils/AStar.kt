@@ -41,7 +41,7 @@ class AStar (private val grid: List<List<Node>>) {
         }
         val path = mutableListOf(end.pos, node.pos)
 
-        while (node?.parent != null) {
+        while (node?.parent?.parent != null) {
             node = node.parent
             if (node != null) path.add(node.pos)
         }

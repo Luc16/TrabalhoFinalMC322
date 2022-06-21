@@ -4,24 +4,26 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Circle
 import com.badlogic.gdx.math.Vector2
+import trabalhofinal.WIDTH
 import trabalhofinal.components.general.Component
+import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.RayCastComponent
+import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import java.util.LinkedList
 import java.util.Queue
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
-class Player(x: Float, y: Float, radius: Float,
-             override val isWall: Boolean = false,
-             override val texture: Texture? = null,
-             override var color: Color = Color.LIGHT_GRAY,
-             override val type: ComponentType = ComponentType.PLAYER
-): Circle(x, y, radius), Component {
+class Player(x: Float, y: Float,  val radius: Float, //TODO tirar
+             texture: Texture,
+             tile: IRayCastTile,
+             color: Color = Color.LIGHT_GRAY,
+): RayCastComponent(texture, x, y, color,  tile, ComponentType.PLAYER) {
 
     //posicoes tile
-    var pos = IVector2(0,0)
-    val i: Int get() = pos.i
-    val j: Int get() = pos.j
+    var mapPos = IVector2(tile.i,tile.j)
+    val i: Int get() = mapPos.i
+    val j: Int get() = mapPos.j
 
     var isMoving = false
 
@@ -31,14 +33,90 @@ class Player(x: Float, y: Float, radius: Float,
 
     var dir = Vector2(1f, 0f)
     var cameraPlane = Vector2(0f, 0.66f)
+    private lateinit var dest: IVector2
     fun rotate(angle: Float){
+        println("Rotated: ${180*angle/ PI}")
         // rotaciona o jogador utilizando multiplicando a direçao e plano da camera por uma matriz de rotação
         dir = Vector2(dir.x* cos(angle) - dir.y* sin(angle), dir.x* sin(angle) + dir.y* cos(angle))
         cameraPlane = Vector2(cameraPlane.x* cos(angle) - cameraPlane.y* sin(angle), cameraPlane.x* sin(angle) + cameraPlane.y* cos(angle))
     }
 
-    fun move(i: Int, j: Int){ //TODO: receber um Ivector2
-        pos.i = i
-        pos.j = j
+    fun calculatePath(dest: IVector2, aStar: AStar){
+        val path = aStar.findPath(mapPos, dest)
+
+        if (path != null){
+            tile.component = null
+            for (pos in path) {
+                destQueue.add(pos)
+            }
+            isMoving = true
+        }
+        this.dest = destQueue.first()
+//        else
+//            println("Invalido")
+    }
+
+    fun update(tileWidth: Float, tileHeight: Float, tile: IRayCastTile) {
+        seen = true
+        if (!isMoving || destQueue.isEmpty()) return
+
+        mapPos = IVector2(tile.i, tile.j)
+        // TODO arrumar isso
+        val speedY = 0.75f*tileWidth / 16
+        val speedX = 0.75f*tileHeight / 16
+
+        if (i == dest.i && j == dest.j) {
+            if (destQueue.size == 1) {
+                x = i*tileWidth + tileWidth/2
+                y = j*tileHeight + tileHeight/2
+            }
+            destQueue.remove(dest)
+
+            if (destQueue.isEmpty()) {
+                isMoving = false
+                this.tile.component = null
+                this.tile = tile
+                tile.component = this
+            } else {
+                dest = destQueue.first()
+
+                val newDir = (dest - mapPos).toVector2()
+                println(dir)
+                println(newDir)
+                println("cross: ${newDir.crs(dir)}, dot: ${newDir.dot(dir)}")
+                rotate(atan(newDir.crs(dir)/newDir.dot(dir)))
+                when {
+                    newDir.dot(dir) == 0f -> {
+                        if (newDir.crs(dir) > 0) rotate(PI.toFloat()/2)
+                        else rotate(-PI.toFloat()/2)
+                    }
+                    newDir.crs(dir) == 0f && newDir.dot(dir) < 0 -> rotate(PI.toFloat())
+                    newDir.crs(dir) != 0f -> rotate(atan(newDir.crs(dir)/newDir.dot(dir)))
+                }
+//        if (newDir.crs(dir) != 0f){
+//            println("Rotated: ${180*atan(newDir.crs(dir)/newDir.dot(dir))/ PI}")
+//            rotate(atan(newDir.crs(dir)/newDir.dot(dir)))
+//        }
+                dir = newDir
+            }
+        } else {
+            if (i != dest.i) {
+                if (i > dest.i) {
+                    x -= speedX
+                    return
+                } else {
+                    x += speedX
+                    return
+                }
+            } else {
+                if (j > dest.j) {
+                    y -= speedY
+                    return
+                } else {
+                    y += speedY
+                    return
+                }
+            }
+        }
     }
 }

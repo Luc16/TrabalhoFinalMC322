@@ -15,6 +15,8 @@ import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
 import trabalhofinal.components.*
 import trabalhofinal.components.general.RayCastComponent
+import trabalhofinal.utils.AStar
+import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.fragmentShader
@@ -40,14 +42,13 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
 
     private var rayCaster: RayCaster
-    private val player = Player(703.4676f,559.23145f, 10f)
+    private var player: Player
     private var mapWidth = 0
     private var mapHeight = 0
     private var tileWidth = 0f
     private var tileHeight = 0f
     private val components = RayCastCompList()
     private var rayCastIsMinimap = true
-    private var mouseControl = true
 
     init {
         val reader = MapReader("assets/maps/test.map")
@@ -82,12 +83,19 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             tiles.add(line)
         }
 
+        player = Player(21*tileWidth + tileWidth/2, 1*tileHeight + tileHeight/2, 10f,
+            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+            tiles[21][1]
+        )
         // adiciona os componentes
         run {
             components.add(
+                player
+            )
+            components.add(
                 RayCastComponent(
                     Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-                    Vector2(tileWidth * 21 + tileWidth / 2, tileHeight * 12 + tileHeight / 2),
+                    tileWidth * 21 + tileWidth / 2, tileHeight * 12 + tileHeight / 2,
                     Color.BROWN, tiles[21][12], ComponentType.ALIEN
                 )
             )
@@ -95,20 +103,20 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             components.add(
                 RayCastComponent(
                     Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")),
-                    Vector2(tileWidth * 20 + tileWidth / 2, tileHeight * 10 + tileHeight / 2),
+                    tileWidth * 20 + tileWidth / 2, tileHeight * 10 + tileHeight / 2,
                     Color.BROWN, tiles[20][10], ComponentType.EGG
                 )
             )
-            tiles[20][10].component = components[1]
 
             components.add(
                 RayCastComponent(
                     Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")),
-                    Vector2(tileWidth * 22 + tileWidth / 2, tileHeight * 2 + tileHeight / 2),
+                    tileWidth * 22 + tileWidth / 2, tileHeight * 2 + tileHeight / 2,
                     Color.BROWN, tiles[22][2], ComponentType.DOOR
                 )
             )
         }
+
 
         rayCaster = RayCaster(tiles, tileWidth, tileHeight)
     }
@@ -121,19 +129,25 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (Gdx.input.isKeyJustPressed(Keys.Q)) Gdx.app.exit()
         if (Gdx.input.isKeyJustPressed(Keys.M)) game.setScreen<MenuScreen>()
 
-        tempController()
+
+//        tempController()
 
         // sempre fazer o raycast antes de criar as meshes dos componentes!
         rayCaster.multipleRayCast3D(player)
         components.createMeshes(player, rayCaster.zBuffer, tileWidth, tileHeight)
+        val playerPos = getTilePos(player.y - player.dir.x*tileHeight/2, player.x + player.dir.y*tileWidth/2)
+
+        player.update(tileWidth, tileHeight, tiles[playerPos.i][playerPos.j])
 
         if (Gdx.input.isKeyJustPressed(Keys.SPACE)) rayCastIsMinimap = !rayCastIsMinimap
+        Gdx.input.isCursorCatched = !rayCastIsMinimap
 
-        if (player.targetComponent.type == ComponentType.DOOR && Gdx.input.isButtonPressed(Buttons.LEFT)){
-            player.targetComponent.color = Color.BLACK
-            (player.targetComponent.component as RayCastComponent).die()
-            components.remove(player.targetComponent.component)
-        }
+
+            if (player.targetComponent.type == ComponentType.DOOR && Gdx.input.isButtonPressed(Buttons.LEFT)){
+                player.targetComponent.color = Color.BLACK
+                (player.targetComponent.component as RayCastComponent).die()
+                components.remove(player.targetComponent.component)
+            }
 
         shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, components)
 
@@ -142,9 +156,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         val speed = 4
         val theta = (2*PI/180).toFloat()
 
-        if (Gdx.input.isKeyJustPressed(Keys.C)) mouseControl = !mouseControl
-
-        if (mouseControl){
+        if (!rayCastIsMinimap){
             // mouse invisivel
             if (!Gdx.input.isCursorCatched) Gdx.input.isCursorCatched = true
             val deltaX = Gdx.input.deltaX.toFloat()/10
@@ -153,8 +165,6 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
         } else {
             Gdx.input.isCursorCatched = false
-            if (Gdx.input.isKeyPressed(Keys.A)) player.rotate(-theta)
-            if (Gdx.input.isKeyPressed(Keys.D)) player.rotate(theta)
         }
 
 
@@ -192,6 +202,50 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         }
     }
 
+    private fun getTilePos(y: Float, x: Float, ratio:Float = 1f): IVector2 {
+        var idx = (x/(tileWidth*ratio)).toInt()
+        var idy = (y/(tileHeight*ratio)).toInt()
+
+        if (idx < 0) idx = 0
+        else if (idx >= tiles.size) idx = tiles.size - 1
+
+        if (idy < 0) idy = 0
+        else if (idy >= tiles[0].size) idy = tiles.size - 1
+        return IVector2(idx, idy)
+    }
+
+    private fun mouseController(activePlayer: Player?, mouseX: Int, mouseY: Int) {
+        if (activePlayer == null || activePlayer.isMoving) return
+
+        val xPos = (WIDTH*0.75f - mouseX)
+        val yPos = (HEIGHT - mouseY)
+
+        val dest = getTilePos(yPos, xPos, 0.75f)
+
+        val currTile = tiles[dest.i][dest.j]
+
+        if (currTile.component == null){
+            val graph = AStar(tiles)
+            player.calculatePath(dest, graph)
+        } else
+            println("Invalido")
+
+//        else if (currTile.component?.let { it.type == ComponentType.PLAYER } == true){
+//            changePlayer(currTile.component as Player)
+//        }
+//        else{
+//            when(currTile.component!!.type){
+//                //TODO: implementar clique em jogador -> trocar jogador
+//                ComponentType.PLAYER -> TODO()
+//                ComponentType.WALL -> TODO()
+//                ComponentType.DOOR -> TODO()
+//                ComponentType.EGG -> TODO()
+//                ComponentType.ALIEN -> TODO()
+//                ComponentType.FUNGUS -> TODO()
+//            }
+//        }
+    }
+
     override fun dispose() {
         shader.dispose()
         textures.forEach { it.dispose() }
@@ -200,10 +254,24 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     override fun keyDown(keycode: Int): Boolean = true
     override fun keyUp(keycode: Int): Boolean = true
     override fun keyTyped(character: Char): Boolean = true
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean = true
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        if (rayCastIsMinimap)
+            mouseController(player, screenX, screenY)
+        return true
+    }
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean = true
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean = true
-    override fun mouseMoved(screenX: Int, screenY: Int): Boolean = true
+    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        if (!rayCastIsMinimap) {
+            val theta = (2 * PI / 180).toFloat()
+            // mouse invisivel
+            val deltaX = (screenX - WIDTH/2) / 100
+
+            player.rotate(deltaX * theta)
+            Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
+        }
+        return true
+    }
     override fun scrolled(amountX: Float, amountY: Float): Boolean = true
 
 }

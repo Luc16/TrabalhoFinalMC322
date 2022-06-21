@@ -6,4 +6,6 @@ interface IRayCastTile: IStatic {
     val isWall: Boolean
     val texture: Texture?
     var component: Component?
+    val i: Int
+    val j: Int
 }

@@ -1,13 +1,12 @@
 package trabalhofinal
 
-import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxGame
-import trabalhofinal.screens.GridScreen
+//import trabalhofinal.screens.GridScreen
 import trabalhofinal.screens.*
 
 const val WIDTH = 800f
@@ -24,10 +23,10 @@ class MyGame: KtxGame<CustomScreen>() {
         font.data.scale(2f)
         addScreen(RayCastingTestScreen(this))
         addScreen(MeshTestScreen(this))
-        addScreen(GridScreen(this))
-        addScreen(MovementTestScreen(this))
+//        addScreen(GridScreen(this))
+//        addScreen(MovementTestScreen(this))
         addScreen(MenuScreen(this))
-        setScreen<GridScreen>()
+        setScreen<MenuScreen>()
     }
 
     override fun dispose() {

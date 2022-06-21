@@ -13,11 +13,12 @@ import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.Textured2DMesh
 
 
-class RayCastComponent(
+open class RayCastComponent(
     override val texture: Texture,
-    private val pos: Vector2,
+    var x: Float,
+    var y: Float,
     private val seenColor: Color,
-    private val tile: IRayCastTile,
+    var tile: IRayCastTile,
     // TODO() tirar
     override val type: ComponentType
     ):
@@ -32,7 +33,7 @@ class RayCastComponent(
             color = if (value) seenColor else Color.BLACK
             field = value
         }
-    private lateinit var mesh: Textured2DMesh
+    private var mesh: Textured2DMesh? = null
     private var dist = Float.MAX_VALUE
 
     init {
@@ -40,13 +41,14 @@ class RayCastComponent(
     }
 
     fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
-        dist = (player.x - pos.x)*(player.x - pos.x) + (player.y - pos.y)*(player.y - pos.y)
+        if (player == this || mesh == null) return
+        dist = (player.x - x)*(player.x - x) + (player.y - y)*(player.y - y)
 
         // variavel para aumentar ou diminuir os sprites
         val div = 1f
 
         // posição relativa do jogador com o componente (utilizando uma matriz de mudança de coordenadas)
-        val transformedPos = Vector2(pos.x - player.x, pos.y - player.y)
+        val transformedPos = Vector2(x - player.x, y - player.y)
         val invDet = 1f / (player.cameraPlane.x * player.dir.y - player.dir.x * player.cameraPlane.y)
         transformedPos.set(
             invDet * (player.dir.y * transformedPos.x - player.dir.x * transformedPos.y),
@@ -109,8 +111,8 @@ class RayCastComponent(
     }
 
     fun render(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
-        if (!seen) return
-        mesh.run {
+        if (!seen || mesh == null) return
+        mesh?.run {
             moveAndScale(initialX, initialY, ratio)
             standAloneRender(shader)
             dispose()
@@ -127,7 +129,7 @@ class RayCastComponent(
     }
 
     override fun dispose() {
-        mesh.dispose()
+        mesh?.dispose()
     }
 }
 

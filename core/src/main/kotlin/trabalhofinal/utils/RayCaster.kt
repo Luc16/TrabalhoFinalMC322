@@ -1,5 +1,7 @@
 package trabalhofinal.utils
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
@@ -55,6 +57,7 @@ class RayCaster(
                 player.dir.x + player.cameraPlane.x * cameraX,
                 player.dir.y + player.cameraPlane.y * cameraX
             )
+            if (Gdx.input.isKeyJustPressed(Input.Keys.P)) println("Dir: ${player.dir}, cameraPlane: ${player.cameraPlane}")
             // armazena o resultado de um rayCast
             val result = singleRayCast(player, rayDir)
             tile = result.first
