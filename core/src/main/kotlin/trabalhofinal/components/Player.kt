@@ -35,7 +35,6 @@ class Player(x: Float, y: Float,  val radius: Float, //TODO tirar
     var cameraPlane = Vector2(0f, 0.66f)
     private lateinit var dest: IVector2
     fun rotate(angle: Float){
-        println("Rotated: ${180*angle/ PI}")
         // rotaciona o jogador utilizando multiplicando a direçao e plano da camera por uma matriz de rotação
         dir = Vector2(dir.x* cos(angle) - dir.y* sin(angle), dir.x* sin(angle) + dir.y* cos(angle))
         cameraPlane = Vector2(cameraPlane.x* cos(angle) - cameraPlane.y* sin(angle), cameraPlane.x* sin(angle) + cameraPlane.y* cos(angle))
@@ -79,24 +78,8 @@ class Player(x: Float, y: Float,  val radius: Float, //TODO tirar
                 tile.component = this
             } else {
                 dest = destQueue.first()
-
                 val newDir = (dest - mapPos).toVector2()
-                println(dir)
-                println(newDir)
-                println("cross: ${newDir.crs(dir)}, dot: ${newDir.dot(dir)}")
-                rotate(atan(newDir.crs(dir)/newDir.dot(dir)))
-                when {
-                    newDir.dot(dir) == 0f -> {
-                        if (newDir.crs(dir) > 0) rotate(PI.toFloat()/2)
-                        else rotate(-PI.toFloat()/2)
-                    }
-                    newDir.crs(dir) == 0f && newDir.dot(dir) < 0 -> rotate(PI.toFloat())
-                    newDir.crs(dir) != 0f -> rotate(atan(newDir.crs(dir)/newDir.dot(dir)))
-                }
-//        if (newDir.crs(dir) != 0f){
-//            println("Rotated: ${180*atan(newDir.crs(dir)/newDir.dot(dir))/ PI}")
-//            rotate(atan(newDir.crs(dir)/newDir.dot(dir)))
-//        }
+                cameraPlane = Vector2(newDir.y, newDir.x).scl(0.66f)
                 dir = newDir
             }
         } else {

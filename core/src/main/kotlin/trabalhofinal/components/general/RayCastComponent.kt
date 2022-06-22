@@ -36,10 +36,6 @@ open class RayCastComponent(
     private var mesh: Textured2DMesh? = null
     private var dist = Float.MAX_VALUE
 
-    init {
-        tile.component = this
-    }
-
     fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         if (player == this || mesh == null) return
         dist = (player.x - x)*(player.x - x) + (player.y - y)*(player.y - y)

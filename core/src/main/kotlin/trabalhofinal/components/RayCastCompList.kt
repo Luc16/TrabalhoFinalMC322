@@ -8,7 +8,10 @@ import trabalhofinal.components.general.RayCastComponent
 class RayCastCompList(private val components: MutableList<RayCastComponent>): Disposable {
     constructor() : this(mutableListOf())
 
-    fun add(comp: RayCastComponent) = components.add(comp)
+    fun add(comp: RayCastComponent) {
+        components.add(comp)
+        comp.tile.component = comp
+    }
     fun remove(comp: RayCastComponent) = components.remove(comp)
     fun remove(comp: Component) = components.remove(comp)
     operator fun get(i: Int): RayCastComponent = components[i]

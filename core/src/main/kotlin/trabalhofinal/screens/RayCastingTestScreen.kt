@@ -83,9 +83,9 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             tiles.add(line)
         }
 
-        player = Player(21*tileWidth + tileWidth/2, 1*tileHeight + tileHeight/2, 10f,
+        player = Player(21*tileWidth + tileWidth/2, 4*tileHeight + tileHeight/2, 10f,
             Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-            tiles[21][1]
+            tiles[21][4]
         )
         // adiciona os componentes
         run {
@@ -135,7 +135,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         // sempre fazer o raycast antes de criar as meshes dos componentes!
         rayCaster.multipleRayCast3D(player)
         components.createMeshes(player, rayCaster.zBuffer, tileWidth, tileHeight)
-        val playerPos = getTilePos(player.y - player.dir.x*tileHeight/2, player.x + player.dir.y*tileWidth/2)
+        val playerPos = getTilePos(player.y - player.dir.y*tileHeight/2, player.x - player.dir.x*tileWidth/2)
 
         player.update(tileWidth, tileHeight, tiles[playerPos.i][playerPos.j])
 
@@ -265,7 +265,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (!rayCastIsMinimap) {
             val theta = (2 * PI / 180).toFloat()
             // mouse invisivel
-            val deltaX = (screenX - WIDTH/2) / 100
+            val deltaX = (WIDTH/2 - screenX) / 100
 
             player.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
