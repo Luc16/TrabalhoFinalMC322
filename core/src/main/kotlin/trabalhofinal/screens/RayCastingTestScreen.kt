@@ -265,7 +265,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (!rayCastIsMinimap) {
             val theta = (2 * PI / 180).toFloat()
             // mouse invisivel
-            val deltaX = (WIDTH/2 - screenX) / 100
+            val deltaX = (screenX - WIDTH/2) / 100
 
             player.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())

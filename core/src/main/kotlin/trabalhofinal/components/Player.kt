@@ -79,7 +79,7 @@ class Player(x: Float, y: Float,  val radius: Float, //TODO tirar
             } else {
                 dest = destQueue.first()
                 val newDir = (dest - mapPos).toVector2()
-                cameraPlane = Vector2(newDir.y, newDir.x).scl(0.66f)
+                cameraPlane = Vector2(newDir.y, newDir.x).scl(if (abs(newDir.y) > 0f) -0.66f else 0.66f)
                 dir = newDir
             }
         } else {
