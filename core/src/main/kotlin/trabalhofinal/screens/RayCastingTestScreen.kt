@@ -42,7 +42,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
 
     private var rayCaster: RayCaster
-    private var player: Player
+    private var players = mutableListOf<Player>()
+    private var selectedPlayer: Player
     private var mapWidth = 0
     private var mapHeight = 0
     private var tileWidth = 0f
@@ -83,15 +84,20 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             tiles.add(line)
         }
 
-        player = Player(21*tileWidth + tileWidth/2, 4*tileHeight + tileHeight/2, 10f,
+        val p1 = Player(tiles[21][4], 10f, tileWidth, tileHeight,
             Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-            tiles[21][4]
         )
+        selectedPlayer = p1
+        players.add(p1)
+        val p2 = Player(tiles[18][4],10f, tileWidth, tileHeight,
+            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+        )
+        players.add(p2)
+
         // adiciona os componentes
         run {
-            components.add(
-                player
-            )
+            components.add(p1)
+            components.add(p2)
             components.add(
                 RayCastComponent(
                     Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
@@ -133,75 +139,25 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 //        tempController()
 
         // sempre fazer o raycast antes de criar as meshes dos componentes!
-        rayCaster.multipleRayCast3D(player)
-        components.createMeshes(player, rayCaster.zBuffer, tileWidth, tileHeight)
-        val playerPos = getTilePos(player.y - player.dir.y*tileHeight/2, player.x - player.dir.x*tileWidth/2)
+        rayCaster.multipleRayCast3D(selectedPlayer)
+        components.createMeshes(selectedPlayer, rayCaster.zBuffer, tileWidth, tileHeight)
+        val playerPos = getTilePos(selectedPlayer.y - selectedPlayer.dir.y*tileHeight/2, selectedPlayer.x - selectedPlayer.dir.x*tileWidth/2)
 
-        player.update(tileWidth, tileHeight, tiles[playerPos.i][playerPos.j])
+        selectedPlayer.update(tileWidth, tileHeight, tiles[playerPos.i][playerPos.j])
 
         if (Gdx.input.isKeyJustPressed(Keys.SPACE)) rayCastIsMinimap = !rayCastIsMinimap
         Gdx.input.isCursorCatched = !rayCastIsMinimap
 
 
-            if (player.targetComponent.type == ComponentType.DOOR && Gdx.input.isButtonPressed(Buttons.LEFT)){
-                player.targetComponent.color = Color.BLACK
-                (player.targetComponent.component as RayCastComponent).die()
-                components.remove(player.targetComponent.component)
+            if (selectedPlayer.targetComponent.type == ComponentType.DOOR && Gdx.input.isButtonPressed(Buttons.LEFT)){
+                selectedPlayer.targetComponent.color = Color.BLACK
+                (selectedPlayer.targetComponent.component as RayCastComponent).die()
+                components.remove(selectedPlayer.targetComponent.component)
             }
 
-        shipRenderer.renderShip(rayCastIsMinimap, rayCaster, player, tiles, components)
+        shipRenderer.renderShip(rayCastIsMinimap, rayCaster, players, selectedPlayer, tiles, components)
 
     }
-    private fun tempController(){
-        val speed = 4
-        val theta = (2*PI/180).toFloat()
-
-        if (!rayCastIsMinimap){
-            // mouse invisivel
-            if (!Gdx.input.isCursorCatched) Gdx.input.isCursorCatched = true
-            val deltaX = Gdx.input.deltaX.toFloat()/10
-            player.rotate(deltaX* theta)
-            Gdx.input.setCursorPosition((WIDTH/2).toInt(), (HEIGHT/2).toInt())
-
-        } else {
-            Gdx.input.isCursorCatched = false
-        }
-
-
-        if (Gdx.input.isKeyPressed(Keys.W)) player.y += player.dir.y*speed
-        if (Gdx.input.isKeyPressed(Keys.S)) player.y -= player.dir.y*speed
-
-        var playerRect = Rectangle(player.x - player.radius, player.y - player.radius, 2*player.radius, 2*player.radius)
-        tiles.forEach{ line ->
-            line.forEach { tile ->
-                if (tile.isWall && tile.r.overlaps(playerRect)){
-                    if (Gdx.input.isKeyPressed(Keys.S) && player.dir.y > 0 ||
-                        Gdx.input.isKeyPressed(Keys.W) && player.dir.y < 0)
-                        player.y = tile.y + tile.height + player.radius
-                    else
-                        player.y = tile.y - player.radius
-                }
-            }
-        }
-
-        if (Gdx.input.isKeyPressed(Keys.W)) player.x += player.dir.x*speed
-        if (Gdx.input.isKeyPressed(Keys.S)) player.x -= player.dir.x*speed
-
-        playerRect = Rectangle(player.x - player.radius, player.y - player.radius, 2*player.radius, 2*player.radius)
-
-        tiles.forEach{ line ->
-            line.forEach { tile ->
-                if (tile.isWall && tile.r.overlaps(playerRect)){
-                    if (Gdx.input.isKeyPressed(Keys.S) && player.dir.x > 0 ||
-                        Gdx.input.isKeyPressed(Keys.W) && player.dir.x < 0)
-                        player.x = tile.x + tile.width + player.radius
-                    else
-                        player.x = tile.x - player.radius
-                }
-            }
-        }
-    }
-
     private fun getTilePos(y: Float, x: Float, ratio:Float = 1f): IVector2 {
         var idx = (x/(tileWidth*ratio)).toInt()
         var idy = (y/(tileHeight*ratio)).toInt()
@@ -212,6 +168,13 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (idy < 0) idy = 0
         else if (idy >= tiles[0].size) idy = tiles.size - 1
         return IVector2(idx, idy)
+    }
+
+    // TODO colocar essa função numa classe "SelectedPlayer"
+    private fun changePlayer(player: Player){
+        selectedPlayer.color = Color.LIGHT_GRAY
+        selectedPlayer = player
+        player.color = Color.RED
     }
 
     private fun mouseController(activePlayer: Player?, mouseX: Int, mouseY: Int) {
@@ -226,13 +189,10 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
         if (currTile.component == null){
             val graph = AStar(tiles)
-            player.calculatePath(dest, graph)
-        } else
-            println("Invalido")
-
-//        else if (currTile.component?.let { it.type == ComponentType.PLAYER } == true){
-//            changePlayer(currTile.component as Player)
-//        }
+            selectedPlayer.calculatePath(dest, graph)
+        } else if (currTile.component?.let { it.type == ComponentType.PLAYER } == true){
+            changePlayer(currTile.component as Player)
+        }
 //        else{
 //            when(currTile.component!!.type){
 //                //TODO: implementar clique em jogador -> trocar jogador
@@ -256,7 +216,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     override fun keyTyped(character: Char): Boolean = true
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (rayCastIsMinimap)
-            mouseController(player, screenX, screenY)
+            mouseController(selectedPlayer, screenX, screenY)
         return true
     }
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean = true
@@ -267,7 +227,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             // mouse invisivel
             val deltaX = (screenX - WIDTH/2) / 100
 
-            player.rotate(deltaX * theta)
+            selectedPlayer.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
         }
         return true

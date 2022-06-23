@@ -37,7 +37,7 @@ open class RayCastComponent(
     private var dist = Float.MAX_VALUE
 
     fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
-        if (player == this || mesh == null) return
+        if (player == this) return
         dist = (player.x - x)*(player.x - x) + (player.y - y)*(player.y - y)
 
         // variavel para aumentar ou diminuir os sprites
@@ -50,6 +50,7 @@ open class RayCastComponent(
             invDet * (player.dir.y * transformedPos.x - player.dir.x * transformedPos.y),
             invDet * (-player.cameraPlane.y * transformedPos.x + player.cameraPlane.x * transformedPos.y)
         )
+        if (transformedPos.y == 0f) return
 
         val h = 1.5f*HEIGHT
         val spriteScreenX = (WIDTH / 2) * (1 + transformedPos.x / transformedPos.y)
@@ -111,7 +112,7 @@ open class RayCastComponent(
         mesh?.run {
             moveAndScale(initialX, initialY, ratio)
             standAloneRender(shader)
-            dispose()
+//            dispose()
         }
     }
 

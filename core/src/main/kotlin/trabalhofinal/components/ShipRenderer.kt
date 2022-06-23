@@ -26,7 +26,8 @@ class ShipRenderer(
     fun renderShip(
         rayCastIsMinimap: Boolean,
         rayCaster: RayCaster,
-        player: Player,
+        players: List<Player>,
+        selectedPlayer: Player,
         tiles: List<List<IMapDrawable>>,
         components: RayCastCompList,
     ){
@@ -34,14 +35,14 @@ class ShipRenderer(
         if (!rayCastIsMinimap){
             drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
             components.render(shader)
-            drawTileMap(player, tiles, rayCaster.collisionPoints, true, 5f, HEIGHT - HEIGHT*minimapRatio - 5f)
+            drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints, true, 5f, HEIGHT - HEIGHT*minimapRatio - 5f)
         } else {
             val minimapX = WIDTH*mapRatio
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
             components.render(shader, minimapX, minimapY, 0.25f)
             drawSideThings(minimapY)
-            drawTileMap(player, tiles, rayCaster.collisionPoints, false)
+            drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints, false)
         }
     }
 
@@ -64,7 +65,8 @@ class ShipRenderer(
     }
 
     private fun drawTileMap(
-        player: Player,
+        selectedPlayer: Player,
+        players: List<Player>,
         tiles: List<List<IMapDrawable>>,
         collisionPoints: List<Vector2>,
         isMinimap: Boolean,
@@ -80,8 +82,8 @@ class ShipRenderer(
             renderer.color = Color.LIGHT_GRAY
             collisionPoints.forEach{
                 renderer.rectLine(
-                    mirroredX - player.x*ratio,
-                    minimapRect.y + player.y*ratio,
+                    mirroredX - selectedPlayer.x*ratio,
+                    minimapRect.y + selectedPlayer.y*ratio,
                     mirroredX - it.x*ratio,
                     minimapRect.y + it.y*ratio, 1f)
             }
@@ -92,7 +94,9 @@ class ShipRenderer(
             }
             renderer.color = Color.BROWN
             //TODO("Make player I minimapDrawable")
-            renderer.circle(mirroredX - player.x*ratio, minimapRect.y + player.y*ratio, player.radius*ratio)
+            players.forEach {
+                renderer.circle(mirroredX - it.x * ratio, minimapRect.y + it.y * ratio, it.radius * ratio)
+            }
         }
     }
 

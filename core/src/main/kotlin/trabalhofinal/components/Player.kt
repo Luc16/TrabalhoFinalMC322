@@ -14,11 +14,11 @@ import java.util.LinkedList
 import java.util.Queue
 import kotlin.math.*
 
-class Player(x: Float, y: Float,  val radius: Float, //TODO tirar
+class Player(tile: IRayCastTile,  val radius: Float, //TODO tirar
+             tileWidth: Float, tileHeight: Float,
              texture: Texture,
-             tile: IRayCastTile,
-             color: Color = Color.LIGHT_GRAY,
-): RayCastComponent(texture, x, y, color,  tile, ComponentType.PLAYER) {
+             color: Color = Color.WHITE,
+): RayCastComponent(texture, tile.i*tileWidth + tileWidth/2, tile.j*tileHeight + tileHeight/2, color,  tile, ComponentType.PLAYER) {
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)
@@ -27,7 +27,7 @@ class Player(x: Float, y: Float,  val radius: Float, //TODO tirar
 
     var isMoving = false
 
-    var destQueue: Queue<IVector2> = LinkedList()
+    private var destQueue: Queue<IVector2> = LinkedList()
 
     lateinit var targetComponent: TargetComponent
 
