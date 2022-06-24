@@ -2,10 +2,12 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Circle
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.Component
+import trabalhofinal.components.general.IMapDrawable
 import trabalhofinal.components.general.IRayCastTile
 import trabalhofinal.components.general.RayCastComponent
 import trabalhofinal.utils.AStar
@@ -14,11 +16,12 @@ import java.util.LinkedList
 import java.util.Queue
 import kotlin.math.*
 
-class Player(tile: IRayCastTile,  val radius: Float, //TODO tirar
+class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
              tileWidth: Float, tileHeight: Float,
              texture: Texture,
              color: Color = Color.WHITE,
-): RayCastComponent(texture, tile.i*tileWidth + tileWidth/2, tile.j*tileHeight + tileHeight/2, color,  tile, ComponentType.PLAYER) {
+):  IMapDrawable,
+    RayCastComponent(texture, tile.i*tileWidth + tileWidth/2, tile.j*tileHeight + tileHeight/2, color,  tile, ComponentType.PLAYER) {
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)
@@ -110,5 +113,9 @@ class Player(tile: IRayCastTile,  val radius: Float, //TODO tirar
 
     fun reset(){
         stamina = maxStamina
+    }
+
+    override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
+        renderer.circle(startX - x * ratio, startY + y * ratio, radius * ratio)
     }
 }

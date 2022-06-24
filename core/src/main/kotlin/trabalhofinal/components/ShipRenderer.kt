@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
@@ -63,6 +64,11 @@ class ShipRenderer(
         }
         batch.use(camera.combined){
             button.drawMessage(batch, font)
+            val fungusText = GlyphLayout(font, "Fungus: $0/$10")
+            font.draw(batch, fungusText, button.x + button.width + 5f, (1 - minimapRatio/3) * HEIGHT + fungusText.height/2)
+            val eggText = GlyphLayout(font, "Eggs: $0/$10")
+            font.draw(batch, eggText, button.x + button.width + 5f, (1 - 2*minimapRatio/3) * HEIGHT + eggText.height/2)
+
         }
 
 
@@ -107,9 +113,8 @@ class ShipRenderer(
                 }
             }
             renderer.color = Color.BROWN
-            //TODO("Make player I minimapDrawable")
             players.forEach {
-                renderer.circle(mirroredX - it.x * ratio, minimapRect.y + it.y * ratio, it.radius * ratio)
+                it.draw(mirroredX, minimapRect.y, ratio, renderer)
             }
         }
     }

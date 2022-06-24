@@ -41,10 +41,10 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private var rayCastIsMinimap = true
     private val endTurnButton: Button = Button(
         "End Turn",
-        (shipRenderer.mapRatio + shipRenderer.minimapRatio/2) * WIDTH,
-        (shipRenderer.mapRatio) * HEIGHT - 80f/2 - 10f,
-        WIDTH*shipRenderer.mapRatio - 10f,
-        80f,
+        10f + 200f,
+        (shipRenderer.mapRatio + shipRenderer.minimapRatio/2) * HEIGHT,
+        400f,
+        shipRenderer.minimapRatio * HEIGHT - 10,
         { endTurn() }
     )
 
