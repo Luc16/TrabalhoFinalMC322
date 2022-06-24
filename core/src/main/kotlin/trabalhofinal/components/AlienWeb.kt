@@ -6,10 +6,10 @@ import trabalhofinal.components.general.IRayCastTile
 import trabalhofinal.components.general.RayCastComponent
 
 
-class Egg(tile: IRayCastTile,
-            tileWidth: Float, tileHeight: Float,
-            texture: Texture,
-            color: Color = Color.BROWN,
+class AlienWeb(tile: IRayCastTile,
+          tileWidth: Float, tileHeight: Float,
+          texture: Texture,
+          color: Color = Color.BROWN,
 ): RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
-    override val type = ComponentType.EGG
+    override val type = ComponentType.WEB
 }

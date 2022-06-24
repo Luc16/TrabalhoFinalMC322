@@ -2,6 +2,7 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import trabalhofinal.components.general.IMapDrawable
 import trabalhofinal.components.general.IRayCastTile
 import trabalhofinal.components.general.RayCastComponent
 import trabalhofinal.utils.AStar
@@ -9,21 +10,26 @@ import trabalhofinal.utils.IVector2
 import kotlin.random.Random
 
 
-class Alien(tile: IRayCastTile, val radius: Float, //TODO tirar
+class Alien(tile: IRayCastTile,
             tileWidth: Float, tileHeight: Float,
             texture: Texture,
-            color: Color = Color.RED
-) : RayCastComponent(texture, tile.i*tileWidth + tileWidth/2, tile.j*tileHeight + tileHeight/2, color,  tile, ComponentType.ALIEN){
+            color: Color = Color.BROWN,
+): RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
+
+    override val type = ComponentType.ALIEN
+
+    private val stamina = 5
 
     //CONSIDERANDO QUE ALIEN POSSUI 5 DE STAMINA
+    //TODO, tem q alterar o tile, não o i e j do tile q já tem
     fun teleport(path: List<IVector2>?){
         if (path == null) return
-        if (path.size < 5){
+        if (path.size < stamina + 1){
             this.tile.i = path[path.size-1].i
             this.tile.j = path[path.size-1].j
         } else{
-            this.tile.i = path[4].i
-            this.tile.j = path[4].j
+            this.tile.i = path[stamina].i
+            this.tile.j = path[stamina].j
         }
     }
 

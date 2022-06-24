@@ -64,27 +64,15 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             components.add(p1)
             components.add(p2)
             components.add(
-                RayCastComponent(
-                    Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-                    ship.tileWidth * 21 + ship.tileWidth / 2, ship.tileHeight * 12 + ship.tileHeight / 2,
-                    Color.BROWN, ship[21, 12], ComponentType.ALIEN
-                )
+                Alien(ship[21, 12], ship.tileWidth, ship.tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png")))
             )
 
             components.add(
-                RayCastComponent(
-                    Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")),
-                    ship.tileWidth * 20 + ship.tileWidth / 2, ship.tileHeight * 10 + ship.tileHeight / 2,
-                    Color.BROWN, ship[20, 10], ComponentType.EGG
-                )
+                Egg(ship[20, 10], ship.tileWidth, ship.tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
             )
 
             components.add(
-                RayCastComponent(
-                    Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")),
-                    ship.tileWidth * 22 + ship.tileWidth / 2, ship.tileHeight * 2 + ship.tileHeight / 2,
-                    Color.BROWN, ship[22, 2], ComponentType.DOOR
-                )
+                AlienWeb(ship[22, 2], ship.tileWidth, ship.tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")))
             )
         }
     }
@@ -111,7 +99,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         }
 
         // TODO isso é agir do player
-        if (selectedPlayer.targetComponent.type == ComponentType.DOOR && Gdx.input.isButtonPressed(Buttons.LEFT)){
+        if (selectedPlayer.targetComponent.type == ComponentType.WEB && Gdx.input.isButtonPressed(Buttons.LEFT)){
             selectedPlayer.targetComponent.color = Color.BLACK
             (selectedPlayer.targetComponent.component as RayCastComponent).die()
             components.remove(selectedPlayer.targetComponent.component)

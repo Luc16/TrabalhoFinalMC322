@@ -21,7 +21,9 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
              texture: Texture,
              color: Color = Color.WHITE,
 ):  IMapDrawable,
-    RayCastComponent(texture, tile.i*tileWidth + tileWidth/2, tile.j*tileHeight + tileHeight/2, color,  tile, ComponentType.PLAYER) {
+    RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
+
+    override val type = ComponentType.PLAYER
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)

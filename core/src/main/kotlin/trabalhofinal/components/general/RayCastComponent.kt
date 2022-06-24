@@ -12,20 +12,18 @@ import trabalhofinal.components.Player
 import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.Textured2DMesh
 
-
-open class RayCastComponent(
-    override val texture: Texture,
-    var x: Float,
-    var y: Float,
-    private val seenColor: Color,
+abstract class RayCastComponent(
     var tile: IRayCastTile,
-    // TODO() tirar
-    override val type: ComponentType
+    tileWidth: Float, tileHeight: Float,
+    override val texture: Texture,
+    private val seenColor: Color,
     ):
     Disposable,
     Comparable<RayCastComponent>,
     Component
 {
+    var x = tile.i*tileWidth + tileWidth/2
+    var y = tile.j*tileHeight + tileHeight/2
     override val isWall = false
     override var color: Color = Color.BLACK
     var seen = false
