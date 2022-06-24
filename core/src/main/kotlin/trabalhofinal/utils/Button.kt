@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
 
 class Button(
     private val message: String,
@@ -21,10 +21,22 @@ class Button(
 ): Rectangle(centerX - width/2, centerY - height/2, width, height) {
 
     private var color = normalColor
+    var hovered = false
+    private set
 
-    fun onHover() {color = hoverColor}
-    fun onClick() {color = clickColor}
-    fun resetColor() {color = normalColor}
+    fun checkHover(mouse: Vector2){
+        if (contains(mouse)) onHover()
+        else resetColor()
+    }
+    private fun onHover() {
+        hovered = true
+        color = hoverColor
+    }
+    fun onPress() { if (hovered) color = clickColor }
+    private fun resetColor() {
+        hovered = false
+        color = normalColor
+    }
 
     fun drawMessage(batch: Batch, font: BitmapFont){
         val screenText = GlyphLayout(font, message)

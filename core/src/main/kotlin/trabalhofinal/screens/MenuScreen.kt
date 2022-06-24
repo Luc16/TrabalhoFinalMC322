@@ -1,14 +1,9 @@
 package trabalhofinal.screens
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Input.Buttons
-import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.InputProcessor
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Rectangle
-import com.badlogic.gdx.math.Vector2
 import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.MyGame
@@ -51,18 +46,16 @@ class MenuScreen(game: MyGame):CustomScreen(game), InputProcessor {
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (button != Buttons.LEFT) return true
-        val mouse = Vector2(screenX.toFloat(), HEIGHT - screenY.toFloat())
+//        val mouse = unprojectedMouse(screenX, screenY)
         buttons.forEach {
-            if (it.contains(mouse)){
-                it.onClick()
-            }
+            it.onPress()
         }
         return true
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (button != Buttons.LEFT) return true
-        val mouse = Vector2(screenX.toFloat(), HEIGHT - screenY.toFloat())
+        val mouse = unprojectedMouse(screenX, screenY)
         buttons.forEach {
             if (it.contains(mouse)){
                 it.onRelease()
@@ -72,13 +65,9 @@ class MenuScreen(game: MyGame):CustomScreen(game), InputProcessor {
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val mouse = Vector2(screenX.toFloat(), HEIGHT - screenY.toFloat())
+        val mouse = unprojectedMouse(screenX, screenY)
         buttons.forEach { button ->
-            if (button.contains(mouse)){
-                button.onHover()
-            } else {
-                button.resetColor()
-            }
+            button.checkHover(mouse)
         }
         return true
     }

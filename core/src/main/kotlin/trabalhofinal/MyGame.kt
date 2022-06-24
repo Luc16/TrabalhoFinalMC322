@@ -9,8 +9,8 @@ import ktx.app.KtxGame
 //import trabalhofinal.screens.GridScreen
 import trabalhofinal.screens.*
 
-const val WIDTH = 800f
-const val HEIGHT = 800f
+const val WIDTH = 1000f
+const val HEIGHT = 1000f
 
 class MyGame: KtxGame<CustomScreen>() {
     val renderer: ShapeRenderer by lazy { ShapeRenderer() }

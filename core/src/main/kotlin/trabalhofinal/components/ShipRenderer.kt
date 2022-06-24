@@ -2,6 +2,8 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
@@ -11,17 +13,20 @@ import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.IMapDrawable
+import trabalhofinal.utils.Button
 import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.MeshGroup
 
 class ShipRenderer(
     private val renderer: ShapeRenderer,
+    private val batch: Batch,
+    private val font: BitmapFont,
     private val camera: Camera,
     private val shader: ShaderProgram,
-    private val minimapRatio: Float
+    val minimapRatio: Float
 ) {
 
-    private val mapRatio = 0.75f
+    val mapRatio = 1 - minimapRatio
 
     fun renderShip(
         rayCastIsMinimap: Boolean,
@@ -30,32 +35,41 @@ class ShipRenderer(
         selectedPlayer: Player,
         tiles: List<List<IMapDrawable>>,
         components: RayCastCompList,
+        endTurnButton: Button
     ){
         clearScreen(0f, 0f, 0f, 1f)
         if (!rayCastIsMinimap){
             drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
             components.render(shader)
-            drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints, true, 5f, HEIGHT - HEIGHT*minimapRatio - 5f)
+            drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints,
+                true,
+                WIDTH - WIDTH*minimapRatio - 5f,
+                HEIGHT - HEIGHT*minimapRatio - 5f)
         } else {
             val minimapX = WIDTH*mapRatio
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
-            components.render(shader, minimapX, minimapY, 0.25f)
-            drawSideThings(minimapY)
+            components.render(shader, minimapX, minimapY, minimapRatio)
+            drawSideThings(minimapY, endTurnButton)
             drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints, false)
         }
     }
 
-    private fun drawSideThings(initialY: Float) {
+    private fun drawSideThings(initialY: Float, button: Button) {
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.BLACK
-            renderer.rect(WIDTH - WIDTH*0.25f, 0f, WIDTH*0.25f, initialY)
+            renderer.rect(WIDTH - WIDTH*minimapRatio, 0f, WIDTH*minimapRatio, initialY)
+            button.drawRect(renderer)
         }
+        batch.use(camera.combined){
+            button.drawMessage(batch, font)
+        }
+
 
     }
 
     private fun drawRayCast(meshes: MeshGroup, isMinimap: Boolean, floor: Float, initialX: Float = 0f, initialY: Float = 0f) {
-        val ratio = if (isMinimap) 0.25f else 1f
+        val ratio = if (isMinimap) minimapRatio else 1f
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.WHITE
             renderer.rect(initialX, initialY, WIDTH*ratio, floor*ratio)

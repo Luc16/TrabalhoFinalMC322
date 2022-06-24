@@ -25,9 +25,12 @@ class Player(tile: IRayCastTile,  val radius: Float, //TODO tirar
     val i: Int get() = mapPos.i
     val j: Int get() = mapPos.j
 
+    private val maxStamina = 10
+    private var stamina = 5
     var isMoving = false
 
     private var destQueue: Queue<IVector2> = LinkedList()
+    private var pathLen = 0
 
     lateinit var targetComponent: TargetComponent
 
@@ -45,29 +48,31 @@ class Player(tile: IRayCastTile,  val radius: Float, //TODO tirar
 
         if (path != null){
             tile.component = null
-            for (pos in path) {
-                destQueue.add(pos)
-            }
+            for (k in 0 until min(stamina + 1, path.size))
+                destQueue.add(path[k])
+
+            pathLen = destQueue.size
             isMoving = true
         }
         this.dest = destQueue.first()
-//        else
-//            println("Invalido")
     }
 
-    fun update(tileWidth: Float, tileHeight: Float, tile: IRayCastTile) {
+    fun update(tileWidth: Float, tileHeight: Float, mapRatio: Float, tile: IRayCastTile = this.tile) {
         seen = true
         if (!isMoving || destQueue.isEmpty()) return
 
         mapPos = IVector2(tile.i, tile.j)
-        // TODO arrumar isso
-        val speedY = 0.75f*tileWidth / 16
-        val speedX = 0.75f*tileHeight / 16
+
+        val speedY = mapRatio*tileWidth / 16
+        val speedX = mapRatio*tileHeight / 16
 
         if (i == dest.i && j == dest.j) {
             if (destQueue.size == 1) {
                 x = i*tileWidth + tileWidth/2
                 y = j*tileHeight + tileHeight/2
+            }
+            if (pathLen > destQueue.size) {
+                stamina--
             }
             destQueue.remove(dest)
 
@@ -101,5 +106,9 @@ class Player(tile: IRayCastTile,  val radius: Float, //TODO tirar
                 }
             }
         }
+    }
+
+    fun reset(){
+        stamina = maxStamina
     }
 }
