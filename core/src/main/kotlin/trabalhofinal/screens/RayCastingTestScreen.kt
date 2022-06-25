@@ -93,6 +93,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private fun endTurn(){
         if (!endTurnButton.hovered) return
         ship.playAliens(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
+        ship.spreadFungus()
         ship.resetPlayers()
     }
 

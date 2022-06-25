@@ -49,12 +49,12 @@ class ShipRenderer(
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
             ship.components.render(shader, minimapX, minimapY, minimapRatio)
-            drawSideThings(minimapY, endTurnButton)
+            drawSideThings(minimapY, endTurnButton, selectedPlayer)
             drawTileMap(selectedPlayer, ship.players, ship.tiles, rayCaster.collisionPoints, false)
         }
     }
 
-    private fun drawSideThings(initialY: Float, button: Button) {
+    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player) {
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.BLACK
             renderer.rect(WIDTH - WIDTH*minimapRatio, 0f, WIDTH*minimapRatio, initialY)
@@ -67,8 +67,35 @@ class ShipRenderer(
             val eggText = GlyphLayout(font, "Eggs: $0/$10")
             font.draw(batch, eggText, button.x + button.width + 5f, (1 - 2*minimapRatio/3) * HEIGHT + eggText.height/2)
 
-        }
+            val name = GlyphLayout(font, selectedPlayer.name)
+            val nameY = (1 - minimapRatio) * HEIGHT - name.height/2 - 10f
+            font.draw(batch, name, WIDTH*(mapRatio + minimapRatio/2) - name.width/2, nameY)
 
+            font.data.setScale(2f)
+
+            val energy = GlyphLayout(font, "Current energy: ${selectedPlayer.energy}")
+            val energyY = nameY - 80f
+            font.draw(batch, energy, WIDTH*mapRatio + 5f, energyY)
+
+            val maxE = GlyphLayout(font, "Max energy: ${selectedPlayer.maxEnergy}")
+            val maxEY = energyY - energy.height - 20f
+            font.draw(batch, maxE, WIDTH*mapRatio + 5f, maxEY)
+
+            val eggE = GlyphLayout(font, "Egg energy: ${selectedPlayer.eggEnergy}")
+            val eggEY = maxEY - maxE.height- 20f
+            font.draw(batch, eggE, WIDTH*mapRatio + 5f, eggEY)
+
+            val webE = GlyphLayout(font, "Web energy: ${selectedPlayer.eggEnergy}")
+            val webEY = eggEY - eggE.height - 20f
+            font.draw(batch, webE, WIDTH*mapRatio + 5f, webEY)
+
+            val fungE = GlyphLayout(font, "Web energy: ${selectedPlayer.eggEnergy}")
+            val fungEY = webEY - webE.height - 20f
+            font.draw(batch, fungE, WIDTH*mapRatio + 5f, fungEY)
+
+            font.data.setScale(3f)
+
+        }
 
     }
 

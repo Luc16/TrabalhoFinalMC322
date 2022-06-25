@@ -15,10 +15,11 @@ class Ship(file: String, textures: List<Texture>) {
     private val fungus = mutableListOf<Fungo>()
     private val eggs = mutableListOf<Fungo>()
     val components = RayCastCompList()
-    private val sizeI: Int
-    private var sizeJ: Int
+    val sizeI: Int
+    var sizeJ: Int
     val tileWidth: Float
     var tileHeight: Float
+    var numFungus = 0
 
     init {
         val reader = MapReader(file)
@@ -37,20 +38,22 @@ class Ship(file: String, textures: List<Texture>) {
             val line = mutableListOf<Tile>()
             for (j in 0 until sizeI){
                 val id = mapString[i][j] - '0'
-                val color = when (id){
-                    1 -> Color.RED
-                    2 -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro
-                    3 -> Color.PURPLE
-                    4 -> Color.WHITE
-                    5 -> Color.YELLOW
-                    6 -> Color.BLUE
-                    7 -> Color.CORAL
-                    8 -> Color.MAGENTA
-                    else -> Color.BLACK
-                }
-                line.add(
-                    Tile(i, j, tileWidth, tileHeight, if (id == 0) null else Wall(color, textures[id-1]))
-                )
+                val color = if (id != 0) Color.WHITE else Color.BLACK
+//                val color = when (id){
+//                    1 -> Color.WHITE
+//                    2 -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro
+//                    3 -> Color.PURPLE
+//                    4 -> Color.WHITE
+//                    5 -> Color.YELLOW
+//                    6 -> Color.BLUE
+//                    7 -> Color.CORAL
+//                    8 -> Color.MAGENTA
+//                    else -> Color.BLACK
+//                }
+
+                val tile = Tile(i, j, tileWidth, tileHeight, null)
+                if (id != 0) tile.component = if (id == 1) Fungo(tile, textures[5]) else Wall(tile, color, textures[3])
+                line.add(tile)
             }
             tempTiles.add(line)
         }
@@ -92,6 +95,8 @@ class Ship(file: String, textures: List<Texture>) {
     fun updateComponents(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         components.updateComponents(player, zBuffer, tileWidth, tileHeight)
     }
+
+    fun spreadFungus() = fungus.forEach { it.spread(this) }
 
     fun removeComponent(comp: Component){
         components.remove(comp)
