@@ -12,14 +12,15 @@ class Ship(file: String, textures: List<Texture>) {
     val tiles: List<List<Tile>>
     val players = mutableListOf<Player>()
     private val aliens = mutableListOf<Alien>()
-    private val fungus = mutableListOf<Fungo>()
-    private val eggs = mutableListOf<Fungo>()
+    private val fungi = mutableListOf<Fungus>()
+    private val eggs = mutableListOf<Fungus>()
     val components = RayCastCompList()
     val sizeI: Int
     var sizeJ: Int
     val tileWidth: Float
     var tileHeight: Float
     var numFungus = 0
+    private var fungiToAdd = mutableListOf<Fungus>()
 
     init {
         val reader = MapReader(file)
@@ -51,8 +52,17 @@ class Ship(file: String, textures: List<Texture>) {
 //                    else -> Color.BLACK
 //                }
 
-                val tile = Tile(i, j, tileWidth, tileHeight, null)
-                if (id != 0) tile.component = if (id == 1) Fungo(tile, textures[5]) else Wall(tile, color, textures[3])
+                val tile = Tile(i, j, tileWidth, tileHeight)
+                if (id != 0) {
+                    tile.setInitialComponent(
+                        if (id == 1) {
+                            val fungus = Fungus(tile, textures[5], textures[3])
+                            fungi.add(fungus)
+                            fungus
+                        }
+                        else Wall(tile, color, textures[3])
+                    )
+                }
                 line.add(tile)
             }
             tempTiles.add(line)
@@ -96,13 +106,19 @@ class Ship(file: String, textures: List<Texture>) {
         components.updateComponents(player, zBuffer, tileWidth, tileHeight)
     }
 
-    fun spreadFungus() = fungus.forEach { it.spread(this) }
+    fun spreadFungus() {
+        fungi.forEach { it.spread(this) }
+        fungiToAdd.forEach { fungi.add(it) }
+        fungiToAdd = mutableListOf()
+    }
+
+    fun addFungusLazy(fungus: Fungus) = fungiToAdd.add(fungus)
 
     fun removeComponent(comp: Component){
         components.remove(comp)
         comp.die()
         when (comp.type) {
-            ComponentType.FUNGUS -> fungus.remove(comp)
+            ComponentType.FUNGUS -> fungi.remove(comp)
             ComponentType.EGG -> eggs.remove(comp)
             ComponentType.PLAYER -> players.remove(comp)
             else -> {}

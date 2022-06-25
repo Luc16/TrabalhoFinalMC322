@@ -128,6 +128,7 @@ abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tira
     }
 
     fun interact(ship: Ship){
+        if (targetComponent.dist > 1.5f*sqrt(ship.tileHeight*ship.tileHeight + ship.tileWidth*ship.tileWidth)) return
         when(targetComponent.type){
             ComponentType.WEB -> {
                 if (energy < webEnergy) return

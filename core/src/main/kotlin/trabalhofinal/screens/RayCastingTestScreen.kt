@@ -64,21 +64,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         )
         selectedPlayer.updateSelected(ship.tileWidth, ship.tileHeight, shipRenderer.mapRatio, ship[playerPos.i, playerPos.j])
 
-        // TODO isso é agir do player
-        if (selectedPlayer.targetComponent.type == ComponentType.WEB && Gdx.input.isButtonPressed(Buttons.LEFT)){
-            selectedPlayer.targetComponent.color = Color.BLACK
-            (selectedPlayer.targetComponent.component as RayCastComponent).die()
-            ship.components.remove(selectedPlayer.targetComponent.component)
-        }
-
-
-        shipRenderer.renderShip(
-            rayCastIsMinimap,
-            rayCaster,
-            ship,
-            selectedPlayer,
-            endTurnButton
-        )
+        shipRenderer.renderShip(rayCastIsMinimap, rayCaster, ship, selectedPlayer, endTurnButton)
 
     }
 

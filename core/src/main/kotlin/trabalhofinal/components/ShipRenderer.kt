@@ -85,11 +85,11 @@ class ShipRenderer(
             val eggEY = maxEY - maxE.height- 20f
             font.draw(batch, eggE, WIDTH*mapRatio + 5f, eggEY)
 
-            val webE = GlyphLayout(font, "Web energy: ${selectedPlayer.eggEnergy}")
+            val webE = GlyphLayout(font, "Web energy: ${selectedPlayer.webEnergy}")
             val webEY = eggEY - eggE.height - 20f
             font.draw(batch, webE, WIDTH*mapRatio + 5f, webEY)
 
-            val fungE = GlyphLayout(font, "Web energy: ${selectedPlayer.eggEnergy}")
+            val fungE = GlyphLayout(font, "Web energy: ${selectedPlayer.fungusEnergy}")
             val fungEY = webEY - webE.height - 20f
             font.draw(batch, fungE, WIDTH*mapRatio + 5f, fungEY)
 

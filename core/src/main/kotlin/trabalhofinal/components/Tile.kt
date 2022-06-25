@@ -13,15 +13,14 @@ class Tile(
         j: Int,
         val width: Float,
         val height: Float,
-        component: Component? = null
     ) :
     IMapDrawable,
     IRayCastTile,
-    Node(i, j, component != null) {
+    Node(i, j, false) {
     override val x: Float = i*width
     override val y: Float = j*height
-    override val isWall: Boolean = component?.isWall ?: false
-    override var component: Component? = component
+    override var isWall: Boolean = false
+    override var component: Component? = null
         set(value) {
             notTraversable = value != null
             field = value
@@ -30,6 +29,10 @@ class Tile(
     override val texture: Texture?
         get() = component?.texture
 
+    fun setInitialComponent(comp: Component?) {
+        component = comp
+        isWall = comp?.isWall ?: false
+    }
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
         component?.let {
             renderer.color = it.color

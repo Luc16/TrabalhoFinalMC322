@@ -2,20 +2,17 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
-import ktx.graphics.color
-import trabalhofinal.components.general.Component
 import trabalhofinal.components.general.IRayCastTile
-import trabalhofinal.utils.Node
 import kotlin.random.Random
 
-class Fungo(
+class Fungus(
     tile: IRayCastTile,
-    texture: Texture? = null, //TODO COLOCAR TEXTURA
+    texture: Texture,
+    private val wallTexture: Texture,
     color: Color = Color.ORANGE,
 ): Wall(tile, color, texture) {
     override val type: ComponentType = ComponentType.FUNGUS
-    override val isWall: Boolean = true
-
+    override val isWall = true
 
     fun spread(ship: Ship){
         forEachNeighbor(ship) {neighbor ->
@@ -26,13 +23,17 @@ class Fungo(
                     surrounded = it?.isWall == true
                 }
                 if (!surrounded) ship.numFungus++
-                neighbor.tile.component = Fungo(neighbor.tile)
+                neighbor.tile.component = texture?.let {
+                    val fungus = Fungus(neighbor.tile, it, wallTexture)
+                    ship.addFungusLazy(fungus)
+                    fungus
+                }
             }
 
         }
     }
 
     override fun die(){
-        tile.component = Wall(tile, Color.WHITE, texture)
+        tile.component = Wall(tile, Color.WHITE, wallTexture)
     }
 }
