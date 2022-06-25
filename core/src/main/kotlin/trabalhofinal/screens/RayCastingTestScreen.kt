@@ -35,9 +35,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     )
     private val ship = Ship("assets/maps/test.map", textures)
     private val rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
-    private var players = mutableListOf<Player>()
-    private var selectedPlayer: Player
-    private val components = RayCastCompList()
+    private var selectedPlayer: Player = ship.getFirstPlayer()
     private var rayCastIsMinimap = true
     private val endTurnButton: Button = Button(
         "End Turn",
@@ -48,34 +46,6 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         { endTurn() }
     )
 
-    init {
-        val p1 = Player(ship[21, 4], 10f, ship.tileWidth, ship.tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-        )
-        selectedPlayer = p1
-        players.add(p1)
-        val p2 = Player(ship[18, 4],10f, ship.tileWidth, ship.tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-        )
-        players.add(p2)
-
-        // adiciona os componentes
-        run {
-            components.add(p1)
-            components.add(p2)
-            components.add(
-                Alien(ship[21, 12], ship.tileWidth, ship.tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png")))
-            )
-
-            components.add(
-                Egg(ship[20, 10], ship.tileWidth, ship.tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
-            )
-
-            components.add(
-                AlienWeb(ship[22, 2], ship.tileWidth, ship.tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")))
-            )
-        }
-    }
 
     override fun show() {
         Gdx.input.inputProcessor = this
@@ -87,31 +57,25 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
         // sempre fazer o raycast antes de criar as meshes dos componentes!
         rayCaster.multipleRayCast3D(selectedPlayer)
-        components.createMeshes(selectedPlayer, rayCaster.zBuffer, ship.tileWidth, ship.tileHeight)
+        ship.updateComponents(selectedPlayer, rayCaster.zBuffer, ship.tileWidth, ship.tileHeight)
         val playerPos = ship.getTilePos(
             selectedPlayer.y - selectedPlayer.dir.y*ship.tileHeight/2,
             selectedPlayer.x - selectedPlayer.dir.x*ship.tileWidth/2
         )
-
-        selectedPlayer.update(ship.tileWidth, ship.tileHeight, shipRenderer.mapRatio, ship[playerPos.i, playerPos.j])
-        players.forEach {
-            if (it != selectedPlayer) it.update(ship.tileWidth, ship.tileHeight, shipRenderer.mapRatio)
-        }
+        selectedPlayer.updateSelected(ship.tileWidth, ship.tileHeight, shipRenderer.mapRatio, ship[playerPos.i, playerPos.j])
 
         // TODO isso é agir do player
         if (selectedPlayer.targetComponent.type == ComponentType.WEB && Gdx.input.isButtonPressed(Buttons.LEFT)){
             selectedPlayer.targetComponent.color = Color.BLACK
             (selectedPlayer.targetComponent.component as RayCastComponent).die()
-            components.remove(selectedPlayer.targetComponent.component)
+            ship.components.remove(selectedPlayer.targetComponent.component)
         }
 
         shipRenderer.renderShip(
             rayCastIsMinimap,
             rayCaster,
-            players,
+            ship,
             selectedPlayer,
-            ship.tiles,
-            components,
             endTurnButton
         )
 
@@ -127,8 +91,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private fun endTurn(){
         if (!endTurnButton.hovered) return
-
-        players.forEach { it.reset() }
+        ship.playAliens(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
+        ship.resetPlayers()
     }
 
     private fun toggleViewMode(){

@@ -32,17 +32,15 @@ class ShipRenderer(
     fun renderShip(
         rayCastIsMinimap: Boolean,
         rayCaster: RayCaster,
-        players: List<Player>,
+        ship: Ship,
         selectedPlayer: Player,
-        tiles: List<List<IMapDrawable>>,
-        components: RayCastCompList,
         endTurnButton: Button
     ){
         clearScreen(0f, 0f, 0f, 1f)
         if (!rayCastIsMinimap){
             drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
-            components.render(shader)
-            drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints,
+            ship.components.render(shader)
+            drawTileMap(selectedPlayer, ship.players, ship.tiles, rayCaster.collisionPoints,
                 true,
                 WIDTH - WIDTH*minimapRatio - 5f,
                 HEIGHT - HEIGHT*minimapRatio - 5f)
@@ -50,9 +48,9 @@ class ShipRenderer(
             val minimapX = WIDTH*mapRatio
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
-            components.render(shader, minimapX, minimapY, minimapRatio)
+            ship.components.render(shader, minimapX, minimapY, minimapRatio)
             drawSideThings(minimapY, endTurnButton)
-            drawTileMap(selectedPlayer, players, tiles, rayCaster.collisionPoints, false)
+            drawTileMap(selectedPlayer, ship.players, ship.tiles, rayCaster.collisionPoints, false)
         }
     }
 

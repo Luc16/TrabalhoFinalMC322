@@ -62,10 +62,13 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
         this.dest = destQueue.first()
     }
 
-    fun update(tileWidth: Float, tileHeight: Float, mapRatio: Float, tile: IRayCastTile = this.tile) {
+    override fun update(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float) {
+        super.update(player, zBuffer, tileWidth, tileHeight)
         seen = true
-        if (!isMoving || destQueue.isEmpty()) return
+    }
 
+    fun updateSelected(tileWidth: Float, tileHeight: Float, mapRatio: Float, tile: IRayCastTile) {
+        if (!isMoving || destQueue.isEmpty()) return
         mapPos = IVector2(tile.i, tile.j)
 
         val speedY = mapRatio*tileWidth / 16

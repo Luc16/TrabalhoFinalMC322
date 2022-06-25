@@ -1,23 +1,22 @@
 package trabalhofinal.components
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
-
 class Ship(file: String, textures: List<Texture>) {
-    var tiles = listOf(listOf<Tile>())
-    private set
-    var sizeI = 0
-    private set
-    var sizeJ = 0
-    private set
-    var tileWidth = 0f
-    private set
-    var tileHeight = 0f
-    private set
+    val tiles: List<List<Tile>>
+    val players = mutableListOf<Player>()
+    val aliens = mutableListOf<Alien>()
+    val fungus = mutableListOf<Fungo>()
+    val components = RayCastCompList()
+    private val sizeI: Int
+    private var sizeJ: Int
+    val tileWidth: Float
+    var tileHeight: Float
 
     init {
         val reader = MapReader(file)
@@ -54,9 +53,43 @@ class Ship(file: String, textures: List<Texture>) {
             tempTiles.add(line)
         }
         tiles = tempTiles.toList()
+
+        val p1 = Player(tiles[21][4], 10f, tileWidth, tileHeight,
+            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+        )
+        players.add(p1)
+        val p2 = Player(tiles[18][4],10f, tileWidth, tileHeight,
+            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+        )
+        players.add(p2)
+        aliens.add(Alien(tiles[21][12], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png"))))
+
+        // adiciona os componentes
+        run {
+            components.add(p1)
+            components.add(p2)
+            components.add(aliens[0])
+            components.add(
+                Egg(tiles[20][10], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
+            )
+
+            components.add(
+                AlienWeb(tiles[22][2], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")))
+            )
+        }
     }
 
     operator fun get(i: Int, j: Int) = tiles[i][j]
+
+    fun getFirstPlayer(): Player = players[0]
+
+    fun resetPlayers() = players.forEach { it.reset() }
+
+    fun playAliens(texture: Texture) = aliens.forEach { it.playTurn(texture, this) }
+
+    fun updateComponents(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
+        components.updateComponents(player, zBuffer, tileWidth, tileHeight)
+    }
 
     fun getTilePos(y: Float, x: Float): IVector2 {
         var idx = (x/(tileWidth)).toInt()
@@ -73,3 +106,4 @@ class Ship(file: String, textures: List<Texture>) {
 
 
 }
+

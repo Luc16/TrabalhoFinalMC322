@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import ktx.graphics.color
 import trabalhofinal.components.general.Component
+import kotlin.random.Random
 
 class Fungo(
     override val isWall: Boolean = true,
@@ -15,22 +16,27 @@ class Fungo(
 
     //a ideia é que tenha uma lista de fungos na ship (?) e chame o metodo de cada
     // um dos fungos passando a coordenada i e j deles
-    fun spread(tiles: List<List<Tile>>, i: Int, j: Int){
-        if(i - 1 >= 0){
-            if (tiles[i-1][j].component!!.type == ComponentType.WALL)
-                tiles[i-1][j].component = Fungo()
-        }
-        if(i + 1 < tiles.size){
-            if (tiles[i+1][j].component!!.type == ComponentType.WALL)
-                tiles[i+1][j].component = Fungo()
-        }
-        if(j - 1 >= 0){
-            if (tiles[i][j-1].component!!.type == ComponentType.WALL)
-                tiles[i][j-1].component = Fungo()
-        }
-        if(j + 1 < tiles[0].size){
-            if (tiles[i][j+1].component!!.type == ComponentType.WALL)
-                tiles[i][j+1].component = Fungo()
+    fun spread(ship: Ship, i: Int, j: Int){
+        for (fungo in ship.fungus){
+            val value = Random.nextInt(1, 100)
+            if (value <= 10){
+                if(i - 1 >= 0){
+                    if (ship.tiles[i-1][j].component!!.type == ComponentType.WALL)
+                        ship.tiles[i-1][j].component = Fungo()
+                }
+                if(i + 1 < ship.tiles.size){
+                    if (ship.tiles[i+1][j].component!!.type == ComponentType.WALL)
+                        ship.tiles[i+1][j].component = Fungo()
+                }
+                if(j - 1 >= 0){
+                    if (ship.tiles[i][j-1].component!!.type == ComponentType.WALL)
+                        ship.tiles[i][j-1].component = Fungo()
+                }
+                if(j + 1 < ship.tiles[0].size){
+                    if (ship.tiles[i][j+1].component!!.type == ComponentType.WALL)
+                        ship.tiles[i][j+1].component = Fungo()
+                }
+            }
         }
     }
 }

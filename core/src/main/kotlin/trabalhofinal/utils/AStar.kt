@@ -57,10 +57,10 @@ class AStar (private val grid: List<List<Node>>) {
         }
     }
 
-    fun findPath(source: IVector2, dest: IVector2): List<IVector2>?{
+    fun findPath(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean = false): List<IVector2>?{
         // ver se a posicao destino eh valida
         // APAGUEI TEMPORARIAMENTE O SOURCE.ISBLOCKED
-        if (dest.isOutOfRange() || source.isOutOfRange() || dest.isBlocked()) return null
+        if (dest.isOutOfRange() || source.isOutOfRange() || (!acceptBlockedDest && dest.isBlocked())) return null
 
 
         val src = getNode(source)
@@ -79,9 +79,11 @@ class AStar (private val grid: List<List<Node>>) {
             open.remove(node)
             node.wasVisited = true
 
+            var foundEnd = false
             node.forEachNeighbor { neighbor ->
                 // se eh parede ou visinho possuir componente bloqueador, return
-                if (neighbor.notTraversable || neighbor.wasVisited) return@forEachNeighbor
+                foundEnd = neighbor == end && acceptBlockedDest
+                if (neighbor.notTraversable || neighbor.wasVisited || foundEnd) return@forEachNeighbor
 
                 if (neighbor.parent == null || neighbor.parent?.let {it.g > node.g} == true){
                     neighbor.parent = node
@@ -93,6 +95,7 @@ class AStar (private val grid: List<List<Node>>) {
                     neighbor.h = abs(neighbor.i - end.i) + abs(neighbor.j - end.j)
                 }
             }
+            if (foundEnd) return resultPath(node)
         }
         println("Nao achei caminho")
         return null

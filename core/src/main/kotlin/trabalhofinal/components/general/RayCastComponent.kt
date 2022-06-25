@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.ComponentType
 import trabalhofinal.components.Player
 import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.Textured2DMesh
@@ -34,8 +33,7 @@ abstract class RayCastComponent(
     private var mesh: Textured2DMesh? = null
     private var dist = Float.MAX_VALUE
 
-    fun createMesh(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
-        if (player == this) return
+    open fun update(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         dist = (player.x - x)*(player.x - x) + (player.y - y)*(player.y - y)
 
         // variavel para aumentar ou diminuir os sprites
