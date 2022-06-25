@@ -49,12 +49,12 @@ class ShipRenderer(
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
             ship.components.render(shader, minimapX, minimapY, minimapRatio)
-            drawSideThings(minimapY, endTurnButton, selectedPlayer)
+            drawSideThings(minimapY, endTurnButton, selectedPlayer, ship)
             drawTileMap(selectedPlayer, ship.players, ship.tiles, rayCaster.collisionPoints, false)
         }
     }
 
-    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player) {
+    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player, ship: Ship) {
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.BLACK
             renderer.rect(WIDTH - WIDTH*minimapRatio, 0f, WIDTH*minimapRatio, initialY)
@@ -62,9 +62,9 @@ class ShipRenderer(
         }
         batch.use(camera.combined){
             button.drawMessage(batch, font)
-            val fungusText = GlyphLayout(font, "Fungus: $0/$10")
+            val fungusText = GlyphLayout(font, "Fungus: ${ship.numFungus}/10")
             font.draw(batch, fungusText, button.x + button.width + 5f, (1 - minimapRatio/3) * HEIGHT + fungusText.height/2)
-            val eggText = GlyphLayout(font, "Eggs: $0/$10")
+            val eggText = GlyphLayout(font, "Eggs: ${ship.numEggs}")
             font.draw(batch, eggText, button.x + button.width + 5f, (1 - 2*minimapRatio/3) * HEIGHT + eggText.height/2)
 
             val name = GlyphLayout(font, selectedPlayer.name)

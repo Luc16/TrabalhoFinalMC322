@@ -61,7 +61,7 @@ class Alien(tile: IRayCastTile,
     private fun placeEgg(texture: Texture, ship: Ship) {
         val value = Random.nextInt(1, 100)
         if (value <= 15) //15% de chance de colocar
-            ship.components.add(Egg(prevTile, ship.tileWidth, ship.tileHeight, texture))
+            ship.addEgg(Egg(prevTile, ship.tileWidth, ship.tileHeight, texture))
     }
 
     fun playTurn(texture: Texture, ship: Ship){

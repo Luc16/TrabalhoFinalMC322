@@ -13,14 +13,15 @@ class Ship(file: String, textures: List<Texture>) {
     val players = mutableListOf<Player>()
     private val aliens = mutableListOf<Alien>()
     private val fungi = mutableListOf<Fungus>()
-    private val eggs = mutableListOf<Fungus>()
+    private val eggs = mutableListOf<Egg>()
     val components = RayCastCompList()
     val sizeI: Int
     var sizeJ: Int
     val tileWidth: Float
     var tileHeight: Float
-    var numFungus = 0
+    var numFungus = 2 //TODO tirar depois
     private var fungiToAdd = mutableListOf<Fungus>()
+    val numEggs get() = eggs.size
 
     init {
         val reader = MapReader(file)
@@ -78,19 +79,15 @@ class Ship(file: String, textures: List<Texture>) {
         )
         players.add(p2)
         aliens.add(Alien(tiles[21][12], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png"))))
+        eggs.add(Egg(tiles[20][10], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png"))))
 
         // adiciona os componentes
         run {
             components.add(p1)
             components.add(p2)
             components.add(aliens[0])
-            components.add(
-                Egg(tiles[20][10], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
-            )
-
-            components.add(
-                AlienWeb(tiles[22][2], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")))
-            )
+            components.add(eggs[0])
+            components.add(AlienWeb(tiles[22][2], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png"))))
         }
     }
 
@@ -113,6 +110,11 @@ class Ship(file: String, textures: List<Texture>) {
     }
 
     fun addFungusLazy(fungus: Fungus) = fungiToAdd.add(fungus)
+
+    fun addEgg(egg: Egg){
+        components.add(egg)
+        eggs.add(egg)
+    }
 
     fun removeComponent(comp: Component){
         components.remove(comp)

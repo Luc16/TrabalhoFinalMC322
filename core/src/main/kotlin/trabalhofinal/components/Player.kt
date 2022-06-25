@@ -128,25 +128,25 @@ abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tira
     }
 
     fun interact(ship: Ship){
+        // Se estiver muito longe não faz acao
         if (targetComponent.dist > 1.5f*sqrt(ship.tileHeight*ship.tileHeight + ship.tileWidth*ship.tileWidth)) return
+
         when(targetComponent.type){
             ComponentType.WEB -> {
                 if (energy < webEnergy) return
-                targetComponent.color = Color.BLACK
                 targetComponent.die()
                 ship.removeComponent(targetComponent.component)
                 energy -= webEnergy
             }
             ComponentType.FUNGUS -> {
                 if (energy < fungusEnergy) return
-                targetComponent.color = Color.WHITE //TODO ver cor certa da parede
                 targetComponent.die()
                 ship.removeComponent(targetComponent.component)
+                ship.numFungus--
                 energy -= fungusEnergy
             }
             ComponentType.EGG -> {
                 if (energy < eggEnergy) return
-                targetComponent.color = Color.BLACK
                 targetComponent.die()
                 ship.removeComponent(targetComponent.component)
                 energy -= eggEnergy
