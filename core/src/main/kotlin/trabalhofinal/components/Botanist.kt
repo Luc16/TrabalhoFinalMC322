@@ -13,7 +13,7 @@ class Botanist(
     color: Color = Color.GREEN
 ) : Player(tile, radius, tileWidth, tileHeight, texture, color) {
     override val name: String
-        get() = TODO("Not yet implemented")
+        get() = "Botanist"
     override val maxEnergy: Int
         get() = 10
     override val webEnergy: Int
