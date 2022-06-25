@@ -30,10 +30,6 @@ class Tile(
     override val texture: Texture?
         get() = component?.texture
 
-
-    //temporario!!!!!!!!!!!!!!!!
-    val r = Rectangle(x, y, width, height)
-
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
         component?.let {
             renderer.color = it.color

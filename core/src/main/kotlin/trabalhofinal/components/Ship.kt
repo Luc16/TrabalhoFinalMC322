@@ -10,7 +10,7 @@ import trabalhofinal.utils.MapReader
 class Ship(file: String, textures: List<Texture>) {
     val tiles: List<List<Tile>>
     val players = mutableListOf<Player>()
-    val aliens = mutableListOf<Alien>()
+    private val aliens = mutableListOf<Alien>()
     val fungus = mutableListOf<Fungo>()
     val components = RayCastCompList()
     private val sizeI: Int
@@ -55,7 +55,7 @@ class Ship(file: String, textures: List<Texture>) {
         tiles = tempTiles.toList()
 
         val p1 = Player(tiles[21][4], 10f, tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), color = Color.GREEN
         )
         players.add(p1)
         val p2 = Player(tiles[18][4],10f, tileWidth, tileHeight,

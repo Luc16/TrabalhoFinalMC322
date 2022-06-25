@@ -36,7 +36,6 @@ class AStar (private val grid: List<List<Node>>) {
     private fun resultPath(end: Node): List<IVector2>? {
         var node: Node? = end.parent
         if (node == null){
-            resetGrid()
             return null
         }
         val path = mutableListOf(end.pos, node.pos)
@@ -45,7 +44,6 @@ class AStar (private val grid: List<List<Node>>) {
             node = node.parent
             if (node != null) path.add(node.pos)
         }
-        resetGrid()
         return path.reversed()
     }
 
@@ -57,9 +55,8 @@ class AStar (private val grid: List<List<Node>>) {
         }
     }
 
-    fun findPath(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean = false): List<IVector2>?{
+    private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean): List<IVector2>?{
         // ver se a posicao destino eh valida
-        // APAGUEI TEMPORARIAMENTE O SOURCE.ISBLOCKED
         if (dest.isOutOfRange() || source.isOutOfRange() || (!acceptBlockedDest && dest.isBlocked())) return null
 
 
@@ -83,7 +80,7 @@ class AStar (private val grid: List<List<Node>>) {
             node.forEachNeighbor { neighbor ->
                 // se eh parede ou visinho possuir componente bloqueador, return
                 foundEnd = neighbor == end && acceptBlockedDest
-                if (neighbor.notTraversable || neighbor.wasVisited || foundEnd) return@forEachNeighbor
+                if ((neighbor != end && neighbor.notTraversable) || neighbor.wasVisited || foundEnd) return@forEachNeighbor
 
                 if (neighbor.parent == null || neighbor.parent?.let {it.g > node.g} == true){
                     neighbor.parent = node
@@ -101,4 +98,10 @@ class AStar (private val grid: List<List<Node>>) {
         return null
     }
 
+
+    fun findPath(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean = false): List<IVector2>?{
+        val path = findPathAstar(source, dest, acceptBlockedDest)
+        resetGrid()
+        return path
+    }
 }

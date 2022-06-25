@@ -88,7 +88,6 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
                 isMoving = false
                 this.tile.component = null
                 this.tile = tile
-                tile.component = this
             } else {
                 dest = destQueue.first()
                 val newDir = (dest - mapPos).toVector2()

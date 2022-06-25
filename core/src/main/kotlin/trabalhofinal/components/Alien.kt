@@ -20,9 +20,11 @@ class Alien(tile: IRayCastTile,
     override val type = ComponentType.ALIEN
 
     private val stamina = 5
+    private lateinit var prevTile: IRayCastTile
 
     private fun teleport(destiny: IVector2, ship: Ship){
-        if (tile.component?.type == ComponentType.ALIEN) tile.component = null
+        prevTile = tile
+        tile.component = null
         tile = ship[destiny.i, destiny.j]
         x = tile.i*ship.tileWidth + ship.tileWidth/2
         y = tile.j*ship.tileHeight + ship.tileHeight/2
@@ -34,7 +36,8 @@ class Alien(tile: IRayCastTile,
         val graph = AStar(ship.tiles)
         val paths = mutableListOf<List<IVector2>?>()
         for (player in ship.players){
-            paths.add(graph.findPath(IVector2(tile.i, tile.j), player.mapPos, true))
+            val path = graph.findPath(IVector2(tile.i, tile.j), ship.players[1].mapPos, true)
+            paths.add(path)
         }
         for (i in 0 until paths.size){
             if (paths[i] != null){
@@ -54,12 +57,12 @@ class Alien(tile: IRayCastTile,
 
     private fun placeEgg(texture: Texture, ship: Ship) {
         val value = Random.nextInt(1, 100)
-        if (value <= 15) //15% de chance de colocar
-            ship.components.add(Egg(tile, ship.tileWidth, ship.tileHeight, texture))
+        if (value <= 0) //15% de chance de colocar
+            ship.components.add(Egg(prevTile, ship.tileWidth, ship.tileHeight, texture))
     }
 
     fun playTurn(texture: Texture, ship: Ship){
-        placeEgg(texture, ship)
         findClosestPlayer(ship)
+        placeEgg(texture, ship)
     }
 }
