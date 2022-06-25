@@ -9,4 +9,6 @@ interface Component {
     val texture: Texture?
     var color: Color
     val type: ComponentType
+
+    fun die() {}
 }

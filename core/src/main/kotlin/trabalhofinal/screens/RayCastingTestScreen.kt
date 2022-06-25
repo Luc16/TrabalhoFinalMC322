@@ -71,6 +71,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             ship.components.remove(selectedPlayer.targetComponent.component)
         }
 
+
         shipRenderer.renderShip(
             rayCastIsMinimap,
             rayCaster,
@@ -129,6 +130,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     }
     override fun keyUp(keycode: Int): Boolean = true
     override fun keyTyped(character: Char): Boolean = true
+
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val mouse = unprojectedMouse(screenX, screenY)
         if (mouse.x >= shipRenderer.mapRatio * WIDTH && mouse.y >= shipRenderer.mapRatio * HEIGHT)
@@ -136,6 +138,8 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (rayCastIsMinimap){
             mouseController(selectedPlayer, mouse)
             endTurnButton.onPress()
+        } else {
+            selectedPlayer.interact(ship)
         }
 
         return true
@@ -166,7 +170,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
             selectedPlayer.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
         } else {
-            endTurnButton.checkHover(mouse)
+            if (!selectedPlayer.isMoving) endTurnButton.checkHover(mouse)
         }
         return true
     }

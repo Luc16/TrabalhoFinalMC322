@@ -1,8 +1,6 @@
 package trabalhofinal.utils
 
-import java.util.LinkedList
 import kotlin.math.abs
-
 
 
 class AStar (private val grid: List<List<Node>>) {
@@ -55,6 +53,7 @@ class AStar (private val grid: List<List<Node>>) {
         }
     }
 
+
     private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean): List<IVector2>?{
         // ver se a posicao destino eh valida
         if (dest.isOutOfRange() || source.isOutOfRange() || (!acceptBlockedDest && dest.isBlocked())) return null
@@ -65,6 +64,7 @@ class AStar (private val grid: List<List<Node>>) {
         src.g = 0
         src.h = 0
         val open = mutableListOf(src)
+        var foundEnd = false
         changed.add(src)
 
         while (open.isNotEmpty()){
@@ -76,10 +76,9 @@ class AStar (private val grid: List<List<Node>>) {
             open.remove(node)
             node.wasVisited = true
 
-            var foundEnd = false
             node.forEachNeighbor { neighbor ->
                 // se eh parede ou visinho possuir componente bloqueador, return
-                foundEnd = neighbor == end && acceptBlockedDest
+                if (!foundEnd) foundEnd = neighbor == end && acceptBlockedDest
                 if ((neighbor != end && neighbor.notTraversable) || neighbor.wasVisited || foundEnd) return@forEachNeighbor
 
                 if (neighbor.parent == null || neighbor.parent?.let {it.g > node.g} == true){

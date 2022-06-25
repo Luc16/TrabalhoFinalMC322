@@ -13,4 +13,5 @@ class TargetComponent(
         set(value) {
             component.color = value
         }
+    fun die() = component.die()
 }

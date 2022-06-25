@@ -3,10 +3,7 @@ package trabalhofinal.components
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Circle
 import com.badlogic.gdx.math.Vector2
-import trabalhofinal.WIDTH
-import trabalhofinal.components.general.Component
 import trabalhofinal.components.general.IMapDrawable
 import trabalhofinal.components.general.IRayCastTile
 import trabalhofinal.components.general.RayCastComponent
@@ -16,23 +13,29 @@ import java.util.LinkedList
 import java.util.Queue
 import kotlin.math.*
 
-class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
-             tileWidth: Float, tileHeight: Float,
-             texture: Texture,
-             color: Color = Color.WHITE,
+abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
+                      tileWidth: Float, tileHeight: Float,
+                      texture: Texture,
+                      color: Color = Color.WHITE,
 ):  IMapDrawable,
     RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
 
     override val type = ComponentType.PLAYER
+    abstract val name: String
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)
     val i: Int get() = mapPos.i
     val j: Int get() = mapPos.j
 
-    private val maxStamina = 10
-    private var stamina = 5
+    var energy = 5
     var isMoving = false
+
+    abstract val maxEnergy: Int
+    abstract val webEnergy: Int
+    abstract val fungusEnergy: Int
+    abstract val eggEnergy: Int
+
 
     private var destQueue: Queue<IVector2> = LinkedList()
     private var pathLen = 0
@@ -42,6 +45,7 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
     var dir = Vector2(1f, 0f)
     var cameraPlane = Vector2(0f, 0.66f)
     private lateinit var dest: IVector2
+
     fun rotate(angle: Float){
         // rotaciona o jogador utilizando multiplicando a direçao e plano da camera por uma matriz de rotação
         dir = Vector2(dir.x* cos(angle) - dir.y* sin(angle), dir.x* sin(angle) + dir.y* cos(angle))
@@ -53,7 +57,7 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
 
         if (path != null){
             tile.component = null
-            for (k in 0 until min(stamina + 1, path.size))
+            for (k in 0 until min(energy + 1, path.size))
                 destQueue.add(path[k])
 
             pathLen = destQueue.size
@@ -80,7 +84,7 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
                 y = j*tileHeight + tileHeight/2
             }
             if (pathLen > destQueue.size) {
-                stamina--
+                energy--
             }
             destQueue.remove(dest)
 
@@ -116,10 +120,37 @@ class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
     }
 
     fun reset(){
-        stamina = maxStamina
+        energy = maxEnergy
     }
 
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
         renderer.circle(startX - x * ratio, startY + y * ratio, radius * ratio)
+    }
+
+    fun interact(ship: Ship){
+        when(targetComponent.type){
+            ComponentType.WEB -> {
+                if (energy < webEnergy) return
+                targetComponent.color = Color.BLACK
+                targetComponent.die()
+                ship.removeComponent(targetComponent.component)
+                energy -= webEnergy
+            }
+            ComponentType.FUNGUS -> {
+                if (energy < fungusEnergy) return
+                targetComponent.color = Color.WHITE //TODO ver cor certa da parede
+                targetComponent.die()
+                ship.removeComponent(targetComponent.component)
+                energy -= fungusEnergy
+            }
+            ComponentType.EGG -> {
+                if (energy < eggEnergy) return
+                targetComponent.color = Color.BLACK
+                targetComponent.die()
+                ship.removeComponent(targetComponent.component)
+                energy -= eggEnergy
+            }
+            else -> {}
+        }
     }
 }

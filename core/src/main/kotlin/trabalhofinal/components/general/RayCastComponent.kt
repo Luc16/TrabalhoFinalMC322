@@ -113,11 +113,10 @@ abstract class RayCastComponent(
         mesh?.run {
             moveAndScale(initialX, initialY, ratio)
             standAloneRender(shader)
-//            dispose()
         }
     }
 
-    fun die(){
+    override fun die(){
         tile.component = null
     }
 

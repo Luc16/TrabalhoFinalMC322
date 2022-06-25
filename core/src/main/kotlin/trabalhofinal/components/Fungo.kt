@@ -17,26 +17,28 @@ class Fungo(
     //a ideia é que tenha uma lista de fungos na ship (?) e chame o metodo de cada
     // um dos fungos passando a coordenada i e j deles
     fun spread(ship: Ship, i: Int, j: Int){
-        for (fungo in ship.fungus){
-            val value = Random.nextInt(1, 100)
-            if (value <= 10){
-                if(i - 1 >= 0){
-                    if (ship.tiles[i-1][j].component!!.type == ComponentType.WALL)
-                        ship.tiles[i-1][j].component = Fungo()
-                }
-                if(i + 1 < ship.tiles.size){
-                    if (ship.tiles[i+1][j].component!!.type == ComponentType.WALL)
-                        ship.tiles[i+1][j].component = Fungo()
-                }
-                if(j - 1 >= 0){
-                    if (ship.tiles[i][j-1].component!!.type == ComponentType.WALL)
-                        ship.tiles[i][j-1].component = Fungo()
-                }
-                if(j + 1 < ship.tiles[0].size){
-                    if (ship.tiles[i][j+1].component!!.type == ComponentType.WALL)
-                        ship.tiles[i][j+1].component = Fungo()
-                }
+        val value = Random.nextInt(1, 100)
+        if (value <= 10){
+            if(i - 1 >= 0){
+                if (ship.tiles[i-1][j].component!!.type == ComponentType.WALL)
+                    ship.tiles[i-1][j].component = Fungo()
+            }
+            if(i + 1 < ship.tiles.size){
+                if (ship.tiles[i+1][j].component!!.type == ComponentType.WALL)
+                    ship.tiles[i+1][j].component = Fungo()
+            }
+            if(j - 1 >= 0){
+                if (ship.tiles[i][j-1].component!!.type == ComponentType.WALL)
+                    ship.tiles[i][j-1].component = Fungo()
+            }
+            if(j + 1 < ship.tiles[0].size){
+                if (ship.tiles[i][j+1].component!!.type == ComponentType.WALL)
+                    ship.tiles[i][j+1].component = Fungo()
             }
         }
+    }
+
+    override fun die(){ //setar WALL como componente do tile
+
     }
 }

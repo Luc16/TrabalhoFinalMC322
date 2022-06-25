@@ -5,13 +5,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
+import trabalhofinal.components.general.Component
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 class Ship(file: String, textures: List<Texture>) {
     val tiles: List<List<Tile>>
     val players = mutableListOf<Player>()
     private val aliens = mutableListOf<Alien>()
-    val fungus = mutableListOf<Fungo>()
+    private val fungus = mutableListOf<Fungo>()
+    private val eggs = mutableListOf<Fungo>()
     val components = RayCastCompList()
     private val sizeI: Int
     private var sizeJ: Int
@@ -54,11 +56,11 @@ class Ship(file: String, textures: List<Texture>) {
         }
         tiles = tempTiles.toList()
 
-        val p1 = Player(tiles[21][4], 10f, tileWidth, tileHeight,
+        val p1 = Pyro(tiles[21][4], 10f, tileWidth, tileHeight,
             Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), color = Color.GREEN
         )
         players.add(p1)
-        val p2 = Player(tiles[18][4],10f, tileWidth, tileHeight,
+        val p2 = Botanist(tiles[18][4],10f, tileWidth, tileHeight,
             Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
         )
         players.add(p2)
@@ -89,6 +91,18 @@ class Ship(file: String, textures: List<Texture>) {
 
     fun updateComponents(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         components.updateComponents(player, zBuffer, tileWidth, tileHeight)
+    }
+
+    fun removeComponent(comp: Component){
+        components.remove(comp)
+        comp.die()
+        when (comp.type) {
+            ComponentType.FUNGUS -> fungus.remove(comp)
+            ComponentType.EGG -> eggs.remove(comp)
+            ComponentType.PLAYER -> players.remove(comp)
+            else -> {}
+        }
+
     }
 
     fun getTilePos(y: Float, x: Float): IVector2 {

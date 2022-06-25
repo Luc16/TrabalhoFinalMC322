@@ -35,18 +35,21 @@ class Alien(tile: IRayCastTile,
         var closestPath = 0
         val graph = AStar(ship.tiles)
         val paths = mutableListOf<List<IVector2>?>()
+        val mapPos = IVector2(tile.i, tile.j)
+
         for (player in ship.players){
-            val path = graph.findPath(IVector2(tile.i, tile.j), ship.players[1].mapPos, true)
+            val path = graph.findPath(mapPos, player.mapPos, true)
             paths.add(path)
         }
-        for (i in 0 until paths.size){
-            if (paths[i] != null){
-                if (paths[i]!!.size < min){
-                    min = paths[i]!!.size
-                    closestPath = i
-                }
+        paths.forEachIndexed { i, path ->
+            if (path == null) return@forEachIndexed
+            if (path.size < min){
+                min = path.size
+                closestPath = i
             }
+
         }
+
         val closest = paths[closestPath]
         if (closest != null && min != Int.MAX_VALUE)
             if (closest.size < stamina + 1)
