@@ -22,16 +22,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private val shader = ShaderProgram(vertexShader, fragmentShader)
     private val shipRenderer = ShipRenderer(renderer, batch, font, viewport.camera, shader, 0.25f, 0.30f)
-    private val textures = listOf(
-        Texture(Gdx.files.local("assets/wolftex/pics/eagle.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/redbrick.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/purplestone.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/greystone.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/trig.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/mossy.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
-        Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),
-    )
+    private val textures = TextureLoader()
     private lateinit var ship: Ship
     private lateinit var rayCaster: RayCaster
     private lateinit var aStar: AStar
@@ -81,7 +72,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private fun endTurn() {
         if (!endTurnButton.hovered) return
-        ship.playAliens(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")), aStar)
+        ship.playAliens(textures.egg, aStar)
         ship.spreadFungus()
         endGame()
         if (!selectedPlayer.live && ship.numPlayers > 0) selectedPlayer = ship.getFirstPlayer()
@@ -119,7 +110,6 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     override fun dispose() {
         shader.dispose()
-        textures.forEach { it.dispose() }
     }
 
     override fun keyDown(keycode: Int): Boolean {

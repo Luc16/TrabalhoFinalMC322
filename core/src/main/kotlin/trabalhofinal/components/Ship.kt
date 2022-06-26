@@ -10,9 +10,10 @@ import trabalhofinal.components.general.*
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
+import trabalhofinal.utils.TextureLoader
 import kotlin.math.max
 
-class Ship(file: String, textures: List<Texture>): ComponentShip {
+class Ship(file: String, textures: TextureLoader): ComponentShip {
     val tiles: List<List<Tile>>
     override val drawableTiles: List<List<DrawableTile>>
         get() = tiles
@@ -25,7 +26,7 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
     var sizeJ: Int
     override val tileWidth: Float
     override val tileHeight: Float
-    override var numFungi = 2 //TODO tirar depois
+    override var numFungi = 0
     private var fungiToAdd = mutableListOf<Fungus>()
     override val numEggs get() = eggs.size
     val numPlayers get() = players.size
@@ -52,52 +53,43 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
 
                 tile.setInitialComponent(
                     when (id){
-                        1 -> Wall(tile, textures[3])
+                        1 -> Wall(tile, textures.wall)
                         2 -> {
-                            val fungus = Fungus(tile, textures[5], textures[3])
+                            val fungus = Fungus(tile, textures.fungus, textures.wall)
                             fungi.add(fungus)
                             numFungi++
                             fungus
                         }
                         3 -> {
-                            val web = AlienWeb(tile, tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")))
+                            val web = AlienWeb(tile, tileWidth, tileHeight, textures.web)
                             components.add(web)
                             web
                         }
                         4 -> {
-                            val p = Pyro(tile, tileWidth, tileHeight,
-                                Texture(Gdx.files.local("assets/wolftex/pics/pyro.png")),
-                                Texture(Gdx.files.local("assets/wolftex/pics/pyro_logo.png")),
-                            )
+                            val p = Pyro(tile, tileWidth, tileHeight, textures.pyro, textures.pyroLogo)
                             components.add(p)
                             players.add(p)
                             p
                         }
                         5 -> {
-                            val p = Recon(tile, tileWidth, tileHeight,
-                                Texture(Gdx.files.local("assets/wolftex/pics/recon.png")),
-                                Texture(Gdx.files.local("assets/wolftex/pics/recon_logo.png")),
-                            )
+                            val p = Recon(tile, tileWidth, tileHeight, textures.recon, textures.reconLogo)
                             components.add(p)
                             players.add(p)
                             p
                         }
                         6 -> {
-                            val p = Botanist(tile, tileWidth, tileHeight,
-                                Texture(Gdx.files.local("assets/wolftex/pics/botanist.png")),
-                                Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
-                            )
+                            val p = Botanist(tile, tileWidth, tileHeight, textures.botanist, textures.botanistLogo)
                             components.add(p)
                             players.add(p)
                             p
                         }
                         7 -> {
-                            val egg = Egg(tile, tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
+                            val egg = Egg(tile, tileWidth, tileHeight, textures.egg)
                             addEgg(egg)
                             egg
                         }
                         8 -> {
-                            val alien = Alien(tile, tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png")))
+                            val alien = Alien(tile, tileWidth, tileHeight, textures.alien)
                             aliens.add(alien)
                             components.add(alien)
                             alien

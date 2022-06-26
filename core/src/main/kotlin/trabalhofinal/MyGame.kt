@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxGame
-//import trabalhofinal.screens.GridScreen
 import trabalhofinal.screens.*
 
 const val WIDTH = 1000f
@@ -22,7 +21,6 @@ class MyGame: KtxGame<CustomScreen>() {
         gameViewport.camera.translate(WIDTH/2, HEIGHT/2,0f)
         font.data.setScale(3f)
         addScreen(GameScreen(this))
-        addScreen(MeshTestScreen(this))
         addScreen(MenuScreen(this))
         setScreen<MenuScreen>()
     }
