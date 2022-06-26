@@ -89,6 +89,11 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
             Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
         )
         players.add(p2)
+        val p3 = Botanist(tiles[14][4], tileWidth, tileHeight,
+            Texture(Gdx.files.local("assets/wolftex/pics/pyro.png")),
+            Texture(Gdx.files.local("assets/wolftex/pics/pyro_logo.png")),
+        )
+        players.add(p3)
         aliens.add(Alien(tiles[21][12], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png"))))
         eggs.add(Egg(tiles[20][10], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png"))))
 
@@ -96,6 +101,7 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
         run {
             components.add(p1)
             components.add(p2)
+            components.add(p3)
             components.add(aliens[0])
             components.add(eggs[0])
             components.add(AlienWeb(tiles[22][2], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png"))))
