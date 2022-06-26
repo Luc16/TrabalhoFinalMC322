@@ -21,7 +21,7 @@ import kotlin.math.PI
 class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private val shader = ShaderProgram(vertexShader, fragmentShader)
-    private val shipRenderer = ShipRenderer(renderer, batch, font, viewport.camera, shader, 0.25f)
+    private val shipRenderer = ShipRenderer(renderer, batch, font, viewport.camera, shader, 0.25f, 0.30f)
     private val textures = listOf(
         Texture(Gdx.files.local("assets/wolftex/pics/eagle.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/redbrick.png")),
@@ -32,10 +32,10 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),
     )
-    private var ship = Ship("assets/maps/test.map", textures)
-    private var rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
-    private var aStar = AStar(ship.tiles)
-    private var selectedPlayer = ship.getFirstPlayer()
+    private lateinit var ship: Ship
+    private lateinit var rayCaster: RayCaster
+    private lateinit var aStar: AStar
+    private lateinit var selectedPlayer: Player
     private var rayCastIsMinimap = true
     private val endTurnButton: Button = Button(
         "End Turn",
@@ -49,7 +49,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     override fun show() {
         Gdx.input.inputProcessor = this
-        ship = Ship("assets/maps/test.map", textures)
+        ship = Ship("assets/maps/apresentacao.map", textures)
         rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
         aStar = AStar(ship.tiles)
         selectedPlayer = ship.getFirstPlayer()
@@ -134,7 +134,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (mouse.x >= shipRenderer.mapRatio * WIDTH && mouse.y >= shipRenderer.mapRatio * HEIGHT)
             toggleViewMode()
         if (rayCastIsMinimap){
-            mouseController(selectedPlayer, mouse)
+            if (!selectedPlayer.isMoving) mouseController(selectedPlayer, mouse)
             endTurnButton.onPress()
         } else {
             selectedPlayer.interact(ship)

@@ -63,7 +63,7 @@ abstract class RayCastComponent(
         var drawEndX = spriteWidth / 2 + spriteScreenX
 
         // verifica se o componente está totalmente fora da tela
-        if(drawStartX > WIDTH || drawEndX < 0 || transformedPos.y < 0) {
+        if(drawStartX >= WIDTH || drawEndX < 0 || transformedPos.y < 0) {
             seen = false
             return
         }

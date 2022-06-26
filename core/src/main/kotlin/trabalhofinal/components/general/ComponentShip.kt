@@ -9,6 +9,7 @@ interface ComponentShip {
     val tileWidth: Float
     val tileHeight: Float
     var numFungi: Int
+    val maxFungi: Int
     val numEggs: Int
     val players: MutableList<Player>
     val drawableTiles: List<List<DrawableTile>>

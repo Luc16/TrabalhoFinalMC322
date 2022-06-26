@@ -8,9 +8,9 @@ import trabalhofinal.components.general.RayCastTile
 
 open class Wall(
     var tile: RayCastTile,
-    override var color: Color,
     override val texture: Texture?,
-    ): Component {
+    override var color: Color = Color.GRAY
+): Component {
     override val isWall = true
     override val type = ComponentType.WALL
     private val i = tile.i

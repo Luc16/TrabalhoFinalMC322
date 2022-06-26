@@ -25,7 +25,8 @@ class ShipRenderer(
     private val font: BitmapFont,
     private val camera: Camera,
     private val shader: ShaderProgram,
-    val minimapRatio: Float
+    val minimapRatio: Float,
+    private val minimapTileRatio: Float
 ) {
 
     val mapRatio = 1 - minimapRatio
@@ -43,8 +44,8 @@ class ShipRenderer(
             ship.renderComponents(shader)
             drawTileMap(selectedPlayer, ship.players, ship.drawableTiles, rayCaster.collisionPoints,
                 true,
-                WIDTH - WIDTH*minimapRatio - 5f,
-                HEIGHT - HEIGHT*minimapRatio - 5f)
+                WIDTH - WIDTH*minimapTileRatio - 5f,
+                HEIGHT - HEIGHT*minimapTileRatio - 5f)
         } else {
             val minimapX = WIDTH*mapRatio
             val minimapY = HEIGHT*mapRatio
@@ -64,7 +65,7 @@ class ShipRenderer(
         }
         batch.use(camera.combined){
             button.drawMessage(batch, font)
-            val fungusText = GlyphLayout(font, "Fungus: ${ship.numFungi}/10")
+            val fungusText = GlyphLayout(font, "Fungus: ${ship.numFungi}/${ship.maxFungi}")
             font.draw(batch, fungusText, button.x + button.width + 5f, (1 - minimapRatio/3) * HEIGHT + fungusText.height/2)
             val eggText = GlyphLayout(font, "Eggs: ${ship.numEggs}")
             font.draw(batch, eggText, button.x + button.width + 5f, (1 - 2*minimapRatio/3) * HEIGHT + eggText.height/2)
@@ -130,7 +131,7 @@ class ShipRenderer(
         initialX: Float = 0f,
         initialY: Float = 0f
     ){
-        val ratio = if (isMinimap) minimapRatio else mapRatio
+        val ratio = if (isMinimap) minimapTileRatio else mapRatio
         val mapRect = Rectangle(initialX, initialY, WIDTH*ratio, HEIGHT*ratio)
         val mirroredX = mapRect.x + mapRect.width
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){

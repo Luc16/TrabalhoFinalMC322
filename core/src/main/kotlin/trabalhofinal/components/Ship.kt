@@ -29,83 +29,87 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
     private var fungiToAdd = mutableListOf<Fungus>()
     override val numEggs get() = eggs.size
     val numPlayers get() = players.size
-    val maxFungi: Int
+    override val maxFungi: Int
 
     init {
         val reader = MapReader(file)
-        val mapString = reader.contents().reversed()
+        val mapString = reader.contents()
+
+        maxFungi = mapString[mapString.lastIndex].toInt()
         sizeJ = mapString[0].length
-        sizeI = mapString.size
+        sizeI = mapString.size - 1
 
         tileWidth = WIDTH /sizeJ
-        tileHeight = HEIGHT /sizeI
-
-        //cria a matriz de tiles
+        tileHeight = HEIGHT/sizeI
 
         val tempTiles = mutableListOf<MutableList<Tile>>()
-        maxFungi = 30
 
         for (i in 0 until sizeJ){
             val line = mutableListOf<Tile>()
             for (j in 0 until sizeI){
                 val id = mapString[i][j] - '0'
-                val color = if (id != 0) Color.GRAY else Color.BLACK
-//                val color = when (id){
-//                    1 -> Color.WHITE
-//                    2 -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro
-//                    3 -> Color.PURPLE
-//                    4 -> Color.WHITE
-//                    5 -> Color.YELLOW
-//                    6 -> Color.BLUE
-//                    7 -> Color.CORAL
-//                    8 -> Color.MAGENTA
-//                    else -> Color.BLACK
-//                }
-
                 val tile = Tile(i, j, tileWidth, tileHeight)
-                if (id != 0) {
-                    tile.setInitialComponent(
-                        if (id == 1) {
+
+                tile.setInitialComponent(
+                    when (id){
+                        1 -> Wall(tile, textures[3])
+                        2 -> {
                             val fungus = Fungus(tile, textures[5], textures[3])
                             fungi.add(fungus)
+                            numFungi++
                             fungus
                         }
-                        else Wall(tile, color, textures[3])
-                    )
-                }
+                        3 -> {
+                            val web = AlienWeb(tile, tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png")))
+                            components.add(web)
+                            web
+                        }
+                        4 -> {
+                            val p = Pyro(tile, tileWidth, tileHeight,
+                                Texture(Gdx.files.local("assets/wolftex/pics/pyro.png")),
+                                Texture(Gdx.files.local("assets/wolftex/pics/pyro_logo.png")),
+                            )
+                            components.add(p)
+                            players.add(p)
+                            p
+                        }
+                        5 -> {
+                            val p = Recon(tile, tileWidth, tileHeight,
+                                Texture(Gdx.files.local("assets/wolftex/pics/recon.png")),
+                                Texture(Gdx.files.local("assets/wolftex/pics/recon_logo.png")),
+                            )
+                            components.add(p)
+                            players.add(p)
+                            p
+                        }
+                        6 -> {
+                            val p = Botanist(tile, tileWidth, tileHeight,
+                                Texture(Gdx.files.local("assets/wolftex/pics/botanist.png")),
+                                Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
+                            )
+                            components.add(p)
+                            players.add(p)
+                            p
+                        }
+                        7 -> {
+                            val egg = Egg(tile, tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
+                            addEgg(egg)
+                            egg
+                        }
+                        8 -> {
+                            val alien = Alien(tile, tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png")))
+                            aliens.add(alien)
+                            components.add(alien)
+                            alien
+                        }
+                        else -> null
+                    }
+                )
                 line.add(tile)
             }
             tempTiles.add(line)
         }
         tiles = tempTiles.toList()
-
-        val p1 = Recon(tiles[21][4], tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/recon.png")),
-            Texture(Gdx.files.local("assets/wolftex/pics/recon_logo.png")),
-        )
-        players.add(p1)
-        val p2 = Botanist(tiles[18][4], tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/botanist.png")),
-            Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
-        )
-        players.add(p2)
-        val p3 = Botanist(tiles[14][4], tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/pyro.png")),
-            Texture(Gdx.files.local("assets/wolftex/pics/pyro_logo.png")),
-        )
-        players.add(p3)
-        aliens.add(Alien(tiles[21][12], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png"))))
-        eggs.add(Egg(tiles[20][10], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png"))))
-
-        // adiciona os componentes
-        run {
-            components.add(p1)
-            components.add(p2)
-            components.add(p3)
-            components.add(aliens[0])
-            components.add(eggs[0])
-            components.add(AlienWeb(tiles[22][2], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/squareweb.png"))))
-        }
     }
 
     override operator fun get(i: Int, j: Int) = tiles[i][j]

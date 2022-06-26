@@ -29,7 +29,7 @@ abstract class Player(tile: RayCastTile,
     val i: Int get() = mapPos.i
     val j: Int get() = mapPos.j
 
-    var energy = 5
+    var energy = maxEnergy
     var isMoving = false
     var isSelected = false
 
@@ -78,8 +78,8 @@ abstract class Player(tile: RayCastTile,
         if (!isMoving || destQueue.isEmpty()) return
         mapPos = IVector2(tile.i, tile.j)
 
-        val speedY = mapRatio*tileWidth / 16
-        val speedX = mapRatio*tileHeight / 16
+        val speedY = mapRatio*tileWidth / 8
+        val speedX = mapRatio*tileHeight / 8
 
         if (i == dest.i && j == dest.j) {
             if (destQueue.size == 1) {

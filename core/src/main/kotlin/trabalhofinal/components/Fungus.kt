@@ -11,7 +11,7 @@ class Fungus(
     texture: Texture,
     private val wallTexture: Texture,
     color: Color = Color.ORANGE,
-): Wall(tile, color, texture) {
+): Wall(tile, texture, color) {
     override val type: ComponentType = ComponentType.FUNGUS
     override val isWall = true
 
@@ -35,6 +35,6 @@ class Fungus(
     }
 
     override fun die(){
-        tile.component = Wall(tile, Color.WHITE, wallTexture)
+        tile.component = Wall(tile, wallTexture)
     }
 }
