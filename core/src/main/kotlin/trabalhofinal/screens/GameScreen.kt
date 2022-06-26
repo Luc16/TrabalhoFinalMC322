@@ -69,10 +69,9 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     }
 
     private fun changePlayer(player: Player){
-        fun Color.scl(scalar: Float) = Color(this.r*scalar, this.g*scalar, this.b*scalar, this.a)
-        selectedPlayer.seenColor = selectedPlayer.seenColor.scl(0.5f)
+        selectedPlayer.isSelected = false
         selectedPlayer = player
-        player.seenColor = player.seenColor.scl(2f)
+        player.isSelected = true
     }
 
     private fun endTurn(){

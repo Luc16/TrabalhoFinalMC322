@@ -42,7 +42,6 @@ abstract class RayCastComponent(
         dist = (player.x - x)*(player.x - x) + (player.y - y)*(player.y - y)
 
         // variavel para aumentar ou diminuir os sprites
-        val div = 1f
 
         // posição relativa do jogador com o componente (utilizando uma matriz de mudança de coordenadas)
         val transformedPos = Vector2(x - player.x, y - player.y)
@@ -55,11 +54,11 @@ abstract class RayCastComponent(
 
         val h = 1.5f*HEIGHT
         val spriteScreenX = (WIDTH / 2) * (1 + transformedPos.x / transformedPos.y)
-        val spriteHeight = (tileHeight * h / transformedPos.y)/div
+        val spriteHeight = tileHeight * h / transformedPos.y
         val drawStartY =  -spriteHeight / 2 + h / 2
         // val drawEndY = spriteHeight / 2 + h / 2
 
-        val spriteWidth = (tileWidth * h / transformedPos.y)/div
+        val spriteWidth = tileWidth * h / transformedPos.y
         var drawStartX = -spriteWidth / 2 + spriteScreenX
         var drawEndX = spriteWidth / 2 + spriteScreenX
 

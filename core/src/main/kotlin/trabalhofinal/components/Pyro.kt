@@ -9,8 +9,9 @@ class Pyro(
     tileWidth: Float,
     tileHeight: Float,
     texture: Texture,
+    mapTexture: Texture,
     color: Color = Color.RED
-) : Player(tile, tileWidth, tileHeight, texture, color) {
+) : Player(tile, tileWidth, tileHeight, texture, mapTexture, color) {
     override val name: String
         get() = "Pyro"
     override val maxEnergy: Int

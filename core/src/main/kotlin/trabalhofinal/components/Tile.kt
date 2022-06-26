@@ -1,11 +1,9 @@
 package trabalhofinal.components
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import trabalhofinal.components.general.Component
-import trabalhofinal.components.general.ComponentType
-import trabalhofinal.components.general.MapDrawable
-import trabalhofinal.components.general.RayCastTile
+import trabalhofinal.components.general.*
 import trabalhofinal.utils.Node
 
 class Tile(
@@ -14,7 +12,7 @@ class Tile(
         val width: Float,
         val height: Float,
     ) :
-    MapDrawable,
+    DrawableTile,
     RayCastTile,
     Node(i, j, false) {
     override val x: Float = i*width
@@ -33,16 +31,22 @@ class Tile(
         component = comp
         isWall = comp?.isWall ?: false
     }
+
+    private fun drawRect(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) = renderer.rect(
+        startX - width * ratio - x * ratio,
+        startY + y * ratio,
+        width * ratio, height * ratio
+    )
+
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
-        component?.let {
-            if (it.type == ComponentType.PLAYER) return
-            renderer.color = it.color
-            renderer.rect(
-                startX - width * ratio - x * ratio-1,
-                startY + y * ratio -1,
-                width * ratio - 1, height * ratio -1
-            )
-        }
+        if (component?.type == ComponentType.PLAYER || component == null) return
+        renderer.color = component?.color
+        drawRect(startX, startY, ratio, renderer)
+    }
+
+    override fun drawOutline(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
+        renderer.color = Color.WHITE
+        drawRect(startX, startY, ratio, renderer)
     }
 
 }

@@ -6,22 +6,19 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.general.Component
-import trabalhofinal.components.general.ComponentShip
-import trabalhofinal.components.general.ComponentType
-import trabalhofinal.components.general.MapDrawable
+import trabalhofinal.components.general.*
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 class Ship(file: String, textures: List<Texture>): ComponentShip {
     val tiles: List<List<Tile>>
-    override val drawableTiles: List<List<MapDrawable>>
+    override val drawableTiles: List<List<DrawableTile>>
         get() = tiles
     override val players = mutableListOf<Player>()
     private val aliens = mutableListOf<Alien>()
     private val fungi = mutableListOf<Fungus>()
     private val eggs = mutableListOf<Egg>()
-    val components = RayCastCompList()
+    override val components = RayCastCompList()
     val sizeI: Int
     var sizeJ: Int
     override val tileWidth: Float
@@ -47,7 +44,7 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
             val line = mutableListOf<Tile>()
             for (j in 0 until sizeI){
                 val id = mapString[i][j] - '0'
-                val color = if (id != 0) Color.WHITE else Color.BLACK
+                val color = if (id != 0) Color.GRAY else Color.BLACK
 //                val color = when (id){
 //                    1 -> Color.WHITE
 //                    2 -> Color(0f, 40f/255f, 0f, 1f) // Verde mais escuro
@@ -79,10 +76,12 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
 
         val p1 = Pyro(tiles[21][4], tileWidth, tileHeight,
             Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+            Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
         )
         players.add(p1)
         val p2 = Botanist(tiles[18][4], tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
+            Texture(Gdx.files.local("assets/wolftex/pics/botanist.png")),
+            Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
         )
         players.add(p2)
         aliens.add(Alien(tiles[21][12], tileWidth, tileHeight, Texture(Gdx.files.local("assets/wolftex/pics/alien.png"))))
@@ -100,7 +99,10 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
 
     override operator fun get(i: Int, j: Int) = tiles[i][j]
 
-    fun getFirstPlayer(): Player = players[0]
+    fun getFirstPlayer(): Player {
+        players[0].isSelected = true
+        return players[0]
+    }
 
     fun resetPlayers() = players.forEach { it.reset() }
 

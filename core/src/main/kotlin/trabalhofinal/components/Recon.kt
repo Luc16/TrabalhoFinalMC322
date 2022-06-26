@@ -9,12 +9,13 @@ class Recon(
     tileWidth: Float,
     tileHeight: Float,
     texture: Texture,
+    mapTexture: Texture,
     color: Color = Color.BLUE
-) : Player(tile, tileWidth, tileHeight, texture, color) {
+) : Player(tile, tileWidth, tileHeight, texture, mapTexture, color) {
     override val name: String
         get() = "Recon"
     override val maxEnergy: Int
-        get() = 10
+        get() = 15
     override val webEnergy: Int
         get() = 4
     override val fungusEnergy: Int

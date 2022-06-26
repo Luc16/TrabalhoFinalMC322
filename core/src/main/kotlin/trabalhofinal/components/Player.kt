@@ -2,12 +2,10 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
-import trabalhofinal.components.general.ComponentType
-import trabalhofinal.components.general.MapDrawable
-import trabalhofinal.components.general.RayCastTile
-import trabalhofinal.components.general.RayCastComponent
+import trabalhofinal.components.general.*
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import java.util.LinkedList
@@ -16,14 +14,14 @@ import kotlin.math.*
 
 abstract class Player(tile: RayCastTile,
                       tileWidth: Float, tileHeight: Float,
-                      texture: Texture,
+                      texture: Texture, private val mapTexture: Texture,
                       color: Color
-):  MapDrawable,
+):  MapBatchDrawable,
     RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
 
     override val type = ComponentType.PLAYER
     abstract val name: String
-    private val radius: Float = tileWidth/2 //TODO tirar
+    private val diameter: Float = tileWidth//TODO tirar
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)
@@ -32,6 +30,7 @@ abstract class Player(tile: RayCastTile,
 
     var energy = 5
     var isMoving = false
+    var isSelected = false
 
     abstract val maxEnergy: Int
     abstract val webEnergy: Int
@@ -125,9 +124,14 @@ abstract class Player(tile: RayCastTile,
         energy = maxEnergy
     }
 
-    override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
-        renderer.color = color
-        renderer.circle(startX - x * ratio, startY + y * ratio, radius * ratio)
+    override fun draw(startX: Float, startY: Float, ratio: Float, batch: Batch) {
+        if (isSelected) batch.setColor(1f, 1f, 1f, 1f)
+        else  batch.setColor(0.5f, 0.5f, 0.5f, 1f)
+        batch.draw(
+            mapTexture,
+            startX - (x + diameter/2) * ratio, startY + (y - diameter/2) * ratio,
+            diameter * ratio, diameter*ratio
+        )
     }
 
     fun interact(ship: Ship){

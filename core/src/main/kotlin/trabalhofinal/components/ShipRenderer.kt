@@ -14,7 +14,7 @@ import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.ComponentShip
-import trabalhofinal.components.general.MapDrawable
+import trabalhofinal.components.general.DrawableTile
 import trabalhofinal.utils.Button
 import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.MeshGroup
@@ -57,8 +57,9 @@ class ShipRenderer(
 
     private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player, ship: ComponentShip) {
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
-            renderer.color = Color.BLACK
+            renderer.color = Color.DARK_GRAY
             renderer.rect(WIDTH - WIDTH*minimapRatio, 0f, WIDTH*minimapRatio, initialY)
+            renderer.rect(0f, HEIGHT*mapRatio, WIDTH*mapRatio, HEIGHT)
             button.drawRect(renderer)
         }
         batch.use(camera.combined){
@@ -96,6 +97,15 @@ class ShipRenderer(
 
             font.data.setScale(3f)
 
+            val buffer = -60
+            val width = WIDTH*minimapRatio - buffer*2
+            batch.draw(selectedPlayer.texture,
+                WIDTH*mapRatio + buffer,
+                fungEY/2 - width/2 + 60,
+                width,
+                width
+            )
+
         }
 
     }
@@ -113,34 +123,41 @@ class ShipRenderer(
     private fun drawTileMap(
         selectedPlayer: Player,
         players: List<Player>,
-        tiles: List<List<MapDrawable>>,
+        tiles: List<List<DrawableTile>>,
         collisionPoints: List<Vector2>,
         isMinimap: Boolean,
         initialX: Float = 0f,
         initialY: Float = 0f
     ){
         val ratio = if (isMinimap) minimapRatio else mapRatio
-        val minimapRect = Rectangle(initialX, initialY, WIDTH*ratio, HEIGHT*ratio)
-        val mirroredX = minimapRect.x + minimapRect.width
+        val mapRect = Rectangle(initialX, initialY, WIDTH*ratio, HEIGHT*ratio)
+        val mirroredX = mapRect.x + mapRect.width
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.BLACK
-            renderer.rect(minimapRect.x, minimapRect.y, minimapRect.width, minimapRect.height)
+            renderer.rect(mapRect.x, mapRect.y, mapRect.width, mapRect.height)
             renderer.color = Color.LIGHT_GRAY
             collisionPoints.forEach{
                 renderer.rectLine(
                     mirroredX - selectedPlayer.x*ratio,
-                    minimapRect.y + selectedPlayer.y*ratio,
+                    mapRect.y + selectedPlayer.y*ratio,
                     mirroredX - it.x*ratio,
-                    minimapRect.y + it.y*ratio, 1f)
+                    mapRect.y + it.y*ratio, 1f)
             }
             tiles.forEach{ line ->
                 line.forEach { tile ->
-                    tile.draw(mirroredX, minimapRect.y, ratio, renderer)
+                    tile.draw(mirroredX, mapRect.y, ratio, renderer)
                 }
             }
-            renderer.color = Color.BROWN
-            players.forEach {
-                it.draw(mirroredX, minimapRect.y, ratio, renderer)
+
+        }
+        batch.use(camera.combined){
+            players.forEach {it.draw(mirroredX, mapRect.y, ratio, batch)}
+        }
+        renderer.use(ShapeRenderer.ShapeType.Line, camera.combined){
+            tiles.forEach{ line ->
+                line.forEach { tile ->
+                    tile.drawOutline(mirroredX, mapRect.y, ratio, renderer)
+                }
             }
         }
     }

@@ -93,7 +93,6 @@ class AStar (private val grid: List<List<Node>>) {
             }
             if (foundEnd) return resultPath(node)
         }
-        println("Nao achei caminho")
         return null
     }
 
