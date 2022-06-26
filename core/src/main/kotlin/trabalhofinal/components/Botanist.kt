@@ -22,5 +22,6 @@ class Botanist(
         get() = 2
     override val eggEnergy: Int
         get() = 4
-
+    override val cameraPlaneSize: Float
+        get() = 0.40f
 }

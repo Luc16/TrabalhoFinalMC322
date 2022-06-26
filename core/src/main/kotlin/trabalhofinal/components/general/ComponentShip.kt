@@ -16,6 +16,7 @@ interface ComponentShip {
 
     operator fun get(i: Int, j: Int): RayCastTile
 
+    fun removeComponent(comp: Component)
     fun renderComponents(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f)
     fun addEgg(egg: Egg)
 }

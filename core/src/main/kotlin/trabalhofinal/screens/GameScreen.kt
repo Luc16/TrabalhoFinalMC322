@@ -32,10 +32,10 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         Texture(Gdx.files.local("assets/wolftex/pics/wood.png")),
         Texture(Gdx.files.local("assets/wolftex/pics/colorstone.png")),
     )
-    private val ship = Ship("assets/maps/test.map", textures)
-    private val rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
-    private val aStar = AStar(ship.tiles)
-    private var selectedPlayer: Player = ship.getFirstPlayer()
+    private var ship = Ship("assets/maps/test.map", textures)
+    private var rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
+    private var aStar = AStar(ship.tiles)
+    private var selectedPlayer = ship.getFirstPlayer()
     private var rayCastIsMinimap = true
     private val endTurnButton: Button = Button(
         "End Turn",
@@ -49,6 +49,11 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     override fun show() {
         Gdx.input.inputProcessor = this
+        ship = Ship("assets/maps/test.map", textures)
+        rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
+        aStar = AStar(ship.tiles)
+        selectedPlayer = ship.getFirstPlayer()
+        rayCastIsMinimap = true
     }
 
     override fun render(delta: Float) {
@@ -74,11 +79,20 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         player.isSelected = true
     }
 
-    private fun endTurn(){
+    private fun endTurn() {
         if (!endTurnButton.hovered) return
         ship.playAliens(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")), aStar)
         ship.spreadFungus()
+        endGame()
+        if (!selectedPlayer.live && ship.numPlayers > 0) selectedPlayer = ship.getFirstPlayer()
         ship.resetPlayers()
+    }
+
+    private fun endGame() {
+        if (ship.numFungi >= ship.maxFungi || ship.numPlayers == 0)
+            game.setScreen<MenuScreen>()
+        else if (ship.numEggs == 0)
+            game.setScreen<MenuScreen>()
     }
 
     private fun toggleViewMode(){

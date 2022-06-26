@@ -10,6 +10,8 @@ import trabalhofinal.components.general.*
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
+import kotlin.math.max
+
 class Ship(file: String, textures: List<Texture>): ComponentShip {
     val tiles: List<List<Tile>>
     override val drawableTiles: List<List<DrawableTile>>
@@ -26,6 +28,8 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
     override var numFungi = 2 //TODO tirar depois
     private var fungiToAdd = mutableListOf<Fungus>()
     override val numEggs get() = eggs.size
+    val numPlayers get() = players.size
+    val maxFungi: Int
 
     init {
         val reader = MapReader(file)
@@ -39,6 +43,7 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
         //cria a matriz de tiles
 
         val tempTiles = mutableListOf<MutableList<Tile>>()
+        maxFungi = 30
 
         for (i in 0 until sizeJ){
             val line = mutableListOf<Tile>()
@@ -100,6 +105,7 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
     override operator fun get(i: Int, j: Int) = tiles[i][j]
 
     fun getFirstPlayer(): Player {
+
         players[0].isSelected = true
         return players[0]
     }
@@ -126,7 +132,8 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
     }
 
     override fun renderComponents(shader: ShaderProgram, initialX: Float, initialY: Float, ratio: Float) = components.render(shader, initialX, initialY, ratio)
-    fun removeComponent(comp: Component){
+
+    override fun removeComponent(comp: Component){
         components.remove(comp)
         comp.die()
         when (comp.type) {

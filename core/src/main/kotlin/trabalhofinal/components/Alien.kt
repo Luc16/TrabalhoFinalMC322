@@ -32,7 +32,7 @@ class Alien(tile: RayCastTile,
 
     private fun findClosestPlayer(ship: ComponentShip, aStar: AStar){
         var min = Int.MAX_VALUE
-        var closestPath = 0
+        var closestPathIdx = 0
         val paths = mutableListOf<List<IVector2>?>()
         val mapPos = IVector2(tile.i, tile.j)
 
@@ -44,15 +44,17 @@ class Alien(tile: RayCastTile,
             if (path == null) return@forEachIndexed
             if (path.size < min){
                 min = path.size
-                closestPath = i
+                closestPathIdx = i
             }
 
         }
 
-        val closest = paths[closestPath]
+        val closest = paths[closestPathIdx]
         if (closest != null && min != Int.MAX_VALUE)
-            if (closest.size < stamina + 1)
+            if (closest.size <= stamina + 1){
                 teleport(closest[closest.lastIndex], ship)
+                ship.removeComponent(ship.players[closestPathIdx])
+            }
             else
                 teleport(closest[stamina], ship)
     }

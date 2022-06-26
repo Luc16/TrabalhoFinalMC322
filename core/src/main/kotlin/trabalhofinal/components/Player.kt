@@ -22,6 +22,7 @@ abstract class Player(tile: RayCastTile,
     override val type = ComponentType.PLAYER
     abstract val name: String
     private val diameter: Float = tileWidth//TODO tirar
+    var live = true
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)
@@ -36,6 +37,7 @@ abstract class Player(tile: RayCastTile,
     abstract val webEnergy: Int
     abstract val fungusEnergy: Int
     abstract val eggEnergy: Int
+    abstract val cameraPlaneSize: Float
 
 
     private var destQueue: Queue<IVector2> = LinkedList()
@@ -44,7 +46,7 @@ abstract class Player(tile: RayCastTile,
     lateinit var targetComponent: TargetComponent
 
     var dir = Vector2(1f, 0f)
-    var cameraPlane = Vector2(0f, 0.66f)
+    var cameraPlane = Vector2(0f, cameraPlaneSize)
     private lateinit var dest: IVector2
 
     fun rotate(angle: Float){
@@ -96,7 +98,7 @@ abstract class Player(tile: RayCastTile,
             } else {
                 dest = destQueue.first()
                 val newDir = (dest - mapPos).toVector2()
-                cameraPlane = Vector2(newDir.y, newDir.x).scl(if (abs(newDir.y) > 0f) -0.66f else 0.66f)
+                cameraPlane = Vector2(newDir.y, newDir.x).scl(if (abs(newDir.y) > 0f) -1*cameraPlaneSize else cameraPlaneSize)
                 dir = newDir
             }
         } else {
@@ -160,5 +162,10 @@ abstract class Player(tile: RayCastTile,
             }
             else -> {}
         }
+    }
+
+    override fun die() {
+        live = false
+        super.die()
     }
 }
