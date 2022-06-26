@@ -99,6 +99,7 @@ class ShipRenderer(
 
             val buffer = -60
             val width = WIDTH*minimapRatio - buffer*2
+            batch.setColor(1f, 1f, 1f,1f)
             batch.draw(selectedPlayer.texture,
                 WIDTH*mapRatio + buffer,
                 fungEY/2 - width/2 + 60,

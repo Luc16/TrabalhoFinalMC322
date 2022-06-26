@@ -74,9 +74,9 @@ class Ship(file: String, textures: List<Texture>): ComponentShip {
         }
         tiles = tempTiles.toList()
 
-        val p1 = Pyro(tiles[21][4], tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
-            Texture(Gdx.files.local("assets/wolftex/pics/botanist_logo.png")),
+        val p1 = Recon(tiles[21][4], tileWidth, tileHeight,
+            Texture(Gdx.files.local("assets/wolftex/pics/recon.png")),
+            Texture(Gdx.files.local("assets/wolftex/pics/recon_logo.png")),
         )
         players.add(p1)
         val p2 = Botanist(tiles[18][4], tileWidth, tileHeight,
