@@ -2,7 +2,10 @@
 
 # Descrição Resumida do Projeto/Jogo
 
-> Descreva resumidamente o jogo e seu propósito.
+> Jogo projeto da disciplina de orientação a objetos, primeiro semestre de 2022.
+> Nesse jogo três robos controlados remotamente são encarregados de eliminar os ovos de um alien invasor para que este saia da nave.
+> Além disso é necessário controlar a quantidade de fungos que vem crescendo na nave e, principalmente, manter os robôs a salvo do alien que espreita na escuridão.
+> 
 
 # Equipe
 * `Luc Joffily Ribas` - `247231` 
@@ -10,7 +13,7 @@
 
 # Arquivo Executável do Jogo
 
-> Coloque aqui um link para download do arquivo `jar` ou equivalente para execução do seu jogo.
+> Colocar depois
 
 # Slides do Projeto
 
@@ -25,3 +28,6 @@
 ## Diagrama Geral da Arquitetura do Jogo
 
 > Apresente um diagrama geral da arquitetura do jogo. O formato é livre. A escolha de um ou mais estilos arquiteturais será considerado um diferencial.
+
+## Agradecimentos
+* Ana Luisa Holthausen de Carvalho (arte dos robôs)

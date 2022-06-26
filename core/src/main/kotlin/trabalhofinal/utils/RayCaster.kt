@@ -57,7 +57,7 @@ class RayCaster(
                 player.dir.x + player.cameraPlane.x * cameraX,
                 player.dir.y + player.cameraPlane.y * cameraX
             )
-            if (Gdx.input.isKeyJustPressed(Input.Keys.P)) println("Dir: ${player.dir}, cameraPlane: ${player.cameraPlane}")
+
             // armazena o resultado de um rayCast
             val result = singleRayCast(player, rayDir)
             tile = result.first

@@ -21,7 +21,7 @@ abstract class Player(tile: RayCastTile,
 
     override val type = ComponentType.PLAYER
     abstract val name: String
-    private val diameter: Float = tileWidth//TODO tirar
+    private val diameter: Float = tileWidth
     var live = true
 
     //posicoes tile
