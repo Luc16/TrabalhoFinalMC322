@@ -13,7 +13,8 @@ import ktx.app.clearScreen
 import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.general.IMapDrawable
+import trabalhofinal.components.general.ComponentShip
+import trabalhofinal.components.general.MapDrawable
 import trabalhofinal.utils.Button
 import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.MeshGroup
@@ -32,15 +33,15 @@ class ShipRenderer(
     fun renderShip(
         rayCastIsMinimap: Boolean,
         rayCaster: RayCaster,
-        ship: Ship,
+        ship: ComponentShip,
         selectedPlayer: Player,
         endTurnButton: Button
     ){
         clearScreen(0f, 0f, 0f, 1f)
         if (!rayCastIsMinimap){
             drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
-            ship.components.render(shader)
-            drawTileMap(selectedPlayer, ship.players, ship.tiles, rayCaster.collisionPoints,
+            ship.renderComponents(shader)
+            drawTileMap(selectedPlayer, ship.players, ship.drawableTiles, rayCaster.collisionPoints,
                 true,
                 WIDTH - WIDTH*minimapRatio - 5f,
                 HEIGHT - HEIGHT*minimapRatio - 5f)
@@ -48,13 +49,13 @@ class ShipRenderer(
             val minimapX = WIDTH*mapRatio
             val minimapY = HEIGHT*mapRatio
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
-            ship.components.render(shader, minimapX, minimapY, minimapRatio)
+            ship.renderComponents(shader, minimapX, minimapY, minimapRatio)
             drawSideThings(minimapY, endTurnButton, selectedPlayer, ship)
-            drawTileMap(selectedPlayer, ship.players, ship.tiles, rayCaster.collisionPoints, false)
+            drawTileMap(selectedPlayer, ship.players, ship.drawableTiles, rayCaster.collisionPoints, false)
         }
     }
 
-    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player, ship: Ship) {
+    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player, ship: ComponentShip) {
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.BLACK
             renderer.rect(WIDTH - WIDTH*minimapRatio, 0f, WIDTH*minimapRatio, initialY)
@@ -62,7 +63,7 @@ class ShipRenderer(
         }
         batch.use(camera.combined){
             button.drawMessage(batch, font)
-            val fungusText = GlyphLayout(font, "Fungus: ${ship.numFungus}/10")
+            val fungusText = GlyphLayout(font, "Fungus: ${ship.numFungi}/10")
             font.draw(batch, fungusText, button.x + button.width + 5f, (1 - minimapRatio/3) * HEIGHT + fungusText.height/2)
             val eggText = GlyphLayout(font, "Eggs: ${ship.numEggs}")
             font.draw(batch, eggText, button.x + button.width + 5f, (1 - 2*minimapRatio/3) * HEIGHT + eggText.height/2)
@@ -89,7 +90,7 @@ class ShipRenderer(
             val webEY = eggEY - eggE.height - 20f
             font.draw(batch, webE, WIDTH*mapRatio + 5f, webEY)
 
-            val fungE = GlyphLayout(font, "Web energy: ${selectedPlayer.fungusEnergy}")
+            val fungE = GlyphLayout(font, "Fungus energy: ${selectedPlayer.fungusEnergy}")
             val fungEY = webEY - webE.height - 20f
             font.draw(batch, fungE, WIDTH*mapRatio + 5f, fungEY)
 
@@ -112,7 +113,7 @@ class ShipRenderer(
     private fun drawTileMap(
         selectedPlayer: Player,
         players: List<Player>,
-        tiles: List<List<IMapDrawable>>,
+        tiles: List<List<MapDrawable>>,
         collisionPoints: List<Vector2>,
         isMinimap: Boolean,
         initialX: Float = 0f,

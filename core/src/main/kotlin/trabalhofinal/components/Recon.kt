@@ -2,16 +2,15 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
-import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.RayCastTile
 
 class Recon(
-    tile: IRayCastTile,
-    radius: Float,
+    tile: RayCastTile,
     tileWidth: Float,
     tileHeight: Float,
     texture: Texture,
     color: Color = Color.BLUE
-) : Player(tile, radius, tileWidth, tileHeight, texture, color) {
+) : Player(tile, tileWidth, tileHeight, texture, color) {
     override val name: String
         get() = "Recon"
     override val maxEnergy: Int

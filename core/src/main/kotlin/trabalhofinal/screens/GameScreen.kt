@@ -1,7 +1,6 @@
 package trabalhofinal.screens
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input.Buttons
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.Color
@@ -12,14 +11,14 @@ import trabalhofinal.HEIGHT
 import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
 import trabalhofinal.components.*
-import trabalhofinal.components.general.RayCastComponent
+import trabalhofinal.components.general.ComponentType
 import trabalhofinal.utils.*
 import trabalhofinal.utils.graphics.fragmentShader
 import trabalhofinal.utils.graphics.vertexShader
 import kotlin.math.PI
 
 
-class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
+class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private val shader = ShaderProgram(vertexShader, fragmentShader)
     private val shipRenderer = ShipRenderer(renderer, batch, font, viewport.camera, shader, 0.25f)
@@ -35,6 +34,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
     )
     private val ship = Ship("assets/maps/test.map", textures)
     private val rayCaster = RayCaster(ship.tiles, ship.tileWidth, ship.tileHeight)
+    private val aStar = AStar(ship.tiles)
     private var selectedPlayer: Player = ship.getFirstPlayer()
     private var rayCastIsMinimap = true
     private val endTurnButton: Button = Button(
@@ -68,17 +68,16 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     }
 
-
-    // TODO colocar essa função numa classe "SelectedPlayer"
     private fun changePlayer(player: Player){
-        selectedPlayer.color = Color.LIGHT_GRAY
+        fun Color.scl(scalar: Float) = Color(this.r*scalar, this.g*scalar, this.b*scalar, this.a)
+        selectedPlayer.seenColor = selectedPlayer.seenColor.scl(0.5f)
         selectedPlayer = player
-        player.color = Color.RED
+        player.seenColor = player.seenColor.scl(2f)
     }
 
     private fun endTurn(){
         if (!endTurnButton.hovered) return
-        ship.playAliens(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")))
+        ship.playAliens(Texture(Gdx.files.local("assets/wolftex/pics/barrel-no-bg.png")), aStar)
         ship.spreadFungus()
         ship.resetPlayers()
     }
@@ -99,8 +98,7 @@ class RayCastingTestScreen(game: MyGame): CustomScreen(game), InputProcessor {
         val currTile = ship[dest.i, dest.j]
 
         if (currTile.component == null){
-            val graph = AStar(ship.tiles)
-            selectedPlayer.calculatePath(dest, graph)
+            selectedPlayer.calculatePath(dest, aStar)
         } else if (currTile.component?.let { it.type == ComponentType.PLAYER } == true){
             changePlayer(currTile.component as Player)
         }

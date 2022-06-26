@@ -3,25 +3,32 @@ package trabalhofinal.components
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.Component
+import trabalhofinal.components.general.ComponentShip
+import trabalhofinal.components.general.ComponentType
+import trabalhofinal.components.general.MapDrawable
+import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
-class Ship(file: String, textures: List<Texture>) {
+class Ship(file: String, textures: List<Texture>): ComponentShip {
     val tiles: List<List<Tile>>
-    val players = mutableListOf<Player>()
+    override val drawableTiles: List<List<MapDrawable>>
+        get() = tiles
+    override val players = mutableListOf<Player>()
     private val aliens = mutableListOf<Alien>()
     private val fungi = mutableListOf<Fungus>()
     private val eggs = mutableListOf<Egg>()
     val components = RayCastCompList()
     val sizeI: Int
     var sizeJ: Int
-    val tileWidth: Float
-    var tileHeight: Float
-    var numFungus = 2 //TODO tirar depois
+    override val tileWidth: Float
+    override val tileHeight: Float
+    override var numFungi = 2 //TODO tirar depois
     private var fungiToAdd = mutableListOf<Fungus>()
-    val numEggs get() = eggs.size
+    override val numEggs get() = eggs.size
 
     init {
         val reader = MapReader(file)
@@ -70,11 +77,11 @@ class Ship(file: String, textures: List<Texture>) {
         }
         tiles = tempTiles.toList()
 
-        val p1 = Pyro(tiles[21][4], 10f, tileWidth, tileHeight,
-            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")), color = Color.GREEN
+        val p1 = Pyro(tiles[21][4], tileWidth, tileHeight,
+            Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
         )
         players.add(p1)
-        val p2 = Botanist(tiles[18][4],10f, tileWidth, tileHeight,
+        val p2 = Botanist(tiles[18][4], tileWidth, tileHeight,
             Texture(Gdx.files.local("assets/wolftex/pics/alien.png")),
         )
         players.add(p2)
@@ -91,13 +98,13 @@ class Ship(file: String, textures: List<Texture>) {
         }
     }
 
-    operator fun get(i: Int, j: Int) = tiles[i][j]
+    override operator fun get(i: Int, j: Int) = tiles[i][j]
 
     fun getFirstPlayer(): Player = players[0]
 
     fun resetPlayers() = players.forEach { it.reset() }
 
-    fun playAliens(texture: Texture) = aliens.forEach { it.playTurn(texture, this) }
+    fun playAliens(texture: Texture, aStar: AStar) = aliens.forEach { it.playTurn(texture, this, aStar) }
 
     fun updateComponents(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         components.updateComponents(player, zBuffer, tileWidth, tileHeight)
@@ -111,11 +118,12 @@ class Ship(file: String, textures: List<Texture>) {
 
     fun addFungusLazy(fungus: Fungus) = fungiToAdd.add(fungus)
 
-    fun addEgg(egg: Egg){
+    override fun addEgg(egg: Egg){
         components.add(egg)
         eggs.add(egg)
     }
 
+    override fun renderComponents(shader: ShaderProgram, initialX: Float, initialY: Float, ratio: Float) = components.render(shader, initialX, initialY, ratio)
     fun removeComponent(comp: Component){
         components.remove(comp)
         comp.die()

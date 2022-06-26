@@ -1,6 +1,6 @@
 package trabalhofinal.components.general
 
-interface IStatic {
+interface Static {
     val x: Float
     val y: Float
 }

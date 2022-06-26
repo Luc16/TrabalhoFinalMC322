@@ -21,7 +21,7 @@ class MyGame: KtxGame<CustomScreen>() {
     override fun create() {
         gameViewport.camera.translate(WIDTH/2, HEIGHT/2,0f)
         font.data.setScale(3f)
-        addScreen(RayCastingTestScreen(this))
+        addScreen(GameScreen(this))
         addScreen(MeshTestScreen(this))
 //        addScreen(GridScreen(this))
 //        addScreen(MovementTestScreen(this))

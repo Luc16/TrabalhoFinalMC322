@@ -2,10 +2,10 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Rectangle
 import trabalhofinal.components.general.Component
-import trabalhofinal.components.general.IMapDrawable
-import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.ComponentType
+import trabalhofinal.components.general.MapDrawable
+import trabalhofinal.components.general.RayCastTile
 import trabalhofinal.utils.Node
 
 class Tile(
@@ -14,8 +14,8 @@ class Tile(
         val width: Float,
         val height: Float,
     ) :
-    IMapDrawable,
-    IRayCastTile,
+    MapDrawable,
+    RayCastTile,
     Node(i, j, false) {
     override val x: Float = i*width
     override val y: Float = j*height
@@ -35,6 +35,7 @@ class Tile(
     }
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
         component?.let {
+            if (it.type == ComponentType.PLAYER) return
             renderer.color = it.color
             renderer.rect(
                 startX - width * ratio - x * ratio-1,

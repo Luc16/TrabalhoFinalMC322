@@ -21,11 +21,11 @@ class MenuScreen(game: MyGame):CustomScreen(game), InputProcessor {
             { println("Não tem") }//game.setScreen<GridScreen>()}
         ),
         Button(
-            "rayCastScreen",
+            "Start",
             WIDTH/2,
             HEIGHT/2 - 150,
             500f, 100f,
-            {game.setScreen<RayCastingTestScreen>()}
+            {game.setScreen<GameScreen>()}
         )
     )
 

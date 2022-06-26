@@ -11,7 +11,7 @@
 //import trabalhofinal.HEIGHT
 //import trabalhofinal.MyGame
 //import trabalhofinal.WIDTH
-//import trabalhofinal.components.ComponentType
+//import trabalhofinal.components.general.ComponentType
 //import trabalhofinal.components.Player
 //import trabalhofinal.components.Tile
 //import trabalhofinal.components.Wall

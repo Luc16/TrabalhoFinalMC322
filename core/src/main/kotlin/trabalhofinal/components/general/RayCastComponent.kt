@@ -12,16 +12,16 @@ import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.Textured2DMesh
 
 abstract class RayCastComponent(
-    tile: IRayCastTile,
+    tile: RayCastTile,
     tileWidth: Float, tileHeight: Float,
     override val texture: Texture,
-    private val seenColor: Color,
+    var seenColor: Color,
     ):
     Disposable,
     Comparable<RayCastComponent>,
     Component
 {
-    var tile: IRayCastTile = tile
+    var tile: RayCastTile = tile
         set(value) {
             value.component = this
             field = value

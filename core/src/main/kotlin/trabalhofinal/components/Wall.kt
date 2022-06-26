@@ -3,12 +3,13 @@ package trabalhofinal.components
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import trabalhofinal.components.general.Component
-import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.ComponentType
+import trabalhofinal.components.general.RayCastTile
 
 open class Wall(
-        var tile: IRayCastTile,
-        override var color: Color,
-        override val texture: Texture?,
+    var tile: RayCastTile,
+    override var color: Color,
+    override val texture: Texture?,
     ): Component {
     override val isWall = true
     override val type = ComponentType.WALL

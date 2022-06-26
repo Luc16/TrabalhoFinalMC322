@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.RayCastTile
 import trabalhofinal.components.Player
 import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.MeshGroup
@@ -15,7 +15,7 @@ import kotlin.math.abs
 import kotlin.math.max
 
 class RayCaster(
-    private val tiles: List<List<IRayCastTile>>,
+    private val tiles: List<List<RayCastTile>>,
     private val tileWidth: Float,
     private val tileHeight: Float,
 ) {
@@ -36,8 +36,8 @@ class RayCaster(
         val zBuffer = Array(WIDTH.toInt()) {0f}
 
         var rayDir = Vector2() // direcao atual do raio
-        var tile: IRayCastTile
-        var prevTile: IRayCastTile? = null
+        var tile: RayCastTile
+        var prevTile: RayCastTile? = null
         var initialVertices = listOf<Vector2>() // vertices posicionais iniciais da mesh
         // inicio e fim da coordenada y da mesh
         var drawStart = 0f
@@ -120,7 +120,7 @@ class RayCaster(
     }
 
     private fun calculateUStartAndUEnd(
-        prevTile: IRayCastTile,
+        prevTile: RayCastTile,
         rayDir: Vector2,
         startWallX: Float,
         prevWallX: Float,
@@ -158,7 +158,7 @@ class RayCaster(
     )
 
 
-    private fun singleRayCast(player: Player, rayDir: Vector2): Triple<IRayCastTile, Int, Float> {
+    private fun singleRayCast(player: Player, rayDir: Vector2): Triple<RayCastTile, Int, Float> {
         // quanto o vetor anda em x e em y
         val rayStepSize = Vector2(
             tileWidth * abs(1 / rayDir.x),

@@ -4,8 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
-import trabalhofinal.components.general.IMapDrawable
-import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.ComponentType
+import trabalhofinal.components.general.MapDrawable
+import trabalhofinal.components.general.RayCastTile
 import trabalhofinal.components.general.RayCastComponent
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
@@ -13,15 +14,16 @@ import java.util.LinkedList
 import java.util.Queue
 import kotlin.math.*
 
-abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tirar
+abstract class Player(tile: RayCastTile,
                       tileWidth: Float, tileHeight: Float,
                       texture: Texture,
-                      color: Color = Color.WHITE,
-):  IMapDrawable,
+                      color: Color
+):  MapDrawable,
     RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
 
     override val type = ComponentType.PLAYER
     abstract val name: String
+    private val radius: Float = tileWidth/2 //TODO tirar
 
     //posicoes tile
     var mapPos = IVector2(tile.i,tile.j)
@@ -62,8 +64,8 @@ abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tira
 
             pathLen = destQueue.size
             isMoving = true
+            this.dest = destQueue.first()
         }
-        this.dest = destQueue.first()
     }
 
     override fun update(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float) {
@@ -71,7 +73,7 @@ abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tira
         seen = true
     }
 
-    fun updateSelected(tileWidth: Float, tileHeight: Float, mapRatio: Float, tile: IRayCastTile) {
+    fun updateSelected(tileWidth: Float, tileHeight: Float, mapRatio: Float, tile: RayCastTile) {
         if (!isMoving || destQueue.isEmpty()) return
         mapPos = IVector2(tile.i, tile.j)
 
@@ -124,6 +126,7 @@ abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tira
     }
 
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
+        renderer.color = color
         renderer.circle(startX - x * ratio, startY + y * ratio, radius * ratio)
     }
 
@@ -142,7 +145,7 @@ abstract class Player(tile: IRayCastTile, private val radius: Float, //TODO tira
                 if (energy < fungusEnergy) return
                 targetComponent.die()
                 ship.removeComponent(targetComponent.component)
-                ship.numFungus--
+                ship.numFungi--
                 energy -= fungusEnergy
             }
             ComponentType.EGG -> {

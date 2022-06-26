@@ -1,8 +1,7 @@
 package trabalhofinal.components.general
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
-interface IMapDrawable {
+interface MapDrawable {
     fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer)
 }

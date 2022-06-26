@@ -2,11 +2,12 @@ package trabalhofinal.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
-import trabalhofinal.components.general.IRayCastTile
+import trabalhofinal.components.general.ComponentType
+import trabalhofinal.components.general.RayCastTile
 import kotlin.random.Random
 
 class Fungus(
-    tile: IRayCastTile,
+    tile: RayCastTile,
     texture: Texture,
     private val wallTexture: Texture,
     color: Color = Color.ORANGE,
@@ -22,7 +23,7 @@ class Fungus(
                     if (!surrounded) return@forEachNeighbor
                     surrounded = it?.isWall == true
                 }
-                if (!surrounded) ship.numFungus++
+                if (!surrounded) ship.numFungi++
                 neighbor.tile.component = texture?.let {
                     val fungus = Fungus(neighbor.tile, it, wallTexture)
                     ship.addFungusLazy(fungus)
