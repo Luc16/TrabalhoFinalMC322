@@ -2,6 +2,7 @@ package trabalhofinal.utils.graphics
 
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import trabalhofinal.exceptions.InvalidTextureVertices
 
 /** Creates a new Mesh with 8 vertices (quad) with the given attributes an texture.
  *
@@ -42,7 +43,7 @@ class Textured2DMesh(
                     )
                 )
             }
-            else -> throw Exception("Wrong number of vertices. Expected ${8*4} or ${4*4}, got ${vertices.size}")
+            else -> throw InvalidTextureVertices(vertices.size)
         }
 
         setIndices(
@@ -55,7 +56,6 @@ class Textured2DMesh(
             )
         )
     }
-
 
     fun moveAndScale(initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
         val vertices = FloatArray(8*4)
@@ -71,6 +71,7 @@ class Textured2DMesh(
             initialX + vertices[28]*ratio, initialY + vertices[29]*ratio, vertices[30], vertices[31],
         ))
     }
+
     fun render(shader: ShaderProgram){
         render(shader, GL20.GL_TRIANGLE_STRIP)
     }

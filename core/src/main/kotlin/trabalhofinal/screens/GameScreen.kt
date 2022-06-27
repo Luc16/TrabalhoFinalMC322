@@ -27,17 +27,16 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private lateinit var selectedPlayer: Player
     private var rayCastIsMinimap = true
     private var adControl = false
-    private final val theta = (2 * PI / 180).toFloat()
+    private val theta = (2 * PI / 180).toFloat()
     private var rotateDir = 0f
     private val endTurnButton: Button = Button(
-        "End Turn",
+        "END TURN",
         10f + 200f,
         (shipRenderer.mapRatio + shipRenderer.minimapRatio/2) * HEIGHT,
         400f,
         shipRenderer.minimapRatio * HEIGHT - 10,
         { endTurn() }
     )
-
 
     override fun show() {
         Gdx.input.inputProcessor = this
