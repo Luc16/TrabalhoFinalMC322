@@ -1,5 +1,6 @@
 package trabalhofinal.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -15,9 +16,9 @@ class Button(
     width: Float,
     height: Float,
     val onRelease: () -> Unit,
-    private val normalColor: Color = Color.VIOLET,
-    private val hoverColor: Color = Color.PINK,
-    private val clickColor: Color = Color.CORAL,
+    private val normalColor: Color = Color(255f/255,159f/255,41f/255,1f),
+    private val hoverColor: Color = Color(255f/(1.5f*255),159f/(1.5f*255),41f/(1.5f*255),1f),
+    private val clickColor: Color = Color(255f/(2*255),159f/(2*255),41f/(2*255),1f),
 ): Rectangle(centerX - width/2, centerY - height/2, width, height) {
 
     private var color = normalColor
@@ -33,7 +34,7 @@ class Button(
         color = hoverColor
     }
     fun onPress() { if (hovered) color = clickColor }
-    private fun resetColor() {
+    fun resetColor() {
         hovered = false
         color = normalColor
     }

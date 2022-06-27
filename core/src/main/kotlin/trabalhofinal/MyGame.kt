@@ -22,6 +22,9 @@ class MyGame: KtxGame<CustomScreen>() {
         font.data.setScale(3f)
         addScreen(GameScreen(this))
         addScreen(MenuScreen(this))
+        addScreen(WinScreen(this))
+        addScreen(LoseScreen(this))
+        addScreen(InstructionScreen(this))
         setScreen<MenuScreen>()
     }
 

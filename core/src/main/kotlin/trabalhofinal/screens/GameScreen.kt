@@ -3,8 +3,6 @@ package trabalhofinal.screens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.InputProcessor
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
@@ -51,9 +49,6 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     }
 
     override fun render(delta: Float) {
-        if (Gdx.input.isKeyJustPressed(Keys.Q)) Gdx.app.exit()
-        if (Gdx.input.isKeyJustPressed(Keys.M)) game.setScreen<MenuScreen>()
-
         // sempre fazer o raycast antes de criar as meshes dos componentes!
         rayCaster.multipleRayCast3D(selectedPlayer)
         ship.updateComponents(selectedPlayer, rayCaster.zBuffer, ship.tileWidth, ship.tileHeight)
@@ -88,9 +83,9 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private fun endGame() {
         if (ship.numFungi >= ship.maxFungi || ship.numPlayers == 0)
-            game.setScreen<MenuScreen>()
+            game.setScreen<LoseScreen>()
         else if (ship.numEggs == 0)
-            game.setScreen<MenuScreen>()
+            game.setScreen<WinScreen>()
     }
 
     private fun toggleViewMode(){
