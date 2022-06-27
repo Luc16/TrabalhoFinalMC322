@@ -124,9 +124,9 @@ abstract class Player(tile: RayCastTile,
     }
 
     override fun draw(startX: Float, startY: Float, ratio: Float, batch: Batch) {
-        if (isSelected) batch.setColor(1f, 1f, 1f, 1f)
-        else  batch.setColor(0.5f, 0.5f, 0.5f, 1f)
+        if (!isSelected) batch.setColor(0.5f, 0.5f, 0.5f, 1f)
         super.draw(startX, startY, ratio, batch)
+        batch.setColor(1f, 1f, 1f, 1f)
     }
 
     fun interact(ship: Ship){

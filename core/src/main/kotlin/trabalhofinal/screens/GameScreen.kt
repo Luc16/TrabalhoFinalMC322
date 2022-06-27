@@ -28,6 +28,9 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private lateinit var aStar: AStar
     private lateinit var selectedPlayer: Player
     private var rayCastIsMinimap = true
+    private var adControl = false
+    private final val theta = (2 * PI / 180).toFloat()
+    private var rotateDir = 0f
     private val endTurnButton: Button = Button(
         "End Turn",
         10f + 200f,
@@ -58,6 +61,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
             selectedPlayer.y - selectedPlayer.dir.y*ship.tileHeight/2,
             selectedPlayer.x - selectedPlayer.dir.x*ship.tileWidth/2
         )
+        if (adControl) selectedPlayer.rotate(rotateDir*theta)
         selectedPlayer.updateSelected(ship.tileWidth, ship.tileHeight, shipRenderer.mapRatio, ship[playerPos.i, playerPos.j])
 
         shipRenderer.renderShip(rayCastIsMinimap, rayCaster, ship, selectedPlayer, endTurnButton)
@@ -114,9 +118,16 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     override fun keyDown(keycode: Int): Boolean {
         if (keycode == Keys.SPACE) toggleViewMode()
+        if (keycode == Keys.C) adControl = !adControl
+        if (keycode == Keys.A) rotateDir = -1f
+        if (keycode == Keys.D) rotateDir = 1f
         return true
     }
-    override fun keyUp(keycode: Int): Boolean = true
+    override fun keyUp(keycode: Int): Boolean {
+        if (keycode == Keys.A && rotateDir == -1f) rotateDir = 0f
+        if (keycode == Keys.D && rotateDir == 1f) rotateDir = 0f
+        return true
+    }
     override fun keyTyped(character: Char): Boolean = true
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
@@ -138,11 +149,9 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     }
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         val mouse = unprojectedMouse(screenX, screenY)
-        if (!rayCastIsMinimap) {
-            val theta = (2 * PI / 180).toFloat()
+        if (!rayCastIsMinimap && !adControl) {
             // mouse invisivel
             val deltaX = (mouse.x - WIDTH/2) / 600
-
             selectedPlayer.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
         }
@@ -150,11 +159,9 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     }
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val mouse = unprojectedMouse(screenX, screenY)
-        if (!rayCastIsMinimap) {
-            val theta = (2 * PI / 180).toFloat()
+        if (!rayCastIsMinimap && !adControl) {
             // mouse invisivel
             val deltaX = (mouse.x - WIDTH/2) / 100
-
             selectedPlayer.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
         } else {

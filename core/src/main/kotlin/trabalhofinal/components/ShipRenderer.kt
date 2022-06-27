@@ -116,7 +116,7 @@ class ShipRenderer(
     private fun drawRayCast(meshes: MeshGroup, isMinimap: Boolean, floor: Float, initialX: Float = 0f, initialY: Float = 0f) {
         val ratio = if (isMinimap) minimapRatio else 1f
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
-            renderer.color = Color.WHITE
+            renderer.color = Color(0x202020ff)
             renderer.rect(initialX, initialY, WIDTH*ratio, floor*ratio)
         }
         meshes.render(camera, shader, initialX, initialY, ratio)
