@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 
 class TextureLoader {
     val wall = Texture(Gdx.files.local("assets/textures/wall.png"))
-    val fungus = Texture(Gdx.files.local("assets/textures/mossy.png"))
+    val fungus = Texture(Gdx.files.local("assets/textures/fungus.png"))
     val web = Texture(Gdx.files.local("assets/textures/squareweb.png"))
     val pyro = Texture(Gdx.files.local("assets/textures/pyro.png"))
     val pyroLogo = Texture(Gdx.files.local("assets/textures/pyro_logo.png"))
