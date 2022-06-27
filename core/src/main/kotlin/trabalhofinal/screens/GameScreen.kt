@@ -61,13 +61,13 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
             selectedPlayer.y - selectedPlayer.dir.y*ship.tileHeight/2,
             selectedPlayer.x - selectedPlayer.dir.x*ship.tileWidth/2
         )
-        if (adControl) {
-            selectedPlayer.rotate(rotateDir*theta)
-            Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
-        }
+        if (adControl) selectedPlayer.rotate(rotateDir*theta)
+
         selectedPlayer.updateSelected(ship.tileWidth, ship.tileHeight, shipRenderer.mapRatio, ship[playerPos.i, playerPos.j])
 
         shipRenderer.renderShip(rayCastIsMinimap, rayCaster, ship, selectedPlayer, endTurnButton)
+
+        if (!rayCastIsMinimap) Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
 
     }
 
