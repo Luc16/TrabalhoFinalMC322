@@ -129,7 +129,7 @@ abstract class Player(tile: RayCastTile,
         batch.setColor(1f, 1f, 1f, 1f)
     }
 
-    fun interact(ship: Ship){
+    fun interact(ship: ComponentShip){
         // Se estiver muito longe não faz acao
         if (targetComponent.dist > 1.5f*sqrt(ship.tileHeight*ship.tileHeight + ship.tileWidth*ship.tileWidth)) return
 

@@ -2,7 +2,9 @@ package trabalhofinal.components.general
 
 import com.badlogic.gdx.graphics.Texture
 
-interface RayCastTile: Static {
+interface RayCastTile {
+    val x: Float
+    val y: Float
     var isWall: Boolean
     val texture: Texture?
     var component: Component?

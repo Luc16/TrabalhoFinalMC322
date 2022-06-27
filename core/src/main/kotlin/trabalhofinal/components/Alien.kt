@@ -68,6 +68,6 @@ class Alien(tile: RayCastTile,
 
     fun playTurn(textures: TextureLoader, ship: ComponentShip, aStar: AStar){
         findClosestPlayer(ship, aStar)
-        placeEgg(textures.egg, textures.egg_logo, ship)
+        placeEgg(textures.egg, textures.eggLogo, ship)
     }
 }

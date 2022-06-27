@@ -51,6 +51,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         // sempre fazer o raycast antes de criar as meshes dos componentes!
         rayCaster.multipleRayCast3D(selectedPlayer)
         ship.updateComponents(selectedPlayer, rayCaster.zBuffer, ship.tileWidth, ship.tileHeight)
+
         val playerPos = ship.getTilePos(
             selectedPlayer.y - selectedPlayer.dir.y*ship.tileHeight/2,
             selectedPlayer.x - selectedPlayer.dir.x*ship.tileWidth/2

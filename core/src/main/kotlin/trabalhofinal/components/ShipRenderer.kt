@@ -14,6 +14,7 @@ import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.ComponentShip
+import trabalhofinal.components.general.DrawableShip
 import trabalhofinal.components.general.DrawableTile
 import trabalhofinal.components.general.MapBatchDrawable
 import trabalhofinal.utils.Button
@@ -35,7 +36,7 @@ class ShipRenderer(
     fun renderShip(
         rayCastIsMinimap: Boolean,
         rayCaster: RayCaster,
-        ship: ComponentShip,
+        ship: DrawableShip,
         selectedPlayer: Player,
         endTurnButton: Button
     ){
@@ -57,7 +58,7 @@ class ShipRenderer(
         }
     }
 
-    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player, ship: ComponentShip) {
+    private fun drawSideThings(initialY: Float, button: Button, selectedPlayer: Player, ship: DrawableShip) {
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color.DARK_GRAY
             renderer.rect(WIDTH - WIDTH*minimapRatio, 0f, WIDTH*minimapRatio, initialY)

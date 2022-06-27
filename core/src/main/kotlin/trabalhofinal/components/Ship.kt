@@ -13,7 +13,7 @@ import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 import trabalhofinal.utils.TextureLoader
 
-class Ship(file: String, textures: TextureLoader): ComponentShip {
+class Ship(file: String, textures: TextureLoader): ComponentShip, DrawableShip {
     val tiles: List<List<Tile>>
     override val drawableTiles: List<List<DrawableTile>>
         get() = tiles
@@ -104,7 +104,7 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
                 fungus
             }
             3 -> {
-                val web = AlienWeb(tile, tileWidth, tileHeight, textures.web, textures.egg_logo)
+                val web = AlienWeb(tile, tileWidth, tileHeight, textures.web, textures.web)
                 components.add(web)
                 web
             }
@@ -127,12 +127,12 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
                 p
             }
             7 -> {
-                val egg = Egg(tile, tileWidth, tileHeight, textures.egg, textures.egg_logo)
+                val egg = Egg(tile, tileWidth, tileHeight, textures.egg, textures.eggLogo)
                 addEgg(egg)
                 egg
             }
             8 -> {
-                val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.egg_logo)
+                val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.eggLogo)
                 aliens.add(alien)
                 components.add(alien)
                 alien
