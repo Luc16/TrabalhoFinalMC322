@@ -2,10 +2,9 @@
 
 # Descrição Resumida do Projeto/Jogo
 
-> Jogo projeto da disciplina de orientação a objetos, primeiro semestre de 2022.
-> Nesse jogo três robos controlados remotamente são encarregados de eliminar os ovos de um alien invasor para que este saia da nave.
-> Além disso é necessário controlar a quantidade de fungos que vem crescendo na nave e, principalmente, manter os robôs a salvo do alien que espreita na escuridão.
-> 
+Projeto da disciplina de orientação a objetos, primeiro semestre de 2022.
+Nesse jogo três robos controlados remotamente são encarregados de eliminar os ovos de um alien invasor para que este saia da nave.
+Além disso, é necessário controlar a quantidade de fungos que vem crescendo na nave e, principalmente, manter os robôs a salvo do alien que espreita na escuridão.
 
 # Equipe
 * `Luc Joffily Ribas` - `247231` 
