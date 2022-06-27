@@ -14,14 +14,11 @@ import kotlin.math.*
 
 abstract class Player(tile: RayCastTile,
                       tileWidth: Float, tileHeight: Float,
-                      texture: Texture, private val mapTexture: Texture,
-                      color: Color
-):  MapBatchDrawable,
-    RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
+                      texture: Texture, mapTexture: Texture,
+):  RayCastComponent(tile, tileWidth, tileHeight, texture, mapTexture) {
 
     override val type = ComponentType.PLAYER
     abstract val name: String
-    private val diameter: Float = tileWidth
     var live = true
 
     //posicoes tile
@@ -129,11 +126,7 @@ abstract class Player(tile: RayCastTile,
     override fun draw(startX: Float, startY: Float, ratio: Float, batch: Batch) {
         if (isSelected) batch.setColor(1f, 1f, 1f, 1f)
         else  batch.setColor(0.5f, 0.5f, 0.5f, 1f)
-        batch.draw(
-            mapTexture,
-            startX - (x + diameter/2) * ratio, startY + (y - diameter/2) * ratio,
-            diameter * ratio, diameter*ratio
-        )
+        super.draw(startX, startY, ratio, batch)
     }
 
     fun interact(ship: Ship){

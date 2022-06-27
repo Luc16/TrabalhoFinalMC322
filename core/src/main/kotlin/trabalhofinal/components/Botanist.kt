@@ -10,8 +10,7 @@ class Botanist(
     tileHeight: Float,
     texture: Texture,
     mapTexture: Texture,
-    color: Color = Color.GREEN
-) : Player(tile, tileWidth, tileHeight, texture, mapTexture, color) {
+) : Player(tile, tileWidth, tileHeight, texture, mapTexture) {
     override val name: String
         get() = "Botanist"
     override val maxEnergy: Int

@@ -2,6 +2,7 @@ package trabalhofinal.components.general
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
@@ -13,13 +14,14 @@ import trabalhofinal.utils.graphics.Textured2DMesh
 
 abstract class RayCastComponent(
     tile: RayCastTile,
-    tileWidth: Float, tileHeight: Float,
+    private val tileWidth: Float, tileHeight: Float,
     override val texture: Texture,
-    var seenColor: Color,
+    val mapTexture: Texture,
     ):
     Disposable,
     Comparable<RayCastComponent>,
-    Component
+    Component,
+    MapBatchDrawable
 {
     var tile: RayCastTile = tile
         set(value) {
@@ -31,10 +33,7 @@ abstract class RayCastComponent(
     override val isWall = false
     override var color: Color = Color.BLACK
     var seen = false
-        set(value) {
-            color = if (value) seenColor else Color.BLACK
-            field = value
-        }
+
     private var mesh: Textured2DMesh? = null
     private var dist = Float.MAX_VALUE
 
@@ -96,6 +95,7 @@ abstract class RayCastComponent(
         val uEnd = (drawEndX - spriteScreenX)/spriteWidth + 0.5f
 
         // cria a mesh para ser desenhada
+        mesh?.dispose()
         mesh = Textured2DMesh(texture,
             floatArrayOf(
                 drawStartX, drawStartY + spriteHeight, uStart, 0f,//upper left
@@ -113,6 +113,15 @@ abstract class RayCastComponent(
             moveAndScale(initialX, initialY, ratio)
             standAloneRender(shader)
         }
+    }
+
+    override fun draw(startX: Float, startY: Float, ratio: Float, batch: Batch) {
+        if (!seen) return
+        batch.draw(
+            mapTexture,
+            startX - (x + tileWidth/2) * ratio, startY + (y - tileWidth/2) * ratio,
+            tileWidth * ratio, tileWidth*ratio
+        )
     }
 
     override fun die(){

@@ -72,7 +72,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     private fun endTurn() {
         if (!endTurnButton.hovered) return
-        ship.playAliens(textures.egg, aStar)
+        ship.playAliens(textures, aStar)
         ship.spreadFungus()
         endGame()
         if (!selectedPlayer.live && ship.numPlayers > 0) selectedPlayer = ship.getFirstPlayer()

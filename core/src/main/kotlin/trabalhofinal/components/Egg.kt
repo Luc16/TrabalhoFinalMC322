@@ -10,7 +10,7 @@ import trabalhofinal.components.general.RayCastComponent
 class Egg(tile: RayCastTile,
           tileWidth: Float, tileHeight: Float,
           texture: Texture,
-          color: Color = Color.BROWN,
-): RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
+          mapTexture: Texture,
+): RayCastComponent(tile, tileWidth, tileHeight, texture, mapTexture) {
     override val type = ComponentType.EGG
 }

@@ -15,6 +15,7 @@ import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.ComponentShip
 import trabalhofinal.components.general.DrawableTile
+import trabalhofinal.components.general.MapBatchDrawable
 import trabalhofinal.utils.Button
 import trabalhofinal.utils.RayCaster
 import trabalhofinal.utils.graphics.MeshGroup
@@ -42,7 +43,7 @@ class ShipRenderer(
         if (!rayCastIsMinimap){
             drawRayCast(rayCaster.meshes, false, rayCaster.floorLevel)
             ship.renderComponents(shader)
-            drawTileMap(selectedPlayer, ship.players, ship.drawableTiles, rayCaster.collisionPoints,
+            drawTileMap(selectedPlayer, ship.components, ship.drawableTiles, rayCaster.collisionPoints,
                 true,
                 WIDTH - WIDTH*minimapTileRatio - 5f,
                 HEIGHT - HEIGHT*minimapTileRatio - 5f)
@@ -52,7 +53,7 @@ class ShipRenderer(
             drawRayCast(rayCaster.meshes, true, rayCaster.floorLevel, minimapX, minimapY)
             ship.renderComponents(shader, minimapX, minimapY, minimapRatio)
             drawSideThings(minimapY, endTurnButton, selectedPlayer, ship)
-            drawTileMap(selectedPlayer, ship.players, ship.drawableTiles, rayCaster.collisionPoints, false)
+            drawTileMap(selectedPlayer, ship.components, ship.drawableTiles, rayCaster.collisionPoints, false)
         }
     }
 
@@ -124,7 +125,7 @@ class ShipRenderer(
 
     private fun drawTileMap(
         selectedPlayer: Player,
-        players: List<Player>,
+        components: MapBatchDrawable,
         tiles: List<List<DrawableTile>>,
         collisionPoints: List<Vector2>,
         isMinimap: Boolean,
@@ -153,7 +154,7 @@ class ShipRenderer(
 
         }
         batch.use(camera.combined){
-            players.forEach {it.draw(mirroredX, mapRect.y, ratio, batch)}
+            components.draw(mirroredX, mapRect.y, ratio, batch)
         }
         renderer.use(ShapeRenderer.ShapeType.Line, camera.combined){
             tiles.forEach{ line ->

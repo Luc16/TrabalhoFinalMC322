@@ -39,7 +39,7 @@ class Tile(
     )
 
     override fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer) {
-        if (component?.type == ComponentType.PLAYER || component == null) return
+        if (component?.isWall == false || component == null) return
         renderer.color = component?.color
         drawRect(startX, startY, ratio, renderer)
     }

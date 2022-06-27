@@ -8,14 +8,15 @@ import trabalhofinal.components.general.RayCastTile
 import trabalhofinal.components.general.RayCastComponent
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
+import trabalhofinal.utils.TextureLoader
 import kotlin.random.Random
 
 
 class Alien(tile: RayCastTile,
             tileWidth: Float, tileHeight: Float,
             texture: Texture,
-            color: Color = Color.BROWN,
-): RayCastComponent(tile, tileWidth, tileHeight, texture, color) {
+            mapTexture: Texture
+): RayCastComponent(tile, tileWidth, tileHeight, texture, mapTexture) {
 
     override val type = ComponentType.ALIEN
 
@@ -59,14 +60,14 @@ class Alien(tile: RayCastTile,
                 teleport(closest[stamina], ship)
     }
 
-    private fun placeEgg(texture: Texture, ship: ComponentShip) {
+    private fun placeEgg(texture: Texture, mapTexture: Texture, ship: ComponentShip) {
         val value = Random.nextInt(1, 100)
         if (value <= 15) //15% de chance de colocar
-            ship.addEgg(Egg(prevTile, ship.tileWidth, ship.tileHeight, texture))
+            ship.addEgg(Egg(prevTile, ship.tileWidth, ship.tileHeight, texture, mapTexture))
     }
 
-    fun playTurn(texture: Texture, ship: ComponentShip, aStar: AStar){
+    fun playTurn(textures: TextureLoader, ship: ComponentShip, aStar: AStar){
         findClosestPlayer(ship, aStar)
-        placeEgg(texture, ship)
+        placeEgg(textures.egg, textures.egg_logo, ship)
     }
 }

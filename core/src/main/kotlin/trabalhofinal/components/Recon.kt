@@ -10,8 +10,7 @@ class Recon(
     tileHeight: Float,
     texture: Texture,
     mapTexture: Texture,
-    color: Color = Color.BLUE
-) : Player(tile, tileWidth, tileHeight, texture, mapTexture, color) {
+) : Player(tile, tileWidth, tileHeight, texture, mapTexture) {
     override val name: String
         get() = "Recon"
     override val maxEnergy: Int

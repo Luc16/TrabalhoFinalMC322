@@ -1,11 +1,13 @@
 package trabalhofinal.components
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Disposable
 import trabalhofinal.components.general.Component
+import trabalhofinal.components.general.MapBatchDrawable
 import trabalhofinal.components.general.RayCastComponent
 
-class RayCastCompList(private val components: MutableList<RayCastComponent>): Disposable {
+class RayCastCompList(private val components: MutableList<RayCastComponent>): Disposable, MapBatchDrawable {
     constructor() : this(mutableListOf())
 
     fun add(comp: RayCastComponent) {
@@ -27,6 +29,8 @@ class RayCastCompList(private val components: MutableList<RayCastComponent>): Di
             components.render(shader, initialX, initialY, ratio)
         }
     }
+
+    override fun draw(startX: Float, startY: Float, ratio: Float, batch: Batch) = components.forEach { it.draw(startX, startY, ratio, batch) }
 
     override fun dispose(){
         components.forEach {

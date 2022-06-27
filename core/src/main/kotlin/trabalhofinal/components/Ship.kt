@@ -61,7 +61,7 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
                             fungus
                         }
                         3 -> {
-                            val web = AlienWeb(tile, tileWidth, tileHeight, textures.web)
+                            val web = AlienWeb(tile, tileWidth, tileHeight, textures.web, textures.egg_logo)
                             components.add(web)
                             web
                         }
@@ -84,12 +84,12 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
                             p
                         }
                         7 -> {
-                            val egg = Egg(tile, tileWidth, tileHeight, textures.egg)
+                            val egg = Egg(tile, tileWidth, tileHeight, textures.egg, textures.egg_logo)
                             addEgg(egg)
                             egg
                         }
                         8 -> {
-                            val alien = Alien(tile, tileWidth, tileHeight, textures.alien)
+                            val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.egg_logo)
                             aliens.add(alien)
                             components.add(alien)
                             alien
@@ -114,7 +114,7 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
 
     fun resetPlayers() = players.forEach { it.reset() }
 
-    fun playAliens(texture: Texture, aStar: AStar) = aliens.forEach { it.playTurn(texture, this, aStar) }
+    fun playAliens(textures: TextureLoader, aStar: AStar) = aliens.forEach { it.playTurn(textures, this, aStar) }
 
     fun updateComponents(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
         components.updateComponents(player, zBuffer, tileWidth, tileHeight)
