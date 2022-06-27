@@ -1,0 +1,3 @@
+package trabalhofinal.exceptions
+
+class InvalidCharacterInEdgeException: InvalidCharacterException()

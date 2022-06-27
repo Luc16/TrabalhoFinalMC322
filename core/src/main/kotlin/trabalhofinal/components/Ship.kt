@@ -1,17 +1,17 @@
 package trabalhofinal.components
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.*
+import trabalhofinal.exceptions.InvalidCharacterException
+import trabalhofinal.exceptions.InvalidCharacterInEdgeException
+import trabalhofinal.exceptions.NotSquareMapException
+import trabalhofinal.exceptions.NumFungiNotSpecifiedException
 import trabalhofinal.utils.AStar
 import trabalhofinal.utils.IVector2
 import trabalhofinal.utils.MapReader
 import trabalhofinal.utils.TextureLoader
-import kotlin.math.max
 
 class Ship(file: String, textures: TextureLoader): ComponentShip {
     val tiles: List<List<Tile>>
@@ -33,8 +33,13 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
     override val maxFungi: Int
 
     init {
-        val reader = MapReader(file)
-        val mapString = reader.contents()
+        val mapString = try {
+            getMapScreen(file)
+        } catch (e: NotSquareMapException){
+            println("Map not square, changing to default map")
+            getMapScreen("assets/maps/apresentacao.map")
+        }
+
 
         maxFungi = mapString[mapString.lastIndex].toInt()
         sizeJ = mapString[0].length
@@ -43,6 +48,26 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
         tileWidth = WIDTH /sizeJ
         tileHeight = HEIGHT/sizeI
 
+        tiles = createMap(textures, mapString)
+    }
+
+    private fun getMapScreen(file: String): List<String> {
+        var reader: MapReader
+        var mapString: List<String>
+        try {
+            reader = MapReader(file)
+            mapString = reader.contents()
+        } catch (e: NumFungiNotSpecifiedException){
+            // Se o mapa não era válido coloca um mapa default
+            println("Num fungi is incorrect, changing to default map")
+            reader = MapReader("assets/maps/apresentacao.map")
+            mapString = reader.contents()
+        }
+        if (mapString.size - 1 != mapString[0].length) throw NotSquareMapException()
+        return mapString
+    }
+
+    private fun createMap(textures: TextureLoader, mapString: List<String>): List<List<Tile>>{
         val tempTiles = mutableListOf<MutableList<Tile>>()
 
         for (i in 0 until sizeJ){
@@ -51,57 +76,71 @@ class Ship(file: String, textures: TextureLoader): ComponentShip {
                 val id = mapString[i][j] - '0'
                 val tile = Tile(i, j, tileWidth, tileHeight)
 
-                tile.setInitialComponent(
-                    when (id){
-                        1 -> Wall(tile, textures.wall)
-                        2 -> {
-                            val fungus = Fungus(tile, textures.fungus, textures.wall)
-                            fungi.add(fungus)
-                            numFungi++
-                            fungus
-                        }
-                        3 -> {
-                            val web = AlienWeb(tile, tileWidth, tileHeight, textures.web, textures.egg_logo)
-                            components.add(web)
-                            web
-                        }
-                        4 -> {
-                            val p = Pyro(tile, tileWidth, tileHeight, textures.pyro, textures.pyroLogo)
-                            components.add(p)
-                            players.add(p)
-                            p
-                        }
-                        5 -> {
-                            val p = Recon(tile, tileWidth, tileHeight, textures.recon, textures.reconLogo)
-                            components.add(p)
-                            players.add(p)
-                            p
-                        }
-                        6 -> {
-                            val p = Botanist(tile, tileWidth, tileHeight, textures.botanist, textures.botanistLogo)
-                            components.add(p)
-                            players.add(p)
-                            p
-                        }
-                        7 -> {
-                            val egg = Egg(tile, tileWidth, tileHeight, textures.egg, textures.egg_logo)
-                            addEgg(egg)
-                            egg
-                        }
-                        8 -> {
-                            val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.egg_logo)
-                            aliens.add(alien)
-                            components.add(alien)
-                            alien
-                        }
-                        else -> null
-                    }
-                )
+                val comp: Component? = try {
+                    selectTile(textures, id, tile, i == 0 || j == 0 || i == sizeJ - 1 || j == sizeI -1)
+                } catch (e: InvalidCharacterInEdgeException){
+                    Wall(tile, textures.wall)
+                } catch (e: InvalidCharacterException){
+                    null
+                }
+
+                tile.setInitialComponent(comp)
                 line.add(tile)
             }
             tempTiles.add(line)
         }
-        tiles = tempTiles.toList()
+        return tempTiles
+    }
+
+    private fun selectTile(textures: TextureLoader, id: Int, tile: Tile, isEdge: Boolean): Component? {
+        if (isEdge && id != 1 && id != 2) throw InvalidCharacterInEdgeException()
+        return when (id){
+            0 -> null
+            1 -> Wall(tile, textures.wall)
+            2 -> {
+                val fungus = Fungus(tile, textures.fungus, textures.wall)
+                fungi.add(fungus)
+                numFungi++
+                fungus
+            }
+            3 -> {
+                val web = AlienWeb(tile, tileWidth, tileHeight, textures.web, textures.egg_logo)
+                components.add(web)
+                web
+            }
+            4 -> {
+                val p = Pyro(tile, tileWidth, tileHeight, textures.pyro, textures.pyroLogo)
+                components.add(p)
+                players.add(p)
+                p
+            }
+            5 -> {
+                val p = Recon(tile, tileWidth, tileHeight, textures.recon, textures.reconLogo)
+                components.add(p)
+                players.add(p)
+                p
+            }
+            6 -> {
+                val p = Botanist(tile, tileWidth, tileHeight, textures.botanist, textures.botanistLogo)
+                components.add(p)
+                players.add(p)
+                p
+            }
+            7 -> {
+                val egg = Egg(tile, tileWidth, tileHeight, textures.egg, textures.egg_logo)
+                addEgg(egg)
+                egg
+            }
+            8 -> {
+                val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.egg_logo)
+                aliens.add(alien)
+                components.add(alien)
+                alien
+            }
+            else -> {
+                throw InvalidCharacterException()
+            }
+        }
     }
 
     override operator fun get(i: Int, j: Int) = tiles[i][j]
