@@ -146,9 +146,8 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         return true
     }
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        val mouse = unprojectedMouse(screenX, screenY)
         if (!rayCastIsMinimap && !adControl) {
-            // mouse invisivel
+            val mouse = Vector2(screenX.toFloat(), screenY.toFloat())
             val deltaX = (mouse.x - WIDTH/2) / 600
             selectedPlayer.rotate(deltaX * theta)
             Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
@@ -156,13 +155,12 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         return true
     }
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val mouse = unprojectedMouse(screenX, screenY)
         if (!rayCastIsMinimap && !adControl) {
-            // mouse invisivel
+            val mouse = Vector2(screenX.toFloat(), screenY.toFloat())
             val deltaX = (mouse.x - WIDTH/2) / 100
             selectedPlayer.rotate(deltaX * theta)
-            Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
         } else {
+            val mouse = unprojectedMouse(screenX, screenY)
             if (!selectedPlayer.isMoving) endTurnButton.checkHover(mouse)
         }
         return true
