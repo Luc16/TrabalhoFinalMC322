@@ -2,6 +2,7 @@ package trabalhofinal.components.general
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.AStar
@@ -37,6 +38,7 @@ abstract class Player(tile: RayCastTile,
 
     private var destQueue: Queue<IVector2> = LinkedList()
     private var pathLen = 0
+    private var playerSeen = false
 
     lateinit var targetComponent: TargetComponent
 
@@ -66,7 +68,13 @@ abstract class Player(tile: RayCastTile,
 
     override fun update(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float) {
         super.update(player, zBuffer, tileWidth, tileHeight)
+        playerSeen = seen
         seen = true
+    }
+
+    override fun render(shader: ShaderProgram, initialX: Float, initialY: Float, ratio: Float) {
+        if (!playerSeen) return
+        super.render(shader, initialX, initialY, ratio)
     }
 
     fun updateSelected(tileWidth: Float, tileHeight: Float, mapRatio: Float, tile: RayCastTile) {

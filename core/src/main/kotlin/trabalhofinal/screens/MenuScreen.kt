@@ -51,7 +51,9 @@ class MenuScreen(game: MyGame):CustomScreen(game), InputProcessor {
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (button != Buttons.LEFT) return true
+        val mouse = unprojectedMouse(screenX, screenY)
         buttons.forEach {
+            it.checkHover(mouse) // para android
             it.onPress()
         }
         return true

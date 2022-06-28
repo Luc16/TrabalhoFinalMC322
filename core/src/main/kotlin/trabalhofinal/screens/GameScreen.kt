@@ -31,6 +31,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     private var adControl = false
     private val theta = (2 * PI / 180).toFloat()
     private var rotateDir = 0f
+    private var prevTouchX = 0
     private val endTurnButton: Button = Button(
         "END TURN",
         10f + 200f,
@@ -135,23 +136,35 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
         if (mouse.x >= shipRenderer.mapRatio * WIDTH && mouse.y >= shipRenderer.mapRatio * HEIGHT)
             toggleViewMode()
         if (rayCastIsMinimap){
-            if (!selectedPlayer.isMoving) mouseController(selectedPlayer, mouse)
+            if (!selectedPlayer.isMoving){
+                mouseController(selectedPlayer, mouse)
+                endTurnButton.checkHover(mouse) // para android
+            }
             endTurnButton.onPress()
         } else {
+            prevTouchX = screenX
             selectedPlayer.interact(ship)
         }
 
         return true
     }
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        endTurnButton.onRelease()
+        if (rayCastIsMinimap && !selectedPlayer.isMoving){
+            val mouse = unprojectedMouse(screenX, screenY)
+
+            endTurnButton.checkHover(mouse) // para android
+            endTurnButton.onRelease()
+            endTurnButton.resetColor()
+        }
         return true
     }
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        // para android
         if (!rayCastIsMinimap && !adControl) {
-            val mouse = Vector2(screenX.toFloat(), screenY.toFloat())
-            var deltaX = (mouse.x - WIDTH/2) / 600
-            deltaX = if (abs(deltaX) > 2.4f && mouse.x < WIDTH/2) -2.4f else if (abs(deltaX) > 2.4f && mouse.x > WIDTH/2) 2.4f else deltaX
+            if ((screenX > WIDTH/2 && prevTouchX < WIDTH/2) ||
+                screenX < WIDTH/2 && prevTouchX > WIDTH/2) prevTouchX = 0
+            val deltaX = (screenX - prevTouchX) / 10f
+            prevTouchX = screenX
             selectedPlayer.rotate(deltaX * theta)
         }
         return true
@@ -159,8 +172,7 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         if (!rayCastIsMinimap && !adControl) {
             val mouse = Vector2(screenX.toFloat(), screenY.toFloat())
-            var deltaX = (mouse.x - WIDTH/2) / 100
-            deltaX = if (abs(deltaX) > 2.4f && mouse.x < WIDTH/2) -2.4f else if (abs(deltaX) > 2.4f && mouse.x > WIDTH/2) 2.4f else deltaX
+            val deltaX = (mouse.x - WIDTH/2) / 100
             selectedPlayer.rotate(deltaX * theta)
         } else {
             val mouse = unprojectedMouse(screenX, screenY)

@@ -33,7 +33,7 @@ class Button(
         hovered = true
         color = hoverColor
     }
-    fun onPress() { if (hovered) color = clickColor }
+    fun onPress() { if(hovered) color = clickColor }
     fun resetColor() {
         hovered = false
         color = normalColor

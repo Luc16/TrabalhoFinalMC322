@@ -106,7 +106,7 @@ abstract class RayCastComponent(
         seen = true
     }
 
-    fun render(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
+    open fun render(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
         if (!seen || mesh == null) return
         mesh?.run {
             moveAndScale(initialX, initialY, ratio)
