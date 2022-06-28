@@ -1,14 +1,13 @@
 package trabalhofinal.utils
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
 import trabalhofinal.components.general.RayCastTile
-import trabalhofinal.components.Player
+import trabalhofinal.components.general.Player
 import trabalhofinal.components.TargetComponent
+import trabalhofinal.components.general.DrawableRayCaster
 import trabalhofinal.utils.graphics.MeshGroup
 import trabalhofinal.utils.graphics.Textured2DMesh
 import kotlin.math.abs
@@ -18,16 +17,13 @@ class RayCaster(
     private val tiles: List<List<RayCastTile>>,
     private val tileWidth: Float,
     private val tileHeight: Float,
-) {
+): DrawableRayCaster {
 
     lateinit var zBuffer: List<Float>
         private set
-    lateinit var collisionPoints: List<Vector2>
-        private set
-    lateinit var meshes: MeshGroup
-        private set
-    var floorLevel = 0f
-        private set
+    override lateinit var collisionPoints: List<Vector2>
+    override lateinit var meshes: MeshGroup
+    override var floorLevel = 0f
 
     fun multipleRayCast3D(player: Player) {
         // variaveis das informações do resultado
@@ -156,7 +152,6 @@ class RayCaster(
             initialVertices[0].x, initialVertices[0].y, uStart, 1f, //lower left
         ), if (side == 1) 2f else 1f
     )
-
 
     private fun singleRayCast(player: Player, rayDir: Vector2): Triple<RayCastTile, Int, Float> {
         // quanto o vetor anda em x e em y

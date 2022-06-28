@@ -4,18 +4,19 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Disposable
+import trabalhofinal.components.general.DrawableMeshGroup
 
 /** Group of meshes
  *
  * @param meshes a list of meshes, it is optional, if not provided the class will begin with an empty list
  * */
-class MeshGroup(private val meshes: MutableList<Textured2DMesh>): Disposable {
+class MeshGroup(private val meshes: MutableList<Textured2DMesh>): DrawableMeshGroup {
     constructor() : this(mutableListOf())
 
     fun add(mesh: Textured2DMesh) = meshes.add(mesh)
     operator fun get(i: Int): Textured2DMesh = meshes[i]
 
-    fun render(camera: Camera, shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f){
+    override fun render(camera: Camera, shader: ShaderProgram, initialX: Float, initialY: Float, ratio: Float){
         shader.bind()
         // manda a matriz da camera para o shader
         shader.setUniformMatrix("u_projTrans", camera.combined)

@@ -10,6 +10,7 @@ import trabalhofinal.MyGame
 import trabalhofinal.WIDTH
 import trabalhofinal.components.*
 import trabalhofinal.components.general.ComponentType
+import trabalhofinal.components.general.Player
 import trabalhofinal.utils.*
 import trabalhofinal.utils.graphics.fragmentShader
 import trabalhofinal.utils.graphics.vertexShader

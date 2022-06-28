@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.Player
 import trabalhofinal.components.TargetComponent
 import trabalhofinal.utils.graphics.Textured2DMesh
 

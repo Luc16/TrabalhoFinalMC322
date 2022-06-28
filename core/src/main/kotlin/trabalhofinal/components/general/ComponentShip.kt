@@ -1,7 +1,6 @@
 package trabalhofinal.components.general
 
 import trabalhofinal.components.Egg
-import trabalhofinal.components.Player
 
 interface ComponentShip {
     val tileWidth: Float

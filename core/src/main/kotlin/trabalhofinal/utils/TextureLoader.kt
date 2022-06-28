@@ -16,4 +16,5 @@ class TextureLoader {
     val egg = Texture(Gdx.files.local("assets/textures/egg.png"))
     val eggLogo = Texture(Gdx.files.local("assets/textures/egg_logo.png"))
     val alien = Texture(Gdx.files.local("assets/textures/alien.png"))
+    val alienLogo = Texture(Gdx.files.local("assets/textures/alienLogo.png"))
 }

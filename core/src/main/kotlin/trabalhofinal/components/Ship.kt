@@ -132,7 +132,7 @@ class Ship(file: String, textures: TextureLoader): ComponentShip, DrawableShip {
                 egg
             }
             8 -> {
-                val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.eggLogo)
+                val alien = Alien(tile, tileWidth, tileHeight, textures.alien, textures.alienLogo)
                 aliens.add(alien)
                 components.add(alien)
                 alien

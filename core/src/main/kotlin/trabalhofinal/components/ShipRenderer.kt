@@ -13,13 +13,9 @@ import ktx.app.clearScreen
 import ktx.graphics.use
 import trabalhofinal.HEIGHT
 import trabalhofinal.WIDTH
-import trabalhofinal.components.general.ComponentShip
-import trabalhofinal.components.general.DrawableShip
-import trabalhofinal.components.general.DrawableTile
-import trabalhofinal.components.general.MapBatchDrawable
+import trabalhofinal.components.general.*
 import trabalhofinal.utils.Button
 import trabalhofinal.utils.RayCaster
-import trabalhofinal.utils.graphics.MeshGroup
 
 class ShipRenderer(
     private val renderer: ShapeRenderer,
@@ -35,7 +31,7 @@ class ShipRenderer(
 
     fun renderShip(
         rayCastIsMinimap: Boolean,
-        rayCaster: RayCaster,
+        rayCaster: DrawableRayCaster,
         ship: DrawableShip,
         selectedPlayer: Player,
         endTurnButton: Button
@@ -114,7 +110,7 @@ class ShipRenderer(
 
     }
 
-    private fun drawRayCast(meshes: MeshGroup, isMinimap: Boolean, floor: Float, initialX: Float = 0f, initialY: Float = 0f) {
+    private fun drawRayCast(meshes: DrawableMeshGroup, isMinimap: Boolean, floor: Float, initialX: Float = 0f, initialY: Float = 0f) {
         val ratio = if (isMinimap) minimapRatio else 1f
         renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
             renderer.color = Color(0x202020ff)

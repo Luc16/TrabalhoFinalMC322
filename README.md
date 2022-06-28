@@ -17,7 +17,7 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 # Slides do Projeto
 
 ## Slides da Prévia
-[Link](https://docs.google.com/presentation/d/1RV9BZshf-Hz11bZMohDVvA4arWciKX9IC_XDAGJdpag/edit#slide=id.p)
+[Link](https://drive.google.com/file/d/1b1BZOB1QTkyP8iMLsTfIILZwD4t5lt8q/view?usp=sharing)
 
 ## Slides da Apresentação Final
 > Coloque um link para os slides da apresentação final do projeto.
@@ -29,4 +29,4 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 > Apresente um diagrama geral da arquitetura do jogo. O formato é livre. A escolha de um ou mais estilos arquiteturais será considerado um diferencial.
 
 ## Agradecimentos
-* Ana Luisa Holthausen de Carvalho (arte dos robôs)
+* Ana Luisa Holthausen de Carvalho (arte do jogo)

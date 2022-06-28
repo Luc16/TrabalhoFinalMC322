@@ -1,7 +1,7 @@
 package trabalhofinal.components
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import trabalhofinal.components.general.Player
 import trabalhofinal.components.general.RayCastTile
 
 class Recon(
