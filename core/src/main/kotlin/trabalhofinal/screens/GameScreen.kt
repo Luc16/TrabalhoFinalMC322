@@ -14,6 +14,7 @@ import trabalhofinal.utils.*
 import trabalhofinal.utils.graphics.fragmentShader
 import trabalhofinal.utils.graphics.vertexShader
 import kotlin.math.PI
+import kotlin.math.abs
 
 
 class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
@@ -148,16 +149,17 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (!rayCastIsMinimap && !adControl) {
             val mouse = Vector2(screenX.toFloat(), screenY.toFloat())
-            val deltaX = (mouse.x - WIDTH/2) / 600
+            var deltaX = (mouse.x - WIDTH/2) / 600
+            deltaX = if (abs(deltaX) > 2.4f && mouse.x < WIDTH/2) -2.4f else if (abs(deltaX) > 2.4f && mouse.x > WIDTH/2) 2.4f else deltaX
             selectedPlayer.rotate(deltaX * theta)
-            Gdx.input.setCursorPosition((WIDTH / 2).toInt(), (HEIGHT / 2).toInt())
         }
         return true
     }
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         if (!rayCastIsMinimap && !adControl) {
             val mouse = Vector2(screenX.toFloat(), screenY.toFloat())
-            val deltaX = (mouse.x - WIDTH/2) / 100
+            var deltaX = (mouse.x - WIDTH/2) / 100
+            deltaX = if (abs(deltaX) > 2.4f && mouse.x < WIDTH/2) -2.4f else if (abs(deltaX) > 2.4f && mouse.x > WIDTH/2) 2.4f else deltaX
             selectedPlayer.rotate(deltaX * theta)
         } else {
             val mouse = unprojectedMouse(screenX, screenY)
