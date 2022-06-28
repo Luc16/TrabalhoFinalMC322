@@ -133,8 +133,10 @@ class GameScreen(game: MyGame): CustomScreen(game), InputProcessor {
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val mouse = unprojectedMouse(screenX, screenY)
-        if (mouse.x >= shipRenderer.mapRatio * WIDTH && mouse.y >= shipRenderer.mapRatio * HEIGHT)
+        if (mouse.x >= shipRenderer.mapRatio * WIDTH && mouse.y >= shipRenderer.mapRatio * HEIGHT){
             toggleViewMode()
+            return true
+        }
         if (rayCastIsMinimap){
             if (!selectedPlayer.isMoving){
                 mouseController(selectedPlayer, mouse)

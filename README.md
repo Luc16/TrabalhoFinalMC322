@@ -25,8 +25,10 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 # Diagramas
 
 ## Diagrama Geral da Arquitetura do Jogo
-
-> Apresente um diagrama geral da arquitetura do jogo. O formato é livre. A escolha de um ou mais estilos arquiteturais será considerado um diferencial.
+![Diagrama Componentes](assets/readmeAssets/DiagramaGeral.png)
+> Primeiramente o GameBuilder irá montar uma Ship, que conterá todas as informações referentes aos tiles, componentes e players. Essas informações serão comunicadas para o view através de interfaces "Drawable"
+> para que este apresente-as ao usuário. O input processor é responsável por receber os comandos do jogador e enviar para o selected player que realizará as ações correspondentes. Além disso há um Ray Caster 
+> que é responsável por criar a visão 3D e enviar as meshes geradas para o view.
 
 ## Agradecimentos
 * Ana Luisa Holthausen de Carvalho (arte do jogo)
