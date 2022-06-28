@@ -9,7 +9,7 @@ import trabalhofinal.MyGame
 
 fun main() {
     Lwjgl3Application(MyGame(), Lwjgl3ApplicationConfiguration().apply {
-        setTitle("MyGame")
+        setTitle("Alien Nest Cleaners")
         setWindowedMode(WIDTH.toInt(), HEIGHT.toInt())
         setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png")
     })
