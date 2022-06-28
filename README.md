@@ -12,15 +12,15 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 
 # Arquivo Executável do Jogo
 
-> Colocar depois
+> [Link para o zip](assets/readmeAssets/ANC.zip)
 
 # Slides do Projeto
 
 ## Slides da Prévia
-[Link](https://drive.google.com/file/d/1b1BZOB1QTkyP8iMLsTfIILZwD4t5lt8q/view?usp=sharing)
+>[Link](https://drive.google.com/file/d/1b1BZOB1QTkyP8iMLsTfIILZwD4t5lt8q/view?usp=sharing)
 
 ## Slides da Apresentação Final
-> Coloque um link para os slides da apresentação final do projeto.
+> [Link](https://drive.google.com/file/d/1dzvt1U-i-1et3-sAsf1pf6dTG8hkVqyQ/view?usp=sharing)
 
 # Diagramas
 

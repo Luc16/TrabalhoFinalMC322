@@ -23,7 +23,7 @@ class Ship(file: String, textures: TextureLoader): ComponentShip, DrawableShip {
     private val eggs = mutableListOf<Egg>()
     override val components = RayCastCompList()
     val sizeI: Int
-    var sizeJ: Int
+    val sizeJ: Int
     override val tileWidth: Float
     override val tileHeight: Float
     override var numFungi = 0
