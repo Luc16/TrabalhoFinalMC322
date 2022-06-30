@@ -12,7 +12,7 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 
 # Arquivo Executável do Jogo
 
-> [Link para o zip](assets/readmeAssets/ANC.jar)
+> [Link para o executável](assets/readmeAssets/ANC.jar)
 
 # Slides do Projeto
 
