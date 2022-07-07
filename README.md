@@ -22,6 +22,14 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 ## Slides da Apresentação Final
 > [Link](https://docs.google.com/presentation/d/1xyjWFhrCbyZV30Mo_N_7FFh13gUgEdvw8kLYVz-yiSo/edit?usp=sharing)
 
+## Relatório de Evolução
+Entre as dificuldades enfrentadas no projeto, tivemos bugs a solucionar relacionados ao RayCasting (personagens com enquadramento errado ou sendo renderizados na tela mesmo quando não estavam no campo de visão do jogador); alguns bugs na renderização do grid e erros nas convenções adotadas para as coordenadas (cometemos com certa frequência erros relacionados a onde era a origem da matriz e enganos com a inversão das coordenadas i e j); aprender e compreender como a linguagem Kotlin pode ser um diferencial no código.
+
+O projeto, inicialmente, nos parecia bem definido com uma arquitetura relativamente simples que tínhamos em mente (vide slides iniciais). Entretanto, conforme o avanço do projeto, percebemos a necessidade de diversas interfaces (visando o polimorfismo e o encapsulamento) e design patterns (adapter e strategy) que foram essenciais para formar um software organizado, consistente com o paradigma da orientação a objetos e facilmente expansível. Isso pode ser observado comparando os diagramas inicial e final, em que se observa a presença de diversas interfaces que comunicam entre si e entre os componentes e gene. Não apenas na arquitetura, houve mudanças também quanto nas mecânicas e ideias do jogo, por exemplo: inicialmente, pensávamos que todos os personagens (os robôs) seriam todos iguais e dependeriam de itens para realizar ações como quebrar teias e ovos. Porém, visando a prática da orientação à objetos, decidimos programar 3 classes diferentes (Recon, Botanist e Pyro) que herdam Player, uma classe abstrata.
+
+
+
+
 # Diagramas
 
 ## Diagrama Geral da Arquitetura do Jogo
