@@ -44,8 +44,7 @@ Por fim, vale constar o esforço despendido em como generalizar as mecânicas do
 private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean): List<IVector2>?{
         // ver se a posicao destino eh valida
         if (dest.isOutOfRange() || source.isOutOfRange() || (!acceptBlockedDest && dest.isBlocked())) return null
-
-        {...}
+    
         
         //checar caminho enquanto a mutable list open nao esta vazio e nao chegamos no tile final
         //caso encontrarmos o tile final (node == end) , devolvemos um mutable list com os tiles a serem caminhados
@@ -53,46 +52,72 @@ private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: B
             val node = open.nextNode()
             if (node == end) {
                 return resultPath(node)
-                caso encontrarmos o tile final, devolvemos um 
+                //caso encontrarmos o tile final, devolvemos um mutableList com os tiles a serem caminhados
             }
 
             open.remove(node)
             node.wasVisited = true
-
+            
+            //para cada um dos vizinhos, calcularemos o valor f = heuristica + distancia_no_inicial e
+            // vamos seguir a busca para o no de menor valor f
             node.forEachNeighbor { neighbor ->
-                // se eh parede ou visinho possuir componente bloqueador, return
+                // se eh parede ou vizinho possuir componente bloqueador, return
                 if (!foundEnd) foundEnd = neighbor == end && acceptBlockedDest
                 if ((neighbor != end && neighbor.notTraversable) || neighbor.wasVisited || foundEnd) return@forEachNeighbor
-
+                
                 if (neighbor.parent == null || neighbor.parent?.let {it.g > node.g} == true){
                     neighbor.parent = node
                     neighbor.g = node.g + 1
                     open.add(neighbor)
                     changed.add(node)
                 }
-                if (neighbor.h == Int.MAX_VALUE){
-                    neighbor.h = abs(neighbor.i - end.i) + abs(neighbor.j - end.j)
-                }
+                
             }
             if (foundEnd) return resultPath(node)
         }
-        //se nao houve return no while, é impossível chegar no tile clicado, logo retornamos um mutable list nulo
+        //se nao houve return, é impossível chegar no tile clicado, logo retornamos um mutable list nulo
         return null
     }
 ~~~
 
-# Destaques de Orientação A Objetos
+Este é o algoritmo de busca de  
+
+# Destaques de Orientação a Objetos
+
+## Sistema de telas:
+> texto
+
+![Hierarquia Exceções](assets/readmeAssets/esquemaTelas.png)
+
+## Código do Destaque OO
+~~~kotlin
+abstract class CustomScreen(
+        val game: MyGame,
+        val batch: Batch = game.batch,
+        val renderer: ShapeRenderer = game.renderer,
+        val font: BitmapFont = game.font,
+        val viewport: FitViewport = game.gameViewport,
+) : KtxScreen {
+    override fun resize(width: Int, height: Int) {
+        viewport.update(width, height)
+    }
+    ...
+}
+~~~
 
 # Destaques de Pattern
 
 ## Adapter
+> Como o Raycaster gera várias meshes para renderização e a renderização de cada uma delas individualmente é mais cara e mais trabalhosa do que em grupo, foi implementado um adaptador de lista de mehes (MeshGroup) para que essas meshes pudessem ser renderizadas de maneira mais compartimentalizada e eficiente
+
+### Diagrama do Pattern
 ![Hierarquia Exceções](assets/readmeAssets/adapter.png)
 
 ### Código do Pattern
 ~~~kotlin
 class MeshGroup(private val meshes: MutableList<Textured2DMesh>): DrawableMeshGroup {
     ...
-    override fun render(camera: Camera, shader: ShaderProgram, initialX: Float, initialY: Float, ratio: Float) {
+    override fun render(...params) {
         shader.bind()
         // manda a matriz da camera para o shader
         ...
@@ -114,6 +139,9 @@ class MeshGroup(private val meshes: MutableList<Textured2DMesh>): DrawableMeshGr
 ~~~
 
 ## Strategy
+>  O componente no centro da visão do jogador será responsável por chamar sua própria função "die()" quando o jogador destruí-lo
+
+### Diagrama do Pattern
 ![Hierarquia Exceções](assets/readmeAssets/strategy.png)
 
 ### Código do Pattern
@@ -127,9 +155,6 @@ class TargetComponent(
     fun die() = component.die()
 }
 ~~~
-
->  O componente no centro da visão do jogador será responsável por chamar sua própria função "die()" quando o jogador destruí-lo
-
 
 # Plano de Exceções
 
