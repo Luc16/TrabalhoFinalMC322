@@ -38,5 +38,70 @@ O projeto, inicialmente, nos parecia bem definido com uma arquitetura relativame
 > para que este apresente-as ao usuário. O input processor é responsável por receber os comandos do jogador e enviar para o selected player que realizará as ações correspondentes. Além disso há um Ray Caster 
 > que é responsável por criar a visão 3D e enviar as meshes geradas para o view.
 
+
+# Destaques de Pattern
+
+## Adapter
+![Hierarquia Exceções](assets/readmeAssets/adapter.png)
+
+### Código do Pattern
+~~~kotlin
+class MeshGroup(private val meshes: MutableList<Textured2DMesh>): DrawableMeshGroup {
+    ...
+    override fun render(camera: Camera, shader: ShaderProgram, initialX: Float, initialY: Float, ratio: Float) {
+        shader.bind()
+        // manda a matriz da camera para o shader
+        ...
+        meshes.forEach { mesh ->
+            // só troca a textura se a textura anterior for diferente a atual
+            if (texture == null || mesh.texture != texture) {
+                texture = mesh.texture
+                mesh.texture.bind()
+            }
+            // ajusta as meshes
+            mesh.moveAndScale(initialX, initialY, ratio)
+            // divide a cor das meshes para ficar mais claro a imagem
+            shader.setUniformf("f_colorDiv", mesh.colorDiv)
+            mesh.render(shader)
+        }
+    }
+    ...
+}
+~~~
+
+## Strategy
+![Hierarquia Exceções](assets/readmeAssets/strategy.png)
+
+### Código do Pattern
+~~~kotlin
+class TargetComponent(
+    val component: Component,
+    val dist: Float
+) {
+    val type get() = component.type
+        ...
+    fun die() = component.die()
+}
+~~~
+
+>  O componente no centro da visão do jogador será responsável por chamar sua própria função "die()" quando o jogador destruí-lo
+
+# Plano de Exceções
+
+## Diagrama da hierarquia de exceções
+
+![Hierarquia Exceções](assets/readmeAssets/exceptions.png)
+
+## Descrição das classes de exceção
+
+| Classe                          | Descrição                                                                                                 |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------|
+| MapException                    | Engloba todas as exceções de criação de mapa                                                              |
+| NumFungiNotSpecifiedException   | Número máximo de fungos não foi especificado no arquivo .map ou é inválido                                |
+| NotSquareMapException           | O mapa não é quadrado                                                                                     |
+| InvalidCharacterException       | Caractere do mapa é inválido                                                                              |
+| InvalidCharacterInEdgeException | Caractere na borda do mapa é inválido, todos os caracteres da borda do mapa devem ser paredes ou fungos   |
+| InvalidTextureVertices          | Número de vértices fornecidos para Textured2DMesh é inválido para formação da imagem no formato requerido |
+
 ## Agradecimentos
 * Ana Luisa Holthausen de Carvalho (arte do jogo)
