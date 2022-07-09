@@ -22,12 +22,28 @@ Além disso, é necessário controlar a quantidade de fungos que vem crescendo n
 ## Slides da Apresentação Final
 > [Link](https://docs.google.com/presentation/d/1xyjWFhrCbyZV30Mo_N_7FFh13gUgEdvw8kLYVz-yiSo/edit?usp=sharing)
 
-## Relatório de Evolução
-Entre as dificuldades enfrentadas no projeto, tivemos bugs a solucionar relacionados ao RayCasting (personagens com enquadramento errado ou sendo renderizados na tela mesmo quando não estavam no campo de visão do jogador); alguns bugs na renderização do grid e erros nas convenções adotadas para as coordenadas (cometemos com certa frequência erros relacionados a onde era a origem da matriz e enganos com a inversão das coordenadas i e j); aprender e compreender como a linguagem Kotlin e o LibKTX (LibGDX para o Kotlin) podem ser diferenciais no código.
+# Relatório de Evolução
+No decorrer da realização do jogo tivemos diversos problemas com relação a diversos aspectos. O processo de implementação do RayCasting, por exemplo, foi um grande desafio
+em decorrência da complexidade do algorítmo e da necessidade de aprendizado não apenas da biblioteca gráfica, mas também da API (OpenGL) a partir da qual esta é 
+implementada. Além disso, aconteceram diversos erros relacionados com as convenções adotadas para as coordenadas,
+houve uma certa dificuldade em coordenar as coordenadas da matriz para que tanto o RayCaster quanto o AStar pudessem funcionar corretamente.
+Aprender e compreender como a linguagem Kotlin e o LibKTX (LibGDX para o Kotlin) podem ser diferenciais no código também foi um tema presenta no decorrer do projeto.
 
-O projeto, inicialmente, nos parecia bem definido com uma arquitetura relativamente simples que tínhamos em mente (vide slides iniciais). Entretanto, conforme o avanço do projeto, percebemos a necessidade de diversas interfaces (visando o polimorfismo e o encapsulamento) e design patterns (adapter e strategy) que foram essenciais para formar um software organizado, consistente com o paradigma da orientação a objetos e facilmente expansível. Isso pode ser observado comparando os diagramas inicial e final, em que se observa a presença de diversas interfaces que comunicam entre si e entre os componentes. Não apenas na arquitetura, houve mudanças também quanto nas mecânicas e ideias do jogo, por exemplo: inicialmente, pensávamos que todos os personagens (os robôs) seriam todos iguais e dependeriam de itens para realizar ações como quebrar teias e ovos. Porém, visando a prática da orientação à objetos, decidimos programar 3 classes diferentes (Recon, Botanist e Pyro) que herdam Player, uma classe abstrata.
+O projeto, inicialmente, nos parecia bem definido com uma arquitetura relativamente simples que tínhamos em mente (vide slides da prévia).
+Entretanto, conforme o avanço do projeto, percebemos a necessidade de expandir a arquitetura com
+diversas interfaces (visando o polimorfismo e o encapsulamento) e design patterns (adapter e strategy)
+que foram essenciais para formar um software organizado, consistente com o paradigma da orientação a objetos e facilmente expansível.
+Isso pode ser observado comparando os diagramas inicial (presente nos slides da prévia) e final, em que se observa a presença de diversas interfaces que comunicam entre si e entre os componentes.
+Não apenas na arquitetura, houve mudanças também quanto nas mecânicas e ideias do jogo, por exemplo: inicialmente, pensávamos que todos os personagens (os robôs)
+seriam todos iguais e dependeriam de itens para realizar ações como quebrar teias e ovos. Porém, visando a prática da orientação à objetos, 
+decidimos programar 3 classes diferentes (Recon, Botanist e Pyro) que herdam Player, uma classe abstrata.
 
-Por fim, vale constar o esforço despendido em como generalizar as mecânicas do jogo (que, conforme o projeto avançava, foram feitas adaptações conforme a arquitetura era estruturada), como por exemplo: o movimento (foi decidido programar o algoritmo de grafo A*, que pode ser utilizado para mapas de grandes proporções); dispersão dos fungos e a probabilidade de tal ocorrer (programamos a chance de 10% de dispersão para cada um dos tiles adjacentes que sejam paredes, mas tivemos que ficar bem atentos ao fato de que há a possibilidade de dispersar para uma parede inatingível pelo jogador, e portanto não é contabilizada pela variável contadora de fungos), entre outras. Assim, acreditamos que o o resultado final do projeto é facilmente escalável sem perdas de eficiência ou causar bugs.
+Por fim, vale constar o esforço despendido em como generalizar as mecânicas do jogo. Conforme o projeto avançava, foram feitas adaptações conforme a arquitetura era estruturada,
+como por exemplo: o movimento, no qual foi decidido programar o algoritmo de grafo A*, que pode ser utilizado para mapas de grandes proporções;
+dispersão dos fungos e a probabilidade de tal ocorrer, programamos a chance de 10% de dispersão para cada um dos tiles adjacentes que sejam paredes,
+mas tivemos que ficar bem atentos ao fato de que há a possibilidade de dispersar para uma parede inatingível pelo jogador, a qual,
+portanto, não é contabilizada pela variável contadora de fungos, entre outras. 
+Assim, acreditamos que o resultado final do projeto é facilmente escalável sem perdas de eficiência ou causar bugs.
 
 # Destaques de Código
 
@@ -74,6 +90,124 @@ private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: B
         //se nao houve return, é impossível chegar no tile clicado, logo retornamos um mutable list nulo
         return null
     }
+~~~
+
+## Ray Casting
+> O algoritmo do Ray Casting foi realizado seguindo o seguinte tutorial: [link](https://lodev.org/cgtutor/raycasting.html). De maneira simplificada, 
+> este algoritmo consiste em criar diversos raios ao longo de um campo de visão andando de tile em tile dentro de uma grid
+> até que o raio encontre uma parede. Quando isso acontece é calculada a distância percorrida perpendiculamente ao plano de visão,
+> de maneira que a altura mostrada na tela é inversamente proporcional a essa distância.
+
+### Código
+~~~kotlin
+class RayCaster(
+    private val tiles: List<List<RayCastTile>>
+    ...
+): DrawableRayCaster {
+    ...
+
+    fun multipleRayCast3D(player: Player) {
+        ...
+        // para todos os pixels na largura da tela
+        for (x in 0 until WIDTH.toInt()) {
+            val cameraX = 2 * x.toFloat() / WIDTH - 1
+            // calcula a direção do raio atual
+            rayDir = Vector2(
+                player.dir.x + player.cameraPlane.x * cameraX,
+                player.dir.y + player.cameraPlane.y * cameraX
+            )
+            ...
+            // armazena o resultado de um rayCast
+            val result = singleRayCast(player, rayDir)
+            ...
+            // calcula altura da linha
+            val h = 1.5f * HEIGHT
+            val lineHeight = tileHeight * (h / perpDist)
+            
+            // calcular inicio e fim do faixa encontrada pelo raio
+            drawStart = -lineHeight / 2 + h / 2
+            floorLevel = max(drawStart, floorLevel)
+            drawEnd = lineHeight / 2 + h / 2
+            ...
+
+            if (prevTile == null || prevTile != tile || prevSide != side) {
+                // cria as meshes
+                ...
+            }
+                
+        }
+        if (prevTile != null) {
+            // cria a ultima mesh
+            ...
+        }
+    }
+    ...
+    private fun singleRayCast(player: Player, rayDir: Vector2): Triple<RayCastTile, Int, Float> {
+        ...
+        // vai andando com o raio até encontrar uma parede
+        while (!tiles[mapPos.i][mapPos.j].isWall) {
+            // realiza o raycast
+            if (rayLengths.x < rayLengths.y) {
+                mapPos.i += step.i
+                side = 0
+                rayLengths.x += rayStepSize.x
+            } else {
+                mapPos.j += step.j
+                side = 1
+                rayLengths.y += rayStepSize.y
+            }
+
+        }
+        ...
+
+    }
+}
+~~~
+
+## Criação da Mesh do Ray Cast Component
+> O algoritmo para criação da mesh dos Ray Cast Components foi realizado seguindo o seguinte tutorial: [link](https://lodev.org/cgtutor/raycasting3.html).
+> Para criação das meshes é aplicada uma transformação linear no vetor entre o jogador selecionado e o componente de maneira que é possível
+> obter a distância perpendicular do componente em relação ao plano de visão do jogador, com isso é possível calcular a largura e altura do componente e 
+> utilizar essa informação para criar a mesh
+
+### Código
+~~~kotlin
+open fun update(player: Player, zBuffer: List<Float>, tileWidth: Float, tileHeight: Float){
+    
+    // posição relativa do jogador com o componente (utilizando uma matriz de mudança de coordenadas)
+    val transformedPos = Vector2(x - player.x, y - player.y)
+    val invDet = 1f / (player.cameraPlane.x * player.dir.y - player.dir.x * player.cameraPlane.y)
+    transformedPos.set(
+        invDet * (player.dir.y * transformedPos.x - player.dir.x * transformedPos.y),
+        invDet * (-player.cameraPlane.y * transformedPos.x + player.cameraPlane.x * transformedPos.y)
+    )
+    if (transformedPos.y == 0f) return
+
+    val h = 1.5f*HEIGHT
+    val spriteScreenX = (WIDTH / 2) * (1 + transformedPos.x / transformedPos.y)
+    val spriteHeight = tileHeight * h / transformedPos.y // transformedPos.y é a distancia perpendicular
+    val drawStartY =  -spriteHeight / 2 + h / 2
+
+    val spriteWidth = tileWidth * h / transformedPos.y
+    var drawStartX = -spriteWidth / 2 + spriteScreenX
+    var drawEndX = spriteWidth / 2 + spriteScreenX
+
+    // verifica se o componente está totalmente fora da tela
+    if(drawStartX >= WIDTH || drawEndX < 0 || transformedPos.y < 0) {
+        seen = false
+        return
+    }
+
+    // procura o valor inicial do componente em X que não está atras de algo
+    ...
+
+    // procura o valor final do componente em X que não está atras de algo
+    ...
+    
+    // cria a mesh para ser desenhada
+    ...
+    seen = true
+}
 ~~~
 
 # Destaques de Orientação a Objetos
@@ -137,6 +271,9 @@ private fun drawTileMap(
 > Todos os RayCastComponents, ou seja, componentes do jogo que serão renderizados em 3D, 
 > mas não são paredes, como ovo, jogador e alien, tem certos atributos, como a textura para o 3D
 > e a textura para o mapa, e funções, como de renderizar no 3D ou desenhar no mapa
+
+### Diagrama
+![Diagrama GM](assets/readmeAssets/diagramaComponentes.png)
 
 ### Código
 ~~~kotlin
@@ -239,9 +376,20 @@ Nesta linha de pensamento, concluímos assim que os princípios de orientação 
 Enfim, é ideal que o uso dos patterns e princípios sejam de uso natural e lógico, e não forçados propositalmente. Por fim, vale dizer que, principalmente em sistemas de alta escala (como de empresas Big Tech),
 o conhecimento de arquitetura de software é essencial para o bom funcionamento, eficiência e reaproveitamento de projetos já realizados.
 
-Entre trabalhos futuros, podemos citar: a adição de mais jogadores humanos para o jogo, ou seja, que mais pessoas joguem simultaneamente e que cada uma delas possua seus próprios robôs
+No entanto, sentimos também, que nosso trabalho poderia melhorar em diversos aspectos. Um exemplo é que o mapa do jogo atualmente só pode ser quadrado, de maneira que não há
+uma otimização do espaço da tela, portanto uma possível melhoria seria permitir mapas com diferentes dimensões. Além disso, no jogo atual tem-se apenas um mapa, durante o 
+período de realização do projeto não conseguimos montar mais mapas, apesar da montagem envolver apenar escrever um arquivo de texto .map, nesse contexto também seria necessário 
+criar um sistema de escolha de níveis. Outra feature que não conseguimos implementar a tempo é um montador de mapa dentro do jogo que permita com que os jogadores pudessem montar
+os próprios mapas e testa-los. Por fim, percebemos que poderiamos ter adotado alguns design patterns além dos que já foram mencionados. As classes TextureLoader e MapReader,
+por exemplo, poderiam ser singletons. 
+
+Apesar disso, foi possível aprender e implementar de maneira eficaz diversos conceitos de programação orientação a objetos, como os patterns mencionados anteriormente,
+interfaces para auxiliar na coerência do código e encapsular funções, polimorfismo para que apenas as informações necessárias dos objetos esteja aparente e um plano de exceções.
+Além disso, os algoritmos implementados para utilização no jogo, como o A* e o RayCast e como relacioná-los a um projeto maior foram conhecimentos importante para nossa formação como programadores.
+
+Outros trabalhos futuros, poderiam ser: a adição de mais jogadores humanos para o jogo, ou seja, que mais pessoas joguem simultaneamente e que cada uma delas possua seus próprios robôs
 que não podem ser controladas por outras; a adição de aliens de diferentes tipos, sendo que eles podem possuir habilidades diferentes de colocar ovos (como foi feito no jogo atual); adicionar novos componentes, sejam eles
-vantajosos para os jogadores ou não, como, por exemplo, um ácido em certos tiles que aumente a energia despendida para andar sobre eles.
+vantajosos para os jogadores ou não, como, por exemplo, um ácido em certos tiles que aumente a energia despendida para andar sobre eles. 
 
 # Documentação de Compoenentes
 
@@ -270,7 +418,7 @@ Autores | `Luc e Rafael`
 Interfaces |
 
 ## Componente `Game Model`
-Game Model concentra comunica para os outros componentes informações necessárias do grid para o andamento do jogo, como a presença de um
+Game Model concentra comunica para os outros componentes informações necessárias do grid e dos compoenentes para o andamento do jogo, como a presença de um
 componente em certo tile.
 
 ![Diagrama GM](assets/readmeAssets/GameModel.png)
@@ -307,8 +455,7 @@ Método | Objetivo
 `isWall` | Retorna se o componente é uma parede ou não.
 `texture` | Retorna a textura de um componente.
 `color` | Retorna ou seta a cor associada de um componente.
-`type` | Retorna o tipo (presentes no Enum ComponentType) do componente. 
-
+`type` | Retorna o tipo (presentes no Enum ComponentType) do componente.
 
 ## Componente `ShipRenderer`
 
@@ -382,7 +529,6 @@ Método | Objetivo
 -------| --------
 `render` | Desenha todos os itens de um MeshGroup em 3D utilizando um shader.
 
-
 #### Interface `DrawableShip`
 
 Interface que representa a Ship a partir do polimorfismo em drawableTiles e possui atributos relevantes para o fim do jogo
@@ -400,6 +546,23 @@ interface DrawableShip {
 }
 ~~~
 
+#### Interface `DrawableRayCaster`
+
+Interface que contém as informações necessárias para desenhar os objeto provenientes do RayCaster
+
+~~~kotlin
+interface DrawableRayCaster {
+    val collisionPoints: List<Vector2>
+    val meshes: DrawableMeshGroup
+    val floorLevel: Float
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`collisionPoints` | Retorna uma lista com os pontos em que os raios do Ray Cast colidiram.
+`meshes` | Retorna um MeshGroup com as meshes geradas pelo RayCaster.
+`floorLevel` | Retorna o valor do maior ponto mais baixo entre as meches para o desenho do chão.
 
 ## Componente `Game Control`
 Componente responsável pelo controle do jogo, em que as ações recebidas seja por teclado e mouse (PC) quanto por toque (Android)
@@ -457,7 +620,6 @@ Método | Objetivo
 `i` | Retorna ou seta a posição i do tile na matriz.
 `j` | Retorna ou seta a posição j do tile na matriz.
 
-
 # Plano de Exceções
 
 ## Diagrama da hierarquia de exceções
@@ -474,8 +636,6 @@ Método | Objetivo
 | InvalidCharacterException       | Caractere do mapa é inválido                                                                              |
 | InvalidCharacterInEdgeException | Caractere na borda do mapa é inválido, todos os caracteres da borda do mapa devem ser paredes ou fungos   |
 | InvalidTextureVertices          | Número de vértices fornecidos para Textured2DMesh é inválido para formação da imagem no formato requerido |
-
-
 
 # Agradecimentos
 * Ana Luisa Holthausen de Carvalho (arte do jogo)
