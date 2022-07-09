@@ -32,6 +32,10 @@ Por fim, vale constar o esforço despendido em como generalizar as mecânicas do
 # Destaques de Código
 
 ## A Star
+> Este é o algoritmo de busca em grafo A*, utilizado no movimento do Alien e dos jogadores. Essencialmente, este algoritmo realiza um chute pensado de melhor caminho utilizando uma heurística (nesse caso, foi utilizada a Manhattan, a mais adequada para um grid em que os movimentos são cima, baixo, esquerda e direita, ou seja, sem movimentos diagonais), sendo que esse valor será combinado com a distância do nó inicial e teremos, portanto, o valor F que servirá de parâmetro para analisar o próximo nó. Caso haja maior interesse em entender o algoritmo, recomendamos o seguinte vídeo:
+> <br> 
+[Vídeo](https://www.youtube.com/watch?v=-L-WgKMFuhE&t=181s)
+### Código
 ~~~kotlin
 private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean): List<IVector2>?{
         // ver se a posicao destino eh valida
@@ -446,6 +450,10 @@ Método | Objetivo
 | InvalidCharacterException       | Caractere do mapa é inválido                                                                              |
 | InvalidCharacterInEdgeException | Caractere na borda do mapa é inválido, todos os caracteres da borda do mapa devem ser paredes ou fungos   |
 | InvalidTextureVertices          | Número de vértices fornecidos para Textured2DMesh é inválido para formação da imagem no formato requerido |
+
+# Conclusões e Trabalhos Futuros
+
+Com este projeto
 
 # Agradecimentos
 * Ana Luisa Holthausen de Carvalho (arte do jogo)
