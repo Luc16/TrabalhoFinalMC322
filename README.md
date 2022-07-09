@@ -97,7 +97,7 @@ private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: B
 > este algoritmo consiste em criar diversos raios ao longo de um campo de visão andando de tile em tile dentro de uma grid
 > até que o raio encontre uma parede. Quando isso acontece é calculada a distância percorrida perpendiculamente ao plano de visão,
 > de maneira que a altura da mesh mostrada na tela é inversamente proporcional a essa distância.
-
+ 
 ### Código
 ~~~kotlin
 class RayCaster(
