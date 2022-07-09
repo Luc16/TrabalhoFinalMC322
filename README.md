@@ -29,16 +29,8 @@ O projeto, inicialmente, nos parecia bem definido com uma arquitetura relativame
 
 Por fim, vale constar o esforço despendido em como generalizar as mecânicas do jogo (que, conforme o projeto avançava, foram feitas adaptações conforme a arquitetura era estruturada), como por exemplo: o movimento (foi decidido programar o algoritmo de grafo A*, que pode ser utilizado para mapas de grandes proporções); dispersão dos fungos e a probabilidade de tal ocorrer (programamos a chance de 10% de dispersão para cada um dos tiles adjacentes que sejam paredes, mas tivemos que ficar bem atentos ao fato de que há a possibilidade de dispersar para uma parede inatingível pelo jogador, e portanto não é contabilizada pela variável contadora de fungos), entre outras. Assim, acreditamos que o o resultado final do projeto é facilmente escalável sem perdas de eficiência ou causar bugs.
 
-
-# Diagramas
-
-## Diagrama Geral da Arquitetura do Jogo
-![Diagrama Componentes](assets/readmeAssets/DiagramaGeral.png)
-> Primeiramente o GameBuilder irá montar uma Ship, que conterá todas as informações referentes aos tiles, componentes e players. Essas informações serão comunicadas para o view através de interfaces "Drawable"
-> para que este apresente-as ao usuário. O input processor é responsável por receber os comandos do jogador e enviar para o selected player que realizará as ações correspondentes. Além disso há um Ray Caster 
-> que é responsável por criar a visão 3D e enviar as meshes geradas para o view.
-
 # Destaques de Código
+
 ## A Star
 ~~~kotlin
 private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: Boolean): List<IVector2>?{
@@ -80,16 +72,15 @@ private fun findPathAstar(source: IVector2, dest: IVector2, acceptBlockedDest: B
     }
 ~~~
 
-Este é o algoritmo de busca de  
-
 # Destaques de Orientação a Objetos
 
 ## Sistema de telas:
-> texto
+> Inicialmente, no topo do diagrama, temos a classe abstrata CustomScreen que herda a Screen nativa do LibKTX. Em seguida, temos GameScreen e MenuScreen que são telas dinâmicas (ou seja, com ações), e, no mesmo nível, uma classe abstrata ImageScreen que será herdada por LoseScreen, InstructionScreen e WinScreen, telas que são apenas imagens estáticas.
 
-![Hierarquia Exceções](assets/readmeAssets/esquemaTelas.png)
+### Diagrama
+![Esquema_Telas](assets/readmeAssets/diagramaTelas.png)
 
-## Código do Destaque OO
+### Código
 ~~~kotlin
 abstract class CustomScreen(
         val game: MyGame,
@@ -102,6 +93,86 @@ abstract class CustomScreen(
         viewport.update(width, height)
     }
     ...
+}
+~~~
+
+## Polimorfismo e Encapsulamento:
+> Visando o encapsulamento, vemos na função abaixo que a propriedade tiles utiliza uma matriz de DrawableTile, uma interface 
+> que possui apenas as funções draw e drawOutline que são necessárias para desenhar o Grid. Note que a classe Tile implementa
+> DrawableTile, de maneira que podemos iterar sobre a matriz de DrawableTile em vez de Tile, aplicando assim o polimorfismo.
+
+### Código
+~~~kotlin
+private fun drawTileMap(
+    ...,
+    tiles: List<List<DrawableTile>>,
+    ...
+    ){
+        ...
+        renderer.use(ShapeRenderer.ShapeType.Filled, camera.combined){
+            ...
+            tiles.forEach{ line ->
+                line.forEach { tile ->
+                    tile.draw(mirroredX, mapRect.y, ratio, renderer)
+                }
+            }
+
+        }
+        ...
+        renderer.use(ShapeRenderer.ShapeType.Line, camera.combined){
+            tiles.forEach{ line ->
+                line.forEach { tile ->
+                    tile.drawOutline(mirroredX, mapRect.y, ratio, renderer)
+                }
+            }
+        }
+    }
+~~~
+
+## Classe abstrata RayCastComponent:
+> Todos os RayCastComponents, ou seja, componentes do jogo que serão renderizados em 3D, 
+> mas não são paredes, como ovo, jogador e alien, tem certos atributos, como a textura para o 3D
+> e a textura para o mapa, e funções, como de renderizar no 3D ou desenhar no mapa
+
+### Código
+~~~kotlin
+abstract class RayCastComponent(
+    tile: RayCastTile,
+    ...
+    override val texture: Texture,
+    val mapTexture: Texture,
+):
+    Disposable,
+    Comparable<RayCastComponent>,
+    Component,
+    MapBatchDrawable
+{
+    ...
+}
+~~~
+
+## Expansibilidade:
+> A classe Player é uma classe abstrata que tem todas os atributos e funções para a manipulação e desenho dos jogadores.
+> Para criar um novo jogador é muito simples, além de fazer a arte é necessário apenas criar uma nova classe de jogador,
+> especificar parâmetros como nome, energia máxima e tamanho da camera de visão e atribuir para o novo jodaor um número 
+> no construtor da ship. Para modificar um jogador também é fácil, bastando apenas alterar os atributos na classe.
+
+### Código
+~~~kotlin
+class NovoJogador(...params) : Player(params) {
+    override val name: String
+        get() = "Novo Jogador"
+    override val maxEnergy: Int
+        get() = 10 
+    override val webEnergy: Int
+        get() = 2
+    override val fungusEnergy: Int
+        get() = 4
+    override val eggEnergy: Int
+        get() = 4
+    override val cameraPlaneSize: Float
+        get() = 0.40f
+
 }
 ~~~
 
@@ -156,6 +227,209 @@ class TargetComponent(
 }
 ~~~
 
+# Conclusão e Trabalhos Futuros
+
+# Documentação de Compoenentes
+
+## Diagrama Geral da Arquitetura do Jogo
+
+![Diagrama Geral](assets/readmeAssets/DiagramaGeral.png)
+> Primeiramente o GameBuilder irá montar uma Ship, que conterá todas as informações referentes aos tiles, componentes e players. Essas informações serão comunicadas para o view através de interfaces "Drawable"
+> para que este apresente-as ao usuário. O input processor é responsável por receber os comandos do jogador e enviar para o selected player que realizará as ações correspondentes. Além disso há um Ray Caster
+> que é responsável por criar a visão 3D e enviar as meshes geradas para o view.
+
+## Diagrama de componentes
+![Diagrama Componentes](assets/readmeAssets/components.png)
+
+## Componente `Game Builder`
+![Diagrama GB](assets/readmeAssets/GameBuilder.png)
+
+**Ficha Técnica**
+
+item | detalhamento
+----- | -----
+Pacote | `trabalhofinal.utils`
+Autores | `Luc e Rafael`
+Interfaces |
+
+## Componente `Game Model`
+![Diagrama GM](assets/readmeAssets/GameModel.png)
+
+**Ficha Técnica**
+
+item | detalhamento
+----- | -----
+Pacote | `trabalhofinal.components`
+Autores | `Luc e Rafael`
+Interfaces | `Component` <br> `ComponentShip`
+
+### Detalhamento das Interfaces
+
+
+#### Interface `Component`
+
+Interface que permite acesso ao método buildGame para montagem do jogo.
+
+~~~kotlin
+interface Component {
+    val isWall: Boolean
+    val texture: Texture?
+    var color: Color
+    val type: ComponentType
+
+    fun die() {}
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`die` | Elimina um componente de um tile.
+`isWall` | Retorna se o componente é uma parede ou não.
+`texture` | Retorna a textura de um componente.
+`color` | Retorna ou seta a cor associada de um componente.
+`type` | Retorna o tipo (presentes no Enum ComponentType) do componente. 
+
+
+## Componente `ShipRenderer`
+![Diagrama SR](assets/readmeAssets/shipRenderer.png)
+
+**Ficha Técnica**
+
+item | detalhamento
+----- | -----
+Pacote | `trabalhofinal.components`
+Autores | `Luc e Rafael`
+Interfaces | `DrawableMeshGroup` <br>`DrawableRayCaster` <br> `DrawableShip` <br> `DrawableTile` <br> `MapBatchDrawable` <br> `MapShapeDrawable` 
+
+### Detalhamento das Interfaces
+
+#### Interface `MapShapeDrawable`
+
+Interface que representa um elemento que pode ser desenhado no mapa utilizando o ShapeRenderer
+
+~~~kotlin
+interface MapShapeDrawable {
+    fun draw(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer)
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`draw` | Desenha o elemento na tela utilizando o ShapeRenderer.
+
+#### Interface `MapBatchDrawable`
+
+Interface que representa um elemento que pode ser desenhado no mapa utilizando um Batch (com uma textura)
+
+~~~kotlin
+interface MapBatchDrawable {
+    fun draw(startX: Float, startY: Float, ratio: Float, batch: Batch)
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`draw` | Desenha o elemento na tela utilizando o Batch.
+
+#### Interface `DrawableTile`
+
+Interface que implementa MapShapeDrawable, de maneira a representar um tile que tem tanto seu retângulo quanto sua borda desenhados pelo ShapeRenderer
+
+~~~kotlin
+interface DrawableTile: MapShapeDrawable {
+    fun drawOutline(startX: Float, startY: Float, ratio: Float, renderer: ShapeRenderer)
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`drawOutline` | Desenha a borda do tile utilizando o ShapeRenderer.
+
+#### Interface `DrawableMeshGroup`
+
+Interface que representa um MeshGroup que pode ter suas meshes desenhadas utilizando um shader provido.
+
+~~~kotlin
+interface DrawableMeshGroup: Disposable {
+    fun render(camera: Camera, shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f)
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`render` | Desenha todos os itens de um MeshGroup em 3D utilizando um shader.
+
+
+#### Interface `DrawableShip`
+
+Interface que representa a Ship a partir do polimorfismo em drawableTiles e possui atributos relevantes para o fim do jogo
+
+~~~kotlin
+interface DrawableShip {
+    val drawableTiles: List<List<DrawableTile>>
+    val components: MapBatchDrawable
+    var numFungi: Int
+    val maxFungi: Int
+    val numEggs: Int
+
+    fun renderComponents(shader: ShaderProgram, initialX: Float = 0f, initialY: Float = 0f, ratio: Float = 1f)
+
+}
+~~~
+
+
+## Componente `Game Control`
+![Diagrama GC](assets/readmeAssets/GameControl.png)
+
+**Ficha Técnica**
+
+item | detalhamento
+----- | -----
+Pacote | `trabalhofinal.screens`
+Autores | `Luc e Rafael`
+Interfaces |
+
+## Componente `RayCaster`
+![Diagrama RC](assets/readmeAssets/RayCaster.png)
+
+**Ficha Técnica**
+
+item | detalhamento
+----- | -----
+Pacote | `trabalhofinal.utils`
+Autores | `Luc e Rafael`
+Interfaces | `RayCastTile`
+
+### Detalhamento das Interfaces
+
+
+#### Interface `RayCastTile`
+
+Interface que representa um Tile apenas com as informações necessária para o RayCast
+
+~~~kotlin
+interface RayCastTile {
+    val x: Float
+    val y: Float
+    var isWall: Boolean
+    val texture: Texture?
+    var component: Component?
+    var i: Int
+    var j: Int
+}
+~~~
+
+Método | Objetivo
+-------| --------
+`x` | Retorna a posição x real do tile.
+`y` | Retorna a posição y real do tile.
+`isWall` | Retorna ou seta se o Tile é parede ou não.
+`texture` | Retorna a textura do Tile para construir a Textured2DMesh.
+`component` | Retorna ou seta o componente que está no Tile.
+`i` | Retorna ou seta a posição i do tile na matriz.
+`j` | Retorna ou seta a posição j do tile na matriz.
+
+
 # Plano de Exceções
 
 ## Diagrama da hierarquia de exceções
@@ -173,5 +447,7 @@ class TargetComponent(
 | InvalidCharacterInEdgeException | Caractere na borda do mapa é inválido, todos os caracteres da borda do mapa devem ser paredes ou fungos   |
 | InvalidTextureVertices          | Número de vértices fornecidos para Textured2DMesh é inválido para formação da imagem no formato requerido |
 
-## Agradecimentos
+# Agradecimentos
 * Ana Luisa Holthausen de Carvalho (arte do jogo)
+
+
