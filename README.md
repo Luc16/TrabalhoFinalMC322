@@ -232,6 +232,16 @@ class TargetComponent(
 ~~~
 
 # Conclusão e Trabalhos Futuros
+Com este projeto, percebemos, inicialmente, a importância do pensamento em alto nível antes de começar a programar de fato o jogo, ou seja, o quão necessário é ter organização prévia. Com o fato de que o jogo finalizado distanciou-se do planejamento inicial, observamos que, no desenvolvimento de software,
+muitas vezes o pensamento algorítmico e de arquitetura será claro apenas durante o desenvolvimento do produto, pois é durante o processo de criação que novas dificuldades surgem e portanto adaptações são necessárias.
+
+Nesta linha de pensamento, concluímos assim que os princípios de orientação a objetos e os design patterns tornam-se evidentes quando é sentida a necessidade deles no código.
+Enfim, é ideal que o uso dos patterns e princípios sejam de uso natural e lógico, e não forçados propositalmente. Por fim, vale dizer que, principalmente em sistemas de alta escala (como de empresas Big Tech),
+o conhecimento de arquitetura de software é essencial para o bom funcionamento, eficiência e reaproveitamento de projetos já realizados.
+
+Entre trabalhos futuros, podemos citar: a adição de mais jogadores humanos para o jogo, ou seja, que mais pessoas joguem simultaneamente e que cada uma delas possua seus próprios robôs
+que não podem ser controladas por outras; a adição de aliens de diferentes tipos, sendo que eles podem possuir habilidades diferentes de colocar ovos (como foi feito no jogo atual); adicionar novos componentes, sejam eles
+vantajosos para os jogadores ou não, como, por exemplo, um ácido em certos tiles que aumente a energia despendida para andar sobre eles.
 
 # Documentação de Compoenentes
 
@@ -246,6 +256,9 @@ class TargetComponent(
 ![Diagrama Componentes](assets/readmeAssets/components.png)
 
 ## Componente `Game Builder`
+Game Builder é basicamente onde o jogo será inicializado. Conta com a presença de um
+carregador de texturas e um leitor de arquivos para gerar o grid.
+
 ![Diagrama GB](assets/readmeAssets/GameBuilder.png)
 
 **Ficha Técnica**
@@ -257,6 +270,9 @@ Autores | `Luc e Rafael`
 Interfaces |
 
 ## Componente `Game Model`
+Game Model concentra comunica para os outros componentes informações necessárias do grid para o andamento do jogo, como a presença de um
+componente em certo tile.
+
 ![Diagrama GM](assets/readmeAssets/GameModel.png)
 
 **Ficha Técnica**
@@ -295,6 +311,9 @@ Método | Objetivo
 
 
 ## Componente `ShipRenderer`
+
+Componente responsável pelas renderizações tanto de interface gráfica 2D quanto 3D (relacionada ao RayCast)
+
 ![Diagrama SR](assets/readmeAssets/shipRenderer.png)
 
 **Ficha Técnica**
@@ -383,6 +402,9 @@ interface DrawableShip {
 
 
 ## Componente `Game Control`
+Componente responsável pelo controle do jogo, em que as ações recebidas seja por teclado e mouse (PC) quanto por toque (Android)
+são comunicadas para o jogador atual (Selected Player)
+
 ![Diagrama GC](assets/readmeAssets/GameControl.png)
 
 **Ficha Técnica**
@@ -394,6 +416,8 @@ Autores | `Luc e Rafael`
 Interfaces |
 
 ## Componente `RayCaster`
+Componente responsável por prover informações para a renderização 3D, sendo que as informações dos tiles a serem processadas são recebidas da Ship através da interface RayCastTile.
+
 ![Diagrama RC](assets/readmeAssets/RayCaster.png)
 
 **Ficha Técnica**
@@ -451,9 +475,7 @@ Método | Objetivo
 | InvalidCharacterInEdgeException | Caractere na borda do mapa é inválido, todos os caracteres da borda do mapa devem ser paredes ou fungos   |
 | InvalidTextureVertices          | Número de vértices fornecidos para Textured2DMesh é inválido para formação da imagem no formato requerido |
 
-# Conclusões e Trabalhos Futuros
 
-Com este projeto
 
 # Agradecimentos
 * Ana Luisa Holthausen de Carvalho (arte do jogo)
